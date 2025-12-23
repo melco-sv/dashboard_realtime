@@ -1,10 +1,45 @@
 <div class="space-y-8 p-6 bg-[#0b0c15] min-h-screen">
     
+    <style>
+        /* Mengubah ikon kalender menjadi putih agar terlihat di background gelap */
+        .dark-date-input::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+            cursor: pointer;
+        }
+    </style>
+
     <div class="text-center pb-2">
         <h2 class="text-3xl font-extrabold text-white tracking-tight">
             Dashboard Kualitas Serapan
         </h2>
-        <p class="text-gray-400 text-sm mt-1">Monitoring Harian Kualitas Gabah & Beras</p>
+        <p class="text-gray-400 text-sm mt-1">Monitoring Kualitas Gabah & Beras</p>
+    </div>
+
+    <div class="bg-gray-900 border border-gray-800 p-4 rounded-2xl flex flex-col md:flex-row gap-4 items-center justify-between shadow-lg">
+        
+        <div class="flex flex-col md:flex-row gap-4 w-full md:w-auto">
+            
+            <div class="flex items-center gap-3 bg-gray-800 px-4 py-2 rounded-xl border border-gray-700">
+                <span class="text-gray-400 text-xs uppercase font-bold tracking-wider">Cabang:</span>
+                
+                <select wire:model.live="cabang" class="bg-transparent text-white font-bold focus:outline-none text-sm cursor-pointer min-w-[200px]">
+                    <option value="" class="bg-gray-900 text-gray-200">Semua Cabang</option>
+                    @foreach($listCabang as $kode => $nama)
+                        <option value="{{ $kode }}" class="bg-gray-900 text-gray-200">{{ $nama }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="flex items-center gap-3 bg-gray-800 px-4 py-2 rounded-xl border border-gray-700">
+                <span class="text-gray-400 text-xs uppercase font-bold tracking-wider">Periode:</span>
+                <input type="month" wire:model.live="periode" class="bg-transparent text-white font-bold focus:outline-none text-sm cursor-pointer dark-date-input">
+            </div>
+        </div>
+
+        <div wire:loading class="text-blue-400 text-xs font-bold animate-pulse flex items-center gap-2">
+            <svg class="animate-spin h-4 w-4 text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+            Mengupdate Data...
+        </div>
     </div>
 
     <div class="bg-gray-900 border border-blue-900/30 p-6 md:p-8 rounded-3xl relative overflow-hidden shadow-2xl">
@@ -71,5 +106,4 @@
             <x-box-stat label="AVG - Rendemen" :value="$berasStats['rendemen']['avg']" color="text-purple-400" isBold="true" />
         </div>
     </div>
-
 </div>
