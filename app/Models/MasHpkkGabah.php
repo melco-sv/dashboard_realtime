@@ -2,12 +2,18 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class MasHpkkGabah extends Model
 {
-    protected $table = 'mas_hpkk_gabah'; // Nama tabel di database
-    protected $primaryKey = 'id_hpkk_gabah'; // Primary key-nya bukan 'id'
-    public $timestamps = false; // Tabel ini tidak punya created_at/updated_at
+    use HasFactory;
+
+    protected $table = 'mas_hpkk_gabah';
+    protected $primaryKey = 'id_hpkk_gabah'; // Sesuaikan primary key dari foto
+    
+    // MATIKAN TIMESTAMP OTOMATIS
+    public $timestamps = false; 
+
     protected $guarded = [];
 }

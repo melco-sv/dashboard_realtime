@@ -62,6 +62,7 @@
                         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
                         <span class="font-medium">Serapan</span>
                     </a>
+                    
                 </div>
             </div>
 
@@ -77,8 +78,28 @@
                             <svg :class="open ? 'rotate-90' : ''" class="w-4 h-4 transition-transform text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
                         </button>
                         <div x-show="open" x-cloak class="mt-1 ml-4 border-l border-gray-700 pl-4 space-y-1">
-                            <a href="#" class="block px-4 py-2 text-sm text-gray-500 hover:text-white hover:bg-gray-800 rounded-lg">Input Gabah</a>
-                            <a href="#" class="block px-4 py-2 text-sm text-gray-500 hover:text-white hover:bg-gray-800 rounded-lg">Input Beras</a>
+                            <a href="{{ route('input.gabah') }}" wire:navigate 
+   class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group {{ request()->routeIs('input.gabah') ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
+    
+    <div class="p-2 rounded-lg {{ request()->routeIs('input.gabah') ? 'bg-white/20' : 'bg-gray-800 group-hover:bg-gray-700' }}">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+    </div>
+    
+    <span class="font-bold tracking-wide">Input Gabah</span>
+</a>
+                            <a href="{{ route('input.beras') }}" wire:navigate 
+   class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group {{ request()->routeIs('input.beras') ? 'bg-green-600 text-white shadow-lg shadow-green-500/30' : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
+    
+    <div class="p-2 rounded-lg {{ request()->routeIs('input.beras') ? 'bg-white/20' : 'bg-gray-800 group-hover:bg-gray-700' }}">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+        </svg>
+    </div>
+    
+    <span class="font-bold tracking-wide">Input Beras</span>
+</a>
                         </div>
                     </div>
                 </div>
