@@ -1,5 +1,4 @@
 <div class="min-h-screen bg-[#0b0c15] p-6 text-white font-['Space_Grotesk']">
-    
     <div class="max-w-7xl mx-auto mb-8 flex justify-between items-center border-b border-gray-800 pb-4">
         <div>
             <h1 class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-emerald-600">
@@ -8,16 +7,25 @@
             <p class="text-gray-400 text-sm mt-1">Create New HPKK Record (HGL)</p>
         </div>
         
-        @if (session()->has('message'))
-            <div class="px-4 py-2 bg-green-500/10 border border-green-500/50 text-green-400 rounded-lg text-sm font-bold">
-                {{ session('message') }}
-            </div>
-        @endif
-        @if (session()->has('error'))
-            <div class="px-4 py-2 bg-red-500/10 border border-red-500/50 text-red-400 rounded-lg text-sm font-bold">
-                {{ session('error') }}
-            </div>
-        @endif
+        <div class="flex gap-4 items-center">
+            @if (session()->has('message'))
+                <div class="px-4 py-2 bg-green-500/10 border border-green-500/50 text-green-400 rounded-lg text-sm font-bold">
+                    {{ session('message') }}
+                </div>
+            @endif
+            @if (session()->has('error'))
+                <div class="px-4 py-2 bg-red-500/10 border border-red-500/50 text-red-400 rounded-lg text-sm font-bold">
+                    {{ session('error') }}
+                </div>
+            @endif
+
+            <a href="{{ route('list.beras') }}" wire:navigate class="px-5 py-2.5 rounded-xl bg-gray-800 border border-gray-700 text-white hover:bg-gray-700 hover:border-gray-600 transition-all flex items-center gap-2 font-bold shadow-lg shadow-black/50">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                </svg>
+                List Doc Beras
+            </a>
+        </div>
     </div>
 
     <div class="max-w-7xl mx-auto bg-gray-900 border border-gray-800 rounded-2xl p-6 shadow-2xl relative overflow-hidden">
@@ -78,7 +86,7 @@
 
                     <div>
                         <label class="block text-gray-400 text-xs font-bold mb-2">Kondisi Kemasan</label>
-                        <select wire:model="kondisi_kemasan" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 focus:border-blue-500 focus:outline-none">
+                        <select wire:model="kondisi_kemasan" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 focus:border-blue-500 focus:outline-none cursor-pointer">
                             <option value="">-- Pilih --</option>
                             <option value="Baik">Baik</option>
                             <option value="Tidak Baik">Tidak Baik</option>
@@ -87,7 +95,7 @@
 
                     <div>
                         <label class="block text-gray-400 text-xs font-bold mb-2">Hama Penyakit</label>
-                        <select wire:model="hama" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 focus:border-blue-500 focus:outline-none">
+                        <select wire:model="hama" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 focus:border-blue-500 focus:outline-none cursor-pointer">
                             <option value="">-- Pilih --</option>
                             @foreach($optsBebas as $o) <option value="{{$o}}">{{$o}}</option> @endforeach
                         </select>
@@ -95,7 +103,7 @@
 
                     <div>
                         <label class="block text-gray-400 text-xs font-bold mb-2">Dedak/Katul/Sekam</label>
-                        <select wire:model="dedak_katul_sekam" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 focus:border-blue-500 focus:outline-none">
+                        <select wire:model="dedak_katul_sekam" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 focus:border-blue-500 focus:outline-none cursor-pointer">
                             <option value="">-- Pilih --</option>
                             @foreach($optsBebas as $o) <option value="{{$o}}">{{$o}}</option> @endforeach
                         </select>
@@ -103,7 +111,7 @@
 
                     <div>
                         <label class="block text-gray-400 text-xs font-bold mb-2">Bau Apek/Busuk</label>
-                        <select wire:model="bau" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 focus:border-blue-500 focus:outline-none">
+                        <select wire:model="bau" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 focus:border-blue-500 focus:outline-none cursor-pointer">
                             <option value="">-- Pilih --</option>
                             @foreach($optsBebas as $o) <option value="{{$o}}">{{$o}}</option> @endforeach
                         </select>
@@ -111,7 +119,7 @@
 
                     <div>
                         <label class="block text-gray-400 text-xs font-bold mb-2">Bahan Kimia</label>
-                        <select wire:model="bahan_kimia" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 focus:border-blue-500 focus:outline-none">
+                        <select wire:model="bahan_kimia" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 focus:border-blue-500 focus:outline-none cursor-pointer">
                             <option value="">-- Pilih --</option>
                             @foreach($optsBebas as $o) <option value="{{$o}}">{{$o}}</option> @endforeach
                         </select>
@@ -147,29 +155,21 @@
                     <div class="relative">
                         <label class="block text-gray-400 text-xs font-bold mb-2">Derajat Sosoh</label>
                         <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <span class="text-green-500 font-bold">%</span>
-                            </div>
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><span class="text-green-500 font-bold">%</span></div>
                             <input type="number" step="0.01" wire:model="derajat_sosoh" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg pl-10 pr-4 py-3 focus:border-purple-500">
                         </div>
                     </div>
-
                     <div class="relative">
                         <label class="block text-gray-400 text-xs font-bold mb-2">Butir Patah</label>
                         <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <span class="text-green-500 font-bold">%</span>
-                            </div>
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><span class="text-green-500 font-bold">%</span></div>
                             <input type="number" step="0.01" wire:model="butir_patah" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg pl-10 pr-4 py-3 focus:border-purple-500">
                         </div>
                     </div>
-
                     <div class="relative">
                         <label class="block text-gray-400 text-xs font-bold mb-2">Menir</label>
                         <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <span class="text-green-500 font-bold">%</span>
-                            </div>
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><span class="text-green-500 font-bold">%</span></div>
                             <input type="number" step="0.01" wire:model="menir" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg pl-10 pr-4 py-3 focus:border-purple-500">
                         </div>
                     </div>
@@ -185,9 +185,7 @@
                     <div class="relative">
                         <label class="block text-gray-400 text-xs font-bold mb-2">Kuantum Gabah (MO)</label>
                         <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <span class="text-yellow-500 font-bold text-xs">KG</span>
-                            </div>
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><span class="text-yellow-500 font-bold text-xs">KG</span></div>
                             <input type="number" step="0.01" wire:model.live="kuantum_gabah_sesuai_mo" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg pl-10 pr-4 py-3 focus:border-yellow-500">
                         </div>
                     </div>
@@ -195,9 +193,7 @@
                     <div class="relative">
                         <label class="block text-gray-400 text-xs font-bold mb-2">Kuantum Beras</label>
                         <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <span class="text-yellow-500 font-bold text-xs">KG</span>
-                            </div>
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><span class="text-yellow-500 font-bold text-xs">KG</span></div>
                             <input type="number" step="0.01" wire:model.live="kuantum_beras" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg pl-10 pr-4 py-3 focus:border-yellow-500">
                         </div>
                     </div>
@@ -218,9 +214,7 @@
                     <div class="relative">
                         <label class="block text-gray-400 text-xs font-bold mb-2">Menir</label>
                         <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <span class="text-gray-500 font-bold text-xs">KG</span>
-                            </div>
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><span class="text-gray-500 font-bold text-xs">KG</span></div>
                             <input type="number" step="0.01" wire:model="hasil_samping_menir" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg pl-10 pr-4 py-3 focus:border-gray-500">
                         </div>
                     </div>
@@ -228,9 +222,7 @@
                     <div class="relative">
                         <label class="block text-gray-400 text-xs font-bold mb-2">Butir Patah</label>
                         <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <span class="text-gray-500 font-bold text-xs">KG</span>
-                            </div>
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><span class="text-gray-500 font-bold text-xs">KG</span></div>
                             <input type="number" step="0.01" wire:model="hasil_samping_butir_patah" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg pl-10 pr-4 py-3 focus:border-gray-500">
                         </div>
                     </div>
@@ -238,9 +230,7 @@
                     <div class="relative">
                         <label class="block text-gray-400 text-xs font-bold mb-2">Dedak Katul</label>
                         <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <span class="text-gray-500 font-bold text-xs">KG</span>
-                            </div>
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><span class="text-gray-500 font-bold text-xs">KG</span></div>
                             <input type="number" step="0.01" wire:model="hasil_samping_dedak_katul" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg pl-10 pr-4 py-3 focus:border-gray-500">
                         </div>
                     </div>
@@ -248,9 +238,7 @@
                     <div class="relative">
                         <label class="block text-gray-400 text-xs font-bold mb-2">Butir Kuning Rusak</label>
                         <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <span class="text-gray-500 font-bold text-xs">KG</span>
-                            </div>
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><span class="text-gray-500 font-bold text-xs">KG</span></div>
                             <input type="number" step="0.01" wire:model="hasil_samping_butir_kuning_rusak" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg pl-10 pr-4 py-3 focus:border-gray-500">
                         </div>
                     </div>
