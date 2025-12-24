@@ -4,63 +4,69 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use App\Models\MasHpkkBeras;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class InputBeras extends Component
 {
-    // === IDENTITAS DOKUMEN ===
-    public $nomor_hpkk_beras; // Auto
-    public $id_mo; // Nomor MO
+    // === PROPERTI FORM ===
+    public $nomor_hpkk_beras; 
+    public $id_mo; 
     public $nomor_order;
     public $tempat_pemeriksaan;
     public $tanggal_pemeriksaan;
     public $kode_sample;
     public $dasar_pemeriksaan;
     
-    // === KUALITAS FISIK (Dropdown) ===
+    // Kualitas Fisik
     public $kondisi_kemasan;
-    public $hama; // Hama Penyakit
+    public $hama; 
     public $dedak_katul_sekam;
-    public $bau; // Bau Apek/Busuk
-    public $bahan_kimia; // Kimia
+    public $bau; 
+    public $bahan_kimia; 
 
-    // === LAB: KADAR AIR ===
+    // Lab Kadar Air
     public $ulangan_1;
     public $ulangan_2;
     public $ulangan_3;
-    public $rata_rata; // Auto Calc (Kadar Air)
+    public $rata_rata; 
 
-    // === LAB: FISIK BERAS (%) ===
+    // Fisik Beras
     public $derajat_sosoh;
     public $butir_patah;
     public $menir;
 
-    // === KUANTUM & RENDEMEN ===
-    public $kuantum_gabah_sesuai_mo; // KG
-    public $kuantum_beras; // KG
-    public $rendemen_pengolahan; // Auto Calc
+    // Kuantum
+    public $kuantum_gabah_sesuai_mo; 
+    public $kuantum_beras; 
+    public $rendemen_pengolahan; 
 
-    // === HASIL SAMPING (KG) ===
+    // Hasil Samping
     public $hasil_samping_menir;
     public $hasil_samping_butir_patah;
     public $hasil_samping_dedak_katul;
     public $hasil_samping_butir_kuning_rusak;
 
-    // === FOOTER ===
+    // Footer
     public $tanggal_doc;
     public $lokasi;
-    public $mengetahui; // Nama Mengetahui
-    public $petugas; // Nama Petugas
+    public $mengetahui;
+    public $petugas;
     public $catatan;
-    public $group;
-    public $status; // Auto "HPK"
+    public $group; 
+    public $status = 'Active';
 
+    // === MOUNT ===
     public function mount()
     {
         $this->tanggal_pemeriksaan = date('Y-m-d');
         $this->tanggal_doc = date('Y-m-d');
-        $this->status = 'HPK'; // Default Value
         
+        // 1. ISI GROUP OTOMATIS
+        if (Auth::check()) {
+            $this->group = Auth::user()->group;
+        }
+
+        // 2. GENERATE NOMOR SURAT OTOMATIS
         $this->generateNomorSurat();
     }
 
@@ -73,23 +79,25 @@ class InputBeras extends Component
             $u2 = (float) $this->ulangan_2;
             $u3 = (float) $this->ulangan_3;
 
-            if ($u1 || $u2 || $u3) {
-                $avg = ($u1 + $u2 + $u3) / 3;
-                $this->rata_rata = number_format($avg, 2, '.', '');
+            if ($u1 > 0 || $u2 > 0 || $u3 > 0) {
+                // Hitung rata-rata hanya dari nilai yang diisi (>0)
+                $count = 0; $sum = 0;
+                if($u1 > 0) { $sum += $u1; $count++; }
+                if($u2 > 0) { $sum += $u2; $count++; }
+                if($u3 > 0) { $sum += $u3; $count++; }
+
+                $this->rata_rata = $count > 0 ? number_format($sum / $count, 2, '.', '') : 0;
             } else {
                 $this->rata_rata = 0;
             }
         }
 
         // 2. Hitung Rendemen Pengolahan
-        // Rumus: (Kuantum Beras / Kuantum Gabah) * 100 (Biasanya persen)
         if (in_array($propertyName, ['kuantum_beras', 'kuantum_gabah_sesuai_mo'])) {
             $beras = (float) $this->kuantum_beras;
             $gabah = (float) $this->kuantum_gabah_sesuai_mo;
 
             if ($gabah > 0 && $beras > 0) {
-                // Asumsi rendemen adalah persentase, jadi dikali 100.
-                // Jika user minta murni pembagian, hapus * 100 nya.
                 $rendemen = ($beras / $gabah) * 100; 
                 $this->rendemen_pengolahan = number_format($rendemen, 2, '.', '');
             } else {
@@ -98,52 +106,45 @@ class InputBeras extends Component
         }
     }
 
-    // === GENERATE RUNNING NUMBER ===
+    // === GENERATE NOMOR SURAT ===
     public function generateNomorSurat()
     {
-        // Format: (5 Digit)/HGL/4101/SCI/(Romawi)/2025
+        $bulan = date('m');
         $tahun = date('Y');
+        $groupCode = $this->group ?? '0000';
         
-        // Cari nomor terakhir di tabel BERAS berdasarkan tahun tanggal pemeriksaan
-        $lastRecord = MasHpkkBeras::whereYear('tanggal_pemeriksaan', $tahun)
-                        ->orderBy('id_hpkk_beras', 'desc')
-                        ->first();
+        // Hitung berdasarkan tanggal_pemeriksaan
+        $count = MasHpkkBeras::whereYear('tanggal_pemeriksaan', $tahun)
+                        ->where('group', $this->group)
+                        ->count();
 
-        $nextUrutan = 1;
-        if ($lastRecord) {
-            $parts = explode('/', $lastRecord->nomor_hpkk_beras);
-            if (isset($parts[0]) && is_numeric($parts[0])) {
-                $nextUrutan = intval($parts[0]) + 1;
-            }
-        }
-
-        // 5 Digit Padding
-        $runningNo = str_pad($nextUrutan, 5, '0', STR_PAD_LEFT);
-        $bulanRomawi = $this->getRomawi(date('n'));
-
-        $this->nomor_hpkk_beras = "$runningNo/HGL/4101/SCI/$bulanRomawi/$tahun";
+        $nextNo = $count + 1;
+        
+        // Format: 00001/HGL/4101/SCI/XII/2025
+        $noUrut = sprintf("%05d", $nextNo);
+        $romawi = $this->getRomawi($bulan);
+        
+        $this->nomor_hpkk_beras = "$noUrut/HGL/$groupCode/SCI/$romawi/$tahun";
     }
 
     private function getRomawi($bulan) {
-        $map = [1=>'I', 2=>'II', 3=>'III', 4=>'IV', 5=>'V', 6=>'VI', 7=>'VII', 8=>'VIII', 9=>'IX', 10=>'X', 11=>'XI', 12=>'XII'];
-        return $map[$bulan] ?? 'I';
+        $bulan = (int)$bulan;
+        $map = ['', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII'];
+        return $map[$bulan] ?? '';
     }
 
-    public function save()
+    // === SIMPAN DATA (STORE) ===
+    public function store()
     {
+        // 1. Validasi Input Wajib
         $this->validate([
-            'nomor_hpkk_beras' => 'required',
-            'kuantum_gabah_sesuai_mo' => 'required|numeric',
-            'kuantum_beras' => 'required|numeric',
-            'ulangan_1' => 'required|numeric',
-            'ulangan_2' => 'required|numeric',
-            'ulangan_3' => 'required|numeric',
-            'group' => 'required',
             'id_mo' => 'required',
+            'group' => 'required',
         ]);
 
         try {
-            MasHpkkBeras::create([
+            // 2. PERSIAPAN DATA (SANITASI INPUT)
+            $data = [
                 'nomor_hpkk_beras' => $this->nomor_hpkk_beras,
                 'id_mo' => $this->id_mo,
                 'nomor_order' => $this->nomor_order,
@@ -159,27 +160,27 @@ class InputBeras extends Component
                 'bau' => $this->bau,
                 'bahan_kimia' => $this->bahan_kimia,
 
-                // Lab KA
-                'ulangan_1' => $this->ulangan_1,
-                'ulangan_2' => $this->ulangan_2,
-                'ulangan_3' => $this->ulangan_3,
-                'rata_rata' => $this->rata_rata,
+                // Lab KA (Convert empty to 0)
+                'ulangan_1' => $this->ulangan_1 === '' ? 0 : $this->ulangan_1,
+                'ulangan_2' => $this->ulangan_2 === '' ? 0 : $this->ulangan_2,
+                'ulangan_3' => $this->ulangan_3 === '' ? 0 : $this->ulangan_3,
+                'rata_rata' => $this->rata_rata === '' ? 0 : $this->rata_rata,
 
                 // Lab Fisik
-                'derajat_sosoh' => $this->derajat_sosoh,
-                'butir_patah' => $this->butir_patah,
-                'menir' => $this->menir,
+                'derajat_sosoh' => $this->derajat_sosoh === '' ? 0 : $this->derajat_sosoh,
+                'butir_patah' => $this->butir_patah === '' ? 0 : $this->butir_patah,
+                'menir' => $this->menir === '' ? 0 : $this->menir,
 
                 // Kuantum & Rendemen
-                'kuantum_gabah_sesuai_mo' => $this->kuantum_gabah_sesuai_mo,
-                'kuantum_beras' => $this->kuantum_beras,
-                'rendemen_pengolahan' => $this->rendemen_pengolahan,
+                'kuantum_gabah_sesuai_mo' => $this->kuantum_gabah_sesuai_mo === '' ? 0 : $this->kuantum_gabah_sesuai_mo,
+                'kuantum_beras' => $this->kuantum_beras === '' ? 0 : $this->kuantum_beras,
+                'rendemen_pengolahan' => $this->rendemen_pengolahan === '' ? 0 : $this->rendemen_pengolahan,
 
                 // Hasil Samping
-                'hasil_samping_menir' => $this->hasil_samping_menir,
-                'hasil_samping_butir_patah' => $this->hasil_samping_butir_patah,
-                'hasil_samping_dedak_katul' => $this->hasil_samping_dedak_katul,
-                'hasil_samping_butir_kuning_rusak' => $this->hasil_samping_butir_kuning_rusak,
+                'hasil_samping_menir' => $this->hasil_samping_menir === '' ? 0 : $this->hasil_samping_menir,
+                'hasil_samping_butir_patah' => $this->hasil_samping_butir_patah === '' ? 0 : $this->hasil_samping_butir_patah,
+                'hasil_samping_dedak_katul' => $this->hasil_samping_dedak_katul === '' ? 0 : $this->hasil_samping_dedak_katul,
+                'hasil_samping_butir_kuning_rusak' => $this->hasil_samping_butir_kuning_rusak === '' ? 0 : $this->hasil_samping_butir_kuning_rusak,
 
                 // Footer
                 'tanggal_doc' => $this->tanggal_doc,
@@ -189,17 +190,31 @@ class InputBeras extends Component
                 'catatan' => $this->catatan,
                 'group' => $this->group,
                 'status' => $this->status,
-            ]);
+            ];
 
-            session()->flash('message', 'Data HPKK Beras berhasil dibuat!');
+            // 3. Simpan
+            MasHpkkBeras::create($data);
+
+            // 4. Beri Pesan Sukses
+            session()->flash('message', 'Data HPKK Beras berhasil disimpan!');
             
-            // Reset form & generate nomor baru
-            $this->generateNomorSurat();
+            // 5. RESET FORM (MENGOSONGKAN SEMUA INPUTAN)
+            // Saya menambahkan semua field ke sini agar bersih total
             $this->reset([
-                'id_mo', 'nomor_order', 'kode_sample', 'ulangan_1', 'ulangan_2', 'ulangan_3',
-                'rata_rata', 'kuantum_beras', 'kuantum_gabah_sesuai_mo', 'rendemen_pengolahan',
-                'derajat_sosoh', 'butir_patah', 'menir', 'catatan'
+                'id_mo', 'nomor_order', 'tempat_pemeriksaan', 'kode_sample', 'dasar_pemeriksaan',
+                'kondisi_kemasan', 'hama', 'dedak_katul_sekam', 'bau', 'bahan_kimia',
+                'ulangan_1', 'ulangan_2', 'ulangan_3', 'rata_rata',
+                'derajat_sosoh', 'butir_patah', 'menir',
+                'kuantum_gabah_sesuai_mo', 'kuantum_beras', 'rendemen_pengolahan',
+                'hasil_samping_menir', 'hasil_samping_butir_patah', 'hasil_samping_dedak_katul', 'hasil_samping_butir_kuning_rusak',
+                'catatan', 'lokasi', 'mengetahui', 'petugas'
             ]);
+            
+            // Catatan: tanggal_pemeriksaan dan tanggal_doc biasanya tidak di-reset agar memudahkan user input tanggal yang sama,
+            // tapi jika ingin di-reset juga, tambahkan 'tanggal_pemeriksaan', 'tanggal_doc' ke array di atas.
+            
+            // 6. Generate nomor baru (wajib setelah reset)
+            $this->generateNomorSurat();
 
         } catch (\Exception $e) {
             session()->flash('error', 'Gagal menyimpan: ' . $e->getMessage());
@@ -208,7 +223,7 @@ class InputBeras extends Component
 
     public function cancel()
     {
-        return redirect()->to('/');
+        return redirect()->route('list.beras');
     }
 
     public function render()

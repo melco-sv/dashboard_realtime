@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Scopes\CabangScope;
 
 class MasHpkkGabah extends Model
 {
@@ -18,5 +19,9 @@ class MasHpkkGabah extends Model
     {
         // Menghubungkan kolom 'group' (transaksi) dengan 'code_cabang' (ref)
         return $this->belongsTo(RefCabang::class, 'group', 'code_cabang');
+    }
+    protected static function booted()
+    {
+        static::addGlobalScope(new CabangScope);
     }
 }

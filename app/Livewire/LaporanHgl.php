@@ -4,20 +4,18 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use Livewire\WithPagination;
-use Illuminate\Support\Facades\DB; 
-use Illuminate\Support\Facades\Auth; // Tambahkan Import Auth
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth; // 1. Tambahkan Import Auth
 use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\RekapTarifExport;
-use App\Exports\RekapAnalisaExport;
+use App\Exports\RekapHglExport;
 use Barryvdh\DomPDF\Facade\Pdf;
 
-class LaporanGkp extends Component
+class LaporanHgl extends Component
 {
     use WithPagination;
 
     public $tgl_mulai;
     public $tgl_akhir;
-    
     public $total_record = 0;
     public $total_penerimaan = 0;
 
@@ -30,42 +28,44 @@ class LaporanGkp extends Component
 
     public function filter()
     {
-        $this->resetPage();
+        $this->resetPage(); 
         $this->hitungTotal();
     }
 
     // --- 1. LOGIKA HITUNG TOTAL (TERFILTER) ---
     public function hitungTotal()
     {
-        $query = DB::table('mas_hpkk_gabah')
-            ->whereBetween('tanggal_pelaksanaan', [
+        $query = DB::table('mas_hpkk_beras') 
+            ->whereBetween('tanggal_pemeriksaan', [
                 $this->tgl_mulai . ' 00:00:00', 
                 $this->tgl_akhir . ' 23:59:59'
             ]);
 
-        // LOGIKA FILTER: Jika user adalah Inspektor, filter berdasarkan group-nya
+        // LOGIKA FILTER: Khusus Inspektor
         if (Auth::check() && Auth::user()->level == 'Inspektor') {
             $query->where('group', Auth::user()->group);
         }
-        // Super Admin & Verification akan melewati if ini (melihat semua data)
 
         $this->total_record = $query->count();
         
         // Menghitung total penerimaan (handling koma desimal)
-        $this->total_penerimaan = $query->sum(DB::raw("CAST(REPLACE(jumlah_timbangan, ',', '.') AS DECIMAL(15,2))"));
+        $this->total_penerimaan = $query->sum(
+            DB::raw("CAST(REPLACE(kuantum_beras, ',', '.') AS DECIMAL(15,2))")
+        );
     }
 
     // --- 2. LOGIKA RENDER TABEL (TERFILTER) ---
     public function render()
     {
-        $query = DB::table('mas_hpkk_gabah as m')
+        // Query Dasar
+        $query = DB::table('mas_hpkk_beras as m')
             ->leftJoin('ref_cabang as r', 'm.group', '=', 'r.code_cabang')
             ->select(
-                'm.*', 
-                'r.name_cabang', 
+                'm.*',
+                'r.name_cabang',
                 'r.parent_company' 
             )
-            ->whereBetween('m.tanggal_pelaksanaan', [
+            ->whereBetween('m.tanggal_pemeriksaan', [
                 $this->tgl_mulai . ' 00:00:00', 
                 $this->tgl_akhir . ' 23:59:59'
             ]);
@@ -75,33 +75,29 @@ class LaporanGkp extends Component
             $query->where('m.group', Auth::user()->group);
         }
 
-        $data_laporan = $query->orderBy('m.tanggal_pelaksanaan', 'asc')
-            ->paginate(50);
+        // Eksekusi Query dengan Pagination
+        $data_laporan = $query->orderBy('m.tanggal_pemeriksaan', 'asc')
+            ->paginate(50); 
 
-        return view('livewire.laporan-gkp', [
+        return view('livewire.laporan-hgl', [
             'data_laporan' => $data_laporan
         ]);
     }
 
-    // Note: Untuk Excel, pastikan class RekapTarifExport & RekapAnalisaExport
-    // juga ditambahkan logika filter yang sama di dalamnya jika ingin Excel-nya terfilter juga.
-    public function downloadExcelTarif()
+    public function downloadExcel()
     {
-        return Excel::download(new RekapTarifExport($this->tgl_mulai, $this->tgl_akhir), 'Rekap_Pemeriksaan.xlsx');
-    }
-
-    public function downloadExcelAnalisa()
-    {
-        return Excel::download(new RekapAnalisaExport($this->tgl_mulai, $this->tgl_akhir), 'Rekap_Analisa.xlsx');
+        // Note: Pastikan di dalam file App/Exports/RekapHglExport.php 
+        // Anda juga menambahkan logika filter Auth::user()->group agar Excel-nya sesuai.
+        return Excel::download(new RekapHglExport($this->tgl_mulai, $this->tgl_akhir), 'Rekap_HGL.xlsx');
     }
 
     // --- 3. LOGIKA DOWNLOAD PDF (TERFILTER) ---
     public function downloadPdf()
     {
-        $query = DB::table('mas_hpkk_gabah as m')
+        $query = DB::table('mas_hpkk_beras as m')
             ->leftJoin('ref_cabang as r', 'm.group', '=', 'r.code_cabang')
             ->select('m.*', 'r.name_cabang', 'r.parent_company') 
-            ->whereBetween('m.tanggal_pelaksanaan', [
+            ->whereBetween('m.tanggal_pemeriksaan', [
                 $this->tgl_mulai . ' 00:00:00', 
                 $this->tgl_akhir . ' 23:59:59'
             ]);
@@ -111,9 +107,9 @@ class LaporanGkp extends Component
             $query->where('m.group', Auth::user()->group);
         }
 
-        $data = $query->orderBy('m.tanggal_pelaksanaan', 'asc')->get();
+        $data = $query->orderBy('m.tanggal_pemeriksaan', 'asc')->get();
         
-        $pdf = Pdf::loadView('pdf.laporan_rekap_gkp', [
+        $pdf = Pdf::loadView('pdf.laporan_rekap_hgl', [
             'data' => $data,
             'start' => $this->tgl_mulai,
             'end' => $this->tgl_akhir
@@ -121,6 +117,6 @@ class LaporanGkp extends Component
 
         return response()->streamDownload(function () use ($pdf) {
             echo $pdf->output();
-        }, 'Laporan_Rekap_GKP.pdf');
+        }, 'Laporan_Rekap_HGL.pdf');
     }
 }

@@ -2,47 +2,64 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
+    protected $table = 'mas_user'; // Nama tabel sesuai database
+    protected $primaryKey = 'username'; // Primary key string
+    public $incrementing = false;
+    protected $keyType = 'string';
+
+    // KOLOM YANG BISA DIEDIT (WAJIB DITAMBAHKAN AGAR FORM UPDATE BERFUNGSI)
     protected $fillable = [
-        'name',
+        'username', 
+        'nama', 
+        'password', 
+        'level', 
+        'group', 
+        'status', 
+        'nama_client',
+        // Tambahan kolom baru untuk fitur Update Profile:
         'email',
-        'password',
+        'phone',
+        'position',
+        'password_md5' 
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
+    // Sembunyikan password dari return array/json
     protected $hidden = [
-        'password',
-        'remember_token',
+        'password', 'password_md5',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
+    // Override validasi password karena database menggunakan MD5
+    public function getAuthPassword()
     {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
+        return $this->password;
+    }
+
+    // --- Helper Cek Role ---
+    public function isInspektor() {
+        return strtolower($this->level) === 'inspektor';
+    }
+
+    public function isSuperAdmin() {
+        return strtolower($this->level) === 'super admin';
+    }
+
+    public function isVerification() {
+        return strtolower($this->level) === 'verification';
+    }
+
+    // --- Relasi ke Tabel Cabang (RefCabang) ---
+    // Digunakan untuk menampilkan Nama Cabang di Header
+    public function cabang()
+    {
+        // Menghubungkan kolom 'group' di tabel user dengan 'code_cabang' di tabel ref_cabang
+        return $this->belongsTo(RefCabang::class, 'group', 'code_cabang');
     }
 }

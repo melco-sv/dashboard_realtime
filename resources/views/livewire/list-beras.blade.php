@@ -49,12 +49,6 @@
                                 <a href="{{ route('print.beras', ['id' => $item->id_hpkk_beras, 'type' => 'hpk']) }}" target="_blank" class="w-32 bg-blue-600 hover:bg-blue-700 text-white py-1 px-2 rounded text-[10px] font-bold text-center uppercase tracking-wide">Print HPK</a>
                                 <a href="{{ route('print.beras', ['id' => $item->id_hpkk_beras, 'type' => 'lhpk']) }}" target="_blank" class="w-32 bg-blue-500 hover:bg-blue-600 text-white py-1 px-2 rounded text-[10px] font-bold text-center uppercase tracking-wide">Print LHPK</a>
                                 <a href="{{ route('print.beras', ['id' => $item->id_hpkk_beras, 'type' => 'witnessing']) }}" target="_blank" class="w-32 bg-indigo-600 hover:bg-indigo-700 text-white py-1 px-2 rounded text-[10px] font-bold text-center uppercase tracking-wide">Print Witnessing</a>
-                                
-                                @if($item->status == 'Approve')
-                                    <button disabled class="w-32 bg-gray-500 text-white py-1 px-2 rounded text-[10px] font-bold text-center uppercase tracking-wide cursor-not-allowed">Approved</button>
-                                @else
-                                    <button wire:click="approve({{ $item->id_hpkk_beras }})" wire:confirm="Approve data ini?" class="w-32 bg-yellow-500 hover:bg-yellow-600 text-white py-1 px-2 rounded text-[10px] font-bold text-center uppercase tracking-wide">Approve</button>
-                                @endif
 
                                 <button class="w-32 bg-green-600 hover:bg-green-700 text-white py-1 px-2 rounded text-[10px] font-bold text-center uppercase tracking-wide">Update</button>
                                 
@@ -67,7 +61,7 @@
                         </td>
 
                         <td class="px-6 py-4 font-mono text-gray-300">{{ $item->nomor_hpkk_beras }}</td>
-                        <td class="px-6 py-4 font-bold {{ $item->status == 'Approve' ? 'text-green-400' : 'text-yellow-400' }}">{{ $item->status }}</td>
+                        <!-- <td class="px-6 py-4 font-bold {{ $item->status == 'Approve' ? 'text-green-400' : 'text-yellow-400' }}">{{ $item->status }}</td> -->
                         <td class="px-6 py-4">{{ $item->tanggal_pemeriksaan }}</td>
                         <td class="px-6 py-4 uppercase">{{ $item->lokasi }}</td>
                         <td class="px-6 py-4 font-mono text-xs">{{ $item->kode_sample }}</td>
