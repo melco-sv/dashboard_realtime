@@ -5,7 +5,7 @@ namespace App\Livewire;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\DB; 
-use Illuminate\Support\Facades\Auth; // Tambahkan Import Auth
+use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\RekapTarifExport;
 use App\Exports\RekapAnalisaExport;
@@ -18,6 +18,9 @@ class LaporanGkp extends Component
     public $tgl_mulai;
     public $tgl_akhir;
     
+    // Properti Filter Tambahan (Opsional: Jika Admin ingin filter cabang tertentu)
+    public $filter_cabang = ''; 
+
     public $total_record = 0;
     public $total_penerimaan = 0;
 
@@ -25,6 +28,12 @@ class LaporanGkp extends Component
     {
         $this->tgl_mulai = date('Y-m-01');
         $this->tgl_akhir = date('Y-m-d');
+        
+        // Jika User adalah Inspektor, set default filter cabang ke grupnya sendiri
+        if (Auth::check() && Auth::user()->level == 'Inspektor') {
+            $this->filter_cabang = Auth::user()->group;
+        }
+
         $this->hitungTotal();
     }
 
@@ -43,15 +52,18 @@ class LaporanGkp extends Component
                 $this->tgl_akhir . ' 23:59:59'
             ]);
 
-        // LOGIKA FILTER: Jika user adalah Inspektor, filter berdasarkan group-nya
+        // LOGIKA FILTER SECURITY (Inspektor hanya lihat datanya sendiri)
         if (Auth::check() && Auth::user()->level == 'Inspektor') {
             $query->where('group', Auth::user()->group);
+        } 
+        // LOGIKA FILTER ADMIN (Jika Admin memilih cabang tertentu dari dropdown)
+        elseif (!empty($this->filter_cabang)) {
+            $query->where('group', $this->filter_cabang);
         }
-        // Super Admin & Verification akan melewati if ini (melihat semua data)
 
         $this->total_record = $query->count();
         
-        // Menghitung total penerimaan (handling koma desimal)
+        // Handling koma pada jumlah timbangan
         $this->total_penerimaan = $query->sum(DB::raw("CAST(REPLACE(jumlah_timbangan, ',', '.') AS DECIMAL(15,2))"));
     }
 
@@ -70,32 +82,53 @@ class LaporanGkp extends Component
                 $this->tgl_akhir . ' 23:59:59'
             ]);
 
-        // LOGIKA FILTER: Khusus Inspektor
+        // Filter Security (Inspektor)
         if (Auth::check() && Auth::user()->level == 'Inspektor') {
             $query->where('m.group', Auth::user()->group);
+        } 
+        // Filter Pilihan Admin
+        elseif (!empty($this->filter_cabang)) {
+            $query->where('m.group', $this->filter_cabang);
         }
 
         $data_laporan = $query->orderBy('m.tanggal_pelaksanaan', 'asc')
-            ->paginate(50);
+            ->Simplepaginate(50);
+            
+        // Ambil daftar cabang untuk Dropdown Filter (Khusus Admin)
+        $list_cabang = [];
+        if (Auth::check() && Auth::user()->level !== 'Inspektor') {
+            $list_cabang = DB::table('ref_cabang')->orderBy('name_cabang')->get();
+        }
 
         return view('livewire.laporan-gkp', [
-            'data_laporan' => $data_laporan
+            'data_laporan' => $data_laporan,
+            'list_cabang' => $list_cabang // Kirim ke view untuk dropdown
         ]);
     }
 
-    // Note: Untuk Excel, pastikan class RekapTarifExport & RekapAnalisaExport
-    // juga ditambahkan logika filter yang sama di dalamnya jika ingin Excel-nya terfilter juga.
+    // --- 3. EXPORT EXCEL (PERBAIKAN SECURITY) ---
     public function downloadExcelTarif()
     {
-        return Excel::download(new RekapTarifExport($this->tgl_mulai, $this->tgl_akhir), 'Rekap_Pemeriksaan.xlsx');
+        // Tentukan Group ID yang akan difilter
+        // Jika Inspektor: Pakai Auth Group
+        // Jika Admin: Pakai filter_cabang (bisa null jika pilih semua)
+        $groupId = (Auth::check() && Auth::user()->level == 'Inspektor') 
+                    ? Auth::user()->group 
+                    : $this->filter_cabang;
+
+        return Excel::download(new RekapTarifExport($this->tgl_mulai, $this->tgl_akhir, $groupId), 'Rekap_Pemeriksaan_GKP.xlsx');
     }
 
     public function downloadExcelAnalisa()
     {
-        return Excel::download(new RekapAnalisaExport($this->tgl_mulai, $this->tgl_akhir), 'Rekap_Analisa.xlsx');
+        $groupId = (Auth::check() && Auth::user()->level == 'Inspektor') 
+                    ? Auth::user()->group 
+                    : $this->filter_cabang;
+
+        return Excel::download(new RekapAnalisaExport($this->tgl_mulai, $this->tgl_akhir, $groupId), 'Rekap_Analisa_GKP.xlsx');
     }
 
-    // --- 3. LOGIKA DOWNLOAD PDF (TERFILTER) ---
+    // --- 4. DOWNLOAD PDF (TERFILTER) ---
     public function downloadPdf()
     {
         $query = DB::table('mas_hpkk_gabah as m')
@@ -106,9 +139,11 @@ class LaporanGkp extends Component
                 $this->tgl_akhir . ' 23:59:59'
             ]);
 
-        // LOGIKA FILTER: Khusus Inspektor
+        // Filter Security & Admin Choice
         if (Auth::check() && Auth::user()->level == 'Inspektor') {
             $query->where('m.group', Auth::user()->group);
+        } elseif (!empty($this->filter_cabang)) {
+            $query->where('m.group', $this->filter_cabang);
         }
 
         $data = $query->orderBy('m.tanggal_pelaksanaan', 'asc')->get();

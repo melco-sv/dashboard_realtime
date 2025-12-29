@@ -15,29 +15,40 @@ class RekapTarifExport implements FromCollection, WithMapping, WithEvents, WithC
 {
     protected $startDate;
     protected $endDate;
+    protected $groupId; // <--- 1. Properti Baru
     protected $counter = 0;
 
-    public function __construct($startDate, $endDate)
+    // <--- 2. Update Constructor untuk menerima groupId
+    public function __construct($startDate, $endDate, $groupId = null)
     {
         $this->startDate = $startDate;
         $this->endDate = $endDate;
+        $this->groupId = $groupId; // <--- Simpan ke properti
     }
 
     public function collection()
     {
-        return DB::table('mas_hpkk_gabah as m')
+        // Gunakan Query Builder agar kita bisa menambahkan kondisi 'where' secara dinamis
+        $query = DB::table('mas_hpkk_gabah as m')
             ->leftJoin('ref_cabang as r', 'm.group', '=', 'r.code_cabang')
             ->select(
                 'm.*', 
                 'r.name_cabang', 
-                'r.parent_company' // FIX: Gunakan parent_company
+                'r.parent_company'
             )
             ->whereBetween('m.tanggal_pelaksanaan', [
                 $this->startDate . ' 00:00:00', 
                 $this->endDate . ' 23:59:59'
-            ])
-            ->orderBy('m.tanggal_pelaksanaan', 'asc')
-            ->get();
+            ]);
+
+        // <--- 3. LOGIKA FILTER GROUP (PENTING) --->
+        // Jika ada groupId (Inspektor atau Admin yang memilih cabang), filter datanya.
+        // Jika null (Super Admin tanpa filter), tampilkan semua.
+        if (!empty($this->groupId)) {
+            $query->where('m.group', $this->groupId);
+        }
+
+        return $query->orderBy('m.tanggal_pelaksanaan', 'asc')->get();
     }
 
     public function startCell(): string
@@ -58,8 +69,6 @@ class RekapTarifExport implements FromCollection, WithMapping, WithEvents, WithC
 
         // Data dari SQL Join
         $namaCabang = !empty($row->name_cabang) ? strtoupper($row->name_cabang) : '-';
-        
-        // FIX: Ambil parent_company sebagai Kantor Wilayah
         $namaWilayah = !empty($row->parent_company) ? strtoupper($row->parent_company) : '-';
 
         return [
@@ -76,7 +85,6 @@ class RekapTarifExport implements FromCollection, WithMapping, WithEvents, WithC
         ];
     }
 
-    // ... (Fungsi registerEvents SAMA PERSIS dengan sebelumnya, tidak berubah)
     public function registerEvents(): array
     {
         return [

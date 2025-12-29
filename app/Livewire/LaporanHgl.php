@@ -77,7 +77,7 @@ class LaporanHgl extends Component
 
         // Eksekusi Query dengan Pagination
         $data_laporan = $query->orderBy('m.tanggal_pemeriksaan', 'asc')
-            ->paginate(50); 
+            ->Simplepaginate(50); 
 
         return view('livewire.laporan-hgl', [
             'data_laporan' => $data_laporan
