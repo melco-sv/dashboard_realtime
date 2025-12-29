@@ -33,7 +33,7 @@ class UploadFotoGabah extends Component
         'nama' => 'required|string|max:255',
         // Ubah 2048 (2MB) menjadi 5120 (5MB) atau 10240 (10MB)
         'photo' => 'required|image|max:10240', 
-        'group' => 'required',
+        'group' =>  'required',
     ]);
 
         try {

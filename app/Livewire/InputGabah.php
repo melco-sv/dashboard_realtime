@@ -5,6 +5,7 @@ namespace App\Livewire;
 use Livewire\Component;
 use App\Models\MasHpkkGabah;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class InputGabah extends Component
 {
@@ -40,7 +41,7 @@ class InputGabah extends Component
     public $catatan;
     public $group; 
 
-    // === MOUNT ===
+    // === MOUNT (Dipanggil saat halaman dibuka) ===
     public function mount()
     {
         $this->tanggal_pelaksanaan = date('Y-m-d');
@@ -51,27 +52,40 @@ class InputGabah extends Component
             $this->group = Auth::user()->group;
         }
 
-        $this->generateNomorSurat();
+        // Generate nomor bayangan untuk tampilan awal (Preview)
+        $this->generateNomorSurat(true);
     }
 
     // === GENERATE NOMOR SURAT ===
-    public function generateNomorSurat()
+    public function generateNomorSurat($preview = false)
     {
         $bulan = date('m');
         $tahun = date('Y');
         $groupCode = $this->group ?? '0000';
         
-        // Menggunakan tanggal_pelaksanaan untuk menghitung urutan
-        $count = MasHpkkGabah::whereYear('tanggal_pelaksanaan', $tahun)
-                    ->where('group', $this->group)
-                    ->count();
+        // Hitung jumlah data berdasarkan tahun dan group
+        $query = MasHpkkGabah::whereYear('tanggal_pelaksanaan', $tahun)
+                    ->where('group', $this->group);
         
+        $count = $query->count();
+        
+        // Tambah 1 untuk nomor urut berikutnya
         $nextNo = $count + 1;
         
         $noUrut = sprintf("%05d", $nextNo);
         $romawi = $this->getRomawi($bulan);
         
-        $this->nomor_hpkk_gabah = "$noUrut/GPK/$groupCode/SCI/$romawi/$tahun";
+        $generated = "$noUrut/GPK/$groupCode/SCI/$romawi/$tahun";
+
+        // Jika hanya preview (saat mount), return string tanpa set property
+        if ($preview) {
+            $this->nomor_hpkk_gabah = $generated;
+            return $generated;
+        }
+
+        // Jika saat save, return value untuk disimpan ke DB
+        $this->nomor_hpkk_gabah = $generated;
+        return $generated;
     }
 
     private function getRomawi($bulan)
@@ -81,7 +95,7 @@ class InputGabah extends Component
         return $map[$bulan] ?? '';
     }
 
-    // === HITUNG RATA-RATA OTOMATIS ===
+    // === HITUNG RATA-RATA OTOMATIS SAAT KETIK ===
     public function updated($propertyName)
     {
         if (in_array($propertyName, ['ulangan_1', 'ulangan_2', 'ulangan_3'])) {
@@ -91,11 +105,13 @@ class InputGabah extends Component
             
             if ($val1 > 0 || $val2 > 0 || $val3 > 0) {
                 $count = 0; $sum = 0;
-                if($val1>0) { $sum+=$val1; $count++; }
-                if($val2>0) { $sum+=$val2; $count++; }
-                if($val3>0) { $sum+=$val3; $count++; }
+                if($val1 > 0) { $sum+=$val1; $count++; }
+                if($val2 > 0) { $sum+=$val2; $count++; }
+                if($val3 > 0) { $sum+=$val3; $count++; }
                 
                 $this->kadar_air_rata_rata = $count > 0 ? round($sum / $count, 2) : 0;
+            } else {
+                $this->kadar_air_rata_rata = 0;
             }
         }
     }
@@ -103,28 +119,33 @@ class InputGabah extends Component
     // === SIMPAN DATA (STORE) ===
     public function store()
     {
-        // 1. Validasi
+        // 1. Validasi Input
         $this->validate([
             'mitra' => 'required',
             'group' => 'required',
+            'jumlah_timbangan' => 'required|numeric|min:1',
+            'metode_timbang' => 'required',
+            'kadar_air_rata_rata' => 'required|numeric|min:0',
+        ], [
+            'mitra.required' => 'Nama Mitra wajib diisi.',
+            'jumlah_timbangan.required' => 'Jumlah timbangan tidak boleh kosong.',
+            'metode_timbang.required' => 'Silakan pilih metode timbang.',
         ]);
 
+        // Mulai Transaksi Database
+        DB::beginTransaction();
+
         try {
-            // 2. MAPPING METODE TIMBANG (Logic Baru)
-            // Memisahkan input dropdown menjadi 2 kolom database
-            $val_weighbridge = null;
-            $val_non_weighbridge = null;
+            // 2. Generate Nomor Surat FINAL (Penting agar tidak duplikat)
+            $finalNomorSurat = $this->generateNomorSurat(false);
 
-            if ($this->metode_timbang === 'Weightbridge') {
-                $val_weighbridge = 'Weightbridge';
-            } elseif (!empty($this->metode_timbang)) {
-                // Jika pilih "Non Weightbridge - Sawah" atau "MPP"
-                $val_non_weighbridge = $this->metode_timbang;
-            }
+            // 3. Mapping Metode Timbang (Dropdown -> Kolom DB)
+            $val_weighbridge = ($this->metode_timbang === 'Weightbridge') ? 'Weightbridge' : null;
+            $val_non_weighbridge = ($this->metode_timbang !== 'Weightbridge') ? $this->metode_timbang : null;
 
-            // 3. Persiapan Data Array
-            $data = [
-                'nomor_hpkk_gabah' => $this->nomor_hpkk_gabah,
+            // 4. Simpan ke Database
+            MasHpkkGabah::create([
+                'nomor_hpkk_gabah' => $finalNomorSurat,
                 'no_order_pembelian' => $this->no_order_pembelian,
                 'nomor_order' => $this->nomor_order,
                 'mitra' => $this->mitra,
@@ -134,20 +155,20 @@ class InputGabah extends Component
                 'nomor_registrasi_alat_angkut' => $this->nomor_registrasi_alat_angkut,
                 'hama_penyakit' => $this->hama_penyakit,
                 
-                // Masukkan hasil mapping tadi ke kolom yang sesuai
+                // Hasil Mapping
                 'weighbridge' => $val_weighbridge,
                 'non_weighbridge' => $val_non_weighbridge,
-
+                
                 'kode_sample' => $this->kode_sample,
                 
-                // Konversi Angka (0 jika kosong, agar tidak error database)
-                'jumlah_timbangan' => $this->jumlah_timbangan === '' ? 0 : $this->jumlah_timbangan,
-                'ulangan_1' => $this->ulangan_1 === '' ? 0 : $this->ulangan_1,
-                'ulangan_2' => $this->ulangan_2 === '' ? 0 : $this->ulangan_2,
-                'ulangan_3' => $this->ulangan_3 === '' ? 0 : $this->ulangan_3,
-                'kadar_air_rata_rata' => $this->kadar_air_rata_rata === '' ? 0 : $this->kadar_air_rata_rata,
-                'kadar_hampa' => $this->kadar_hampa === '' ? 0 : $this->kadar_hampa,
-                'butir_hijau' => $this->butir_hijau === '' ? 0 : $this->butir_hijau,
+                // Gunakan Null Coalescing (?? 0) agar tidak error jika kosong
+                'jumlah_timbangan' => $this->jumlah_timbangan ?? 0,
+                'ulangan_1' => $this->ulangan_1 ?? 0,
+                'ulangan_2' => $this->ulangan_2 ?? 0,
+                'ulangan_3' => $this->ulangan_3 ?? 0,
+                'kadar_air_rata_rata' => $this->kadar_air_rata_rata ?? 0,
+                'kadar_hampa' => $this->kadar_hampa ?? 0,
+                'butir_hijau' => $this->butir_hijau ?? 0,
                 
                 'tanggal_doc' => $this->tanggal_doc,
                 'lokasi' => $this->lokasi,
@@ -155,13 +176,13 @@ class InputGabah extends Component
                 'petugas' => $this->petugas,
                 'catatan' => $this->catatan,
                 'group' => $this->group,
-            ];
+            ]);
 
-            // 4. Simpan ke Database
-            MasHpkkGabah::create($data);
+            // Commit Transaksi (Simpan Permanen)
+            DB::commit();
 
-            // 5. Beri Notifikasi Sukses
-            session()->flash('message', 'Data HPKK Gabah berhasil dibuat!');
+            // 5. Notifikasi Sukses
+            session()->flash('message', "Data berhasil disimpan! No: $finalNomorSurat");
 
             // 6. Reset Form
             $this->reset([
@@ -170,14 +191,15 @@ class InputGabah extends Component
                 'ulangan_1', 'ulangan_2', 'ulangan_3', 
                 'kadar_air_rata_rata', 'kadar_hampa', 'butir_hijau',
                 'no_order_pembelian', 'nomor_order', 'kode_sample', 'catatan',
-                'metode_timbang'
+                'metode_timbang','lokasi','mengetahui','petugas'
             ]);
             
-            // 7. Generate nomor baru untuk input selanjutnya
-            $this->generateNomorSurat();
+            // Generate nomor bayangan baru untuk input selanjutnya
+            $this->generateNomorSurat(true);
 
         } catch (\Exception $e) {
-            // Tampilkan error jika masih ada masalah
+            // Rollback Transaksi (Batalkan jika ada error)
+            DB::rollBack();
             session()->flash('error', 'Gagal menyimpan: ' . $e->getMessage());
         }
     }

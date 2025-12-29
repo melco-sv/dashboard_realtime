@@ -4,69 +4,67 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Scopes\CabangScope; // Pastikan file Scope ini ada
+use App\Models\RefCabang;
 
 class MasHpkkBeras extends Model
 {
     use HasFactory;
 
-    // Nama Tabel
+    // === KONFIGURASI TABEL ===
     protected $table = 'mas_hpkk_beras';
-    
-    // Primary Key (Karena bukan 'id' default, harus didefinisikan)
     protected $primaryKey = 'id_hpkk_beras'; 
+    public $timestamps = false; // Mematikan created_at & updated_at
 
-    // PENTING: Matikan timestamp karena tabel Anda tidak punya kolom created_at & updated_at
-    // Jika ini true (default), Laravel akan error saat insert data.
-    public $timestamps = false;
+    // === MASS ASSIGNMENT ===
+    // Menggunakan guarded = [] berarti "Semua kolom BOLEH diisi".
+    // Ini lebih praktis daripada menulis $fillable satu per satu.
+    protected $guarded = []; 
 
-    // Daftar kolom yang boleh diisi (Mass Assignment)
-    protected $fillable = [
-        'id_mo',
-        'nomor_hpkk_beras',
-        'nomor_order',
-        'tempat_pemeriksaan',
-        'tanggal_pemeriksaan',
-        'kode_sample',
-        'dasar_pemeriksaan',
-        'kondisi_kemasan',
-        'hama',
-        'dedak_katul_sekam',
-        'bau',
-        'bahan_kimia', // Sesuai struktur tabel
+    // === CASTING TIPE DATA ===
+    // Mengubah data dari database menjadi tipe data asli PHP secara otomatis.
+    // Sangat penting untuk perhitungan matematika di Livewire.
+    protected $casts = [
+        'tanggal_pemeriksaan' => 'date',
+        'tanggal_doc' => 'date',
         
-        // Data Lab Angka
-        'ulangan_1',
-        'ulangan_2',
-        'ulangan_3',
-        'rata_rata',
+        // Pastikan semua kolom angka di-cast ke float/double
+        'ulangan_1' => 'float',
+        'ulangan_2' => 'float',
+        'ulangan_3' => 'float',
+        'rata_rata' => 'float',
         
-        // Fisik Beras
-        'derajat_sosoh',
-        'butir_patah',
-        'menir',
+        'derajat_sosoh' => 'float',
+        'butir_patah' => 'float',
+        'menir' => 'float',
         
-        // Kuantum
-        'kuantum_gabah_sesuai_mo',
-        'kuantum_beras',
-        'rendemen_pengolahan',
+        'kuantum_gabah_sesuai_mo' => 'float',
+        'kuantum_beras' => 'float',
+        'rendemen_pengolahan' => 'float',
         
-        // Hasil Samping
-        'hasil_samping_menir',
-        'hasil_samping_butir_patah',
-        'hasil_samping_dedak_katul',
-        'hasil_samping_butir_kuning_rusak',
-        
-        // Footer & Identitas
-        'catatan',
-        'tanggal_doc',
-        'lokasi',
-        'mengetahui',
-        'petugas',
-        'group',
-        'status',
-        
-        // Kolom Tambahan (jika nanti digunakan)
-        'nomor_lhpk_beras',
-        'periode'
+        'hasil_samping_menir' => 'float',
+        'hasil_samping_butir_patah' => 'float',
+        'hasil_samping_dedak_katul' => 'float',
+        'hasil_samping_butir_kuning_rusak' => 'float',
     ];
+
+    // === RELATIONSHIP (HUBUNGAN ANTAR TABEL) ===
+    
+    /**
+     * Relasi ke tabel RefCabang.
+     * Digunakan untuk mengambil Nama Cabang berdasarkan kolom 'group'.
+     */
+    public function cabang()
+    {
+        // belongsTo(ModelTujuannya, 'Foreign Key di tabel ini', 'Primary Key di tabel tujuan')
+        return $this->belongsTo(RefCabang::class, 'group', 'code_cabang');
+    }
+
+    // === GLOBAL SCOPE ===
+    // Fungsi ini akan otomatis dijalankan setiap kali Model ini dipanggil.
+    // Tujuannya: Agar User Cabang A hanya bisa melihat data Cabang A (Security).
+    protected static function booted()
+    {
+        static::addGlobalScope(new CabangScope);
+    }
 }

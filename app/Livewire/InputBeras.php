@@ -5,6 +5,7 @@ namespace App\Livewire;
 use Livewire\Component;
 use App\Models\MasHpkkBeras;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class InputBeras extends Component
 {
@@ -66,8 +67,8 @@ class InputBeras extends Component
             $this->group = Auth::user()->group;
         }
 
-        // 2. GENERATE NOMOR SURAT OTOMATIS
-        $this->generateNomorSurat();
+        // 2. GENERATE NOMOR SURAT (Preview Saja)
+        $this->generateNomorSurat(true);
     }
 
     // === AUTO CALCULATIONS ===
@@ -80,13 +81,12 @@ class InputBeras extends Component
             $u3 = (float) $this->ulangan_3;
 
             if ($u1 > 0 || $u2 > 0 || $u3 > 0) {
-                // Hitung rata-rata hanya dari nilai yang diisi (>0)
                 $count = 0; $sum = 0;
                 if($u1 > 0) { $sum += $u1; $count++; }
                 if($u2 > 0) { $sum += $u2; $count++; }
                 if($u3 > 0) { $sum += $u3; $count++; }
 
-                $this->rata_rata = $count > 0 ? number_format($sum / $count, 2, '.', '') : 0;
+                $this->rata_rata = $count > 0 ? round($sum / $count, 2) : 0;
             } else {
                 $this->rata_rata = 0;
             }
@@ -99,7 +99,7 @@ class InputBeras extends Component
 
             if ($gabah > 0 && $beras > 0) {
                 $rendemen = ($beras / $gabah) * 100; 
-                $this->rendemen_pengolahan = number_format($rendemen, 2, '.', '');
+                $this->rendemen_pengolahan = round($rendemen, 2);
             } else {
                 $this->rendemen_pengolahan = 0;
             }
@@ -107,24 +107,32 @@ class InputBeras extends Component
     }
 
     // === GENERATE NOMOR SURAT ===
-    public function generateNomorSurat()
+    public function generateNomorSurat($preview = false)
     {
         $bulan = date('m');
         $tahun = date('Y');
         $groupCode = $this->group ?? '0000';
         
-        // Hitung berdasarkan tanggal_pemeriksaan
-        $count = MasHpkkBeras::whereYear('tanggal_pemeriksaan', $tahun)
-                        ->where('group', $this->group)
-                        ->count();
+        // Hitung count berdasarkan tahun dan group
+        $query = MasHpkkBeras::whereYear('tanggal_pemeriksaan', $tahun)
+                        ->where('group', $this->group);
 
+        $count = $query->count();
         $nextNo = $count + 1;
         
         // Format: 00001/HGL/4101/SCI/XII/2025
         $noUrut = sprintf("%05d", $nextNo);
         $romawi = $this->getRomawi($bulan);
         
-        $this->nomor_hpkk_beras = "$noUrut/HGL/$groupCode/SCI/$romawi/$tahun";
+        $generated = "$noUrut/HGL/$groupCode/SCI/$romawi/$tahun";
+
+        if ($preview) {
+            $this->nomor_hpkk_beras = $generated;
+            return $generated;
+        }
+
+        $this->nomor_hpkk_beras = $generated;
+        return $generated;
     }
 
     private function getRomawi($bulan) {
@@ -140,12 +148,23 @@ class InputBeras extends Component
         $this->validate([
             'id_mo' => 'required',
             'group' => 'required',
+            'tanggal_pemeriksaan' => 'required|date',
+            // Validasi numeric agar tidak error di database
+            'ulangan_1' => 'nullable|numeric',
+            'kuantum_beras' => 'nullable|numeric',
+            'kuantum_gabah_sesuai_mo' => 'nullable|numeric',
         ]);
 
+        // Gunakan Transaksi Database
+        DB::beginTransaction();
+
         try {
-            // 2. PERSIAPAN DATA (SANITASI INPUT)
+            // 2. GENERATE NOMOR FINAL (Agar tidak duplikat)
+            $finalNomorSurat = $this->generateNomorSurat(false);
+
+            // 3. PERSIAPAN DATA (SANITASI INPUT)
             $data = [
-                'nomor_hpkk_beras' => $this->nomor_hpkk_beras,
+                'nomor_hpkk_beras' => $finalNomorSurat,
                 'id_mo' => $this->id_mo,
                 'nomor_order' => $this->nomor_order,
                 'tempat_pemeriksaan' => $this->tempat_pemeriksaan,
@@ -160,27 +179,24 @@ class InputBeras extends Component
                 'bau' => $this->bau,
                 'bahan_kimia' => $this->bahan_kimia,
 
-                // Lab KA (Convert empty to 0)
-                'ulangan_1' => $this->ulangan_1 === '' ? 0 : $this->ulangan_1,
-                'ulangan_2' => $this->ulangan_2 === '' ? 0 : $this->ulangan_2,
-                'ulangan_3' => $this->ulangan_3 === '' ? 0 : $this->ulangan_3,
-                'rata_rata' => $this->rata_rata === '' ? 0 : $this->rata_rata,
+                // Gunakan Null Coalescing (?? 0) agar aman
+                'ulangan_1' => $this->ulangan_1 ?? 0,
+                'ulangan_2' => $this->ulangan_2 ?? 0,
+                'ulangan_3' => $this->ulangan_3 ?? 0,
+                'rata_rata' => $this->rata_rata ?? 0,
 
-                // Lab Fisik
-                'derajat_sosoh' => $this->derajat_sosoh === '' ? 0 : $this->derajat_sosoh,
-                'butir_patah' => $this->butir_patah === '' ? 0 : $this->butir_patah,
-                'menir' => $this->menir === '' ? 0 : $this->menir,
+                'derajat_sosoh' => $this->derajat_sosoh ?? 0,
+                'butir_patah' => $this->butir_patah ?? 0,
+                'menir' => $this->menir ?? 0,
 
-                // Kuantum & Rendemen
-                'kuantum_gabah_sesuai_mo' => $this->kuantum_gabah_sesuai_mo === '' ? 0 : $this->kuantum_gabah_sesuai_mo,
-                'kuantum_beras' => $this->kuantum_beras === '' ? 0 : $this->kuantum_beras,
-                'rendemen_pengolahan' => $this->rendemen_pengolahan === '' ? 0 : $this->rendemen_pengolahan,
+                'kuantum_gabah_sesuai_mo' => $this->kuantum_gabah_sesuai_mo ?? 0,
+                'kuantum_beras' => $this->kuantum_beras ?? 0,
+                'rendemen_pengolahan' => $this->rendemen_pengolahan ?? 0,
 
-                // Hasil Samping
-                'hasil_samping_menir' => $this->hasil_samping_menir === '' ? 0 : $this->hasil_samping_menir,
-                'hasil_samping_butir_patah' => $this->hasil_samping_butir_patah === '' ? 0 : $this->hasil_samping_butir_patah,
-                'hasil_samping_dedak_katul' => $this->hasil_samping_dedak_katul === '' ? 0 : $this->hasil_samping_dedak_katul,
-                'hasil_samping_butir_kuning_rusak' => $this->hasil_samping_butir_kuning_rusak === '' ? 0 : $this->hasil_samping_butir_kuning_rusak,
+                'hasil_samping_menir' => $this->hasil_samping_menir ?? 0,
+                'hasil_samping_butir_patah' => $this->hasil_samping_butir_patah ?? 0,
+                'hasil_samping_dedak_katul' => $this->hasil_samping_dedak_katul ?? 0,
+                'hasil_samping_butir_kuning_rusak' => $this->hasil_samping_butir_kuning_rusak ?? 0,
 
                 // Footer
                 'tanggal_doc' => $this->tanggal_doc,
@@ -192,14 +208,15 @@ class InputBeras extends Component
                 'status' => $this->status,
             ];
 
-            // 3. Simpan
+            // 4. Simpan ke Database
             MasHpkkBeras::create($data);
 
-            // 4. Beri Pesan Sukses
-            session()->flash('message', 'Data HPKK Beras berhasil disimpan!');
+            DB::commit(); // Simpan Permanen
+
+            // 5. Beri Pesan Sukses
+            session()->flash('message', "Data HPKK Beras berhasil disimpan! No: $finalNomorSurat");
             
-            // 5. RESET FORM (MENGOSONGKAN SEMUA INPUTAN)
-            // Saya menambahkan semua field ke sini agar bersih total
+            // 6. RESET FORM
             $this->reset([
                 'id_mo', 'nomor_order', 'tempat_pemeriksaan', 'kode_sample', 'dasar_pemeriksaan',
                 'kondisi_kemasan', 'hama', 'dedak_katul_sekam', 'bau', 'bahan_kimia',
@@ -210,13 +227,11 @@ class InputBeras extends Component
                 'catatan', 'lokasi', 'mengetahui', 'petugas'
             ]);
             
-            // Catatan: tanggal_pemeriksaan dan tanggal_doc biasanya tidak di-reset agar memudahkan user input tanggal yang sama,
-            // tapi jika ingin di-reset juga, tambahkan 'tanggal_pemeriksaan', 'tanggal_doc' ke array di atas.
-            
-            // 6. Generate nomor baru (wajib setelah reset)
-            $this->generateNomorSurat();
+            // 7. Generate nomor baru untuk input selanjutnya
+            $this->generateNomorSurat(true);
 
         } catch (\Exception $e) {
+            DB::rollBack(); // Batalkan jika error
             session()->flash('error', 'Gagal menyimpan: ' . $e->getMessage());
         }
     }

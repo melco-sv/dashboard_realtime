@@ -3,26 +3,28 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
-// Import Livewire Components
+// Import Livewire Components (Auth)
 use App\Livewire\Auth\Login;
+
+// Import Livewire Components (Dashboard & Umum)
 use App\Livewire\DashboardGabah;
 use App\Livewire\Serapan;
-use App\Livewire\UpdateProfile; // <--- Import Component UpdateProfile
+use App\Livewire\UpdateProfile;
 
-// Gabah Components
+// Import Livewire Components (Gabah)
 use App\Livewire\InputGabah;
 use App\Livewire\ListGabah;
 use App\Livewire\EditGabah;
 use App\Livewire\UploadFotoGabah;
 use App\Http\Controllers\GabahPdfController;
 
-// Beras Components
+// Import Livewire Components (Beras)
 use App\Livewire\InputBeras;
 use App\Livewire\ListBeras;
 use App\Livewire\UploadFotoBeras;
 use App\Http\Controllers\BerasPdfController;
 
-// Laporan Components
+// Import Livewire Components (Laporan)
 use App\Livewire\LaporanGkp;
 use App\Livewire\LaporanHgl;
 
@@ -36,8 +38,11 @@ use App\Livewire\LaporanHgl;
 // 1. TAMU (GUEST) - Belum Login
 // ==========================================
 Route::middleware('guest')->group(function () {
-    // Halaman utama adalah Login
+    // Halaman Root (/) diarahkan ke Login
     Route::get('/', Login::class)->name('login');
+    
+    // Opsional: Tambahkan juga route /login eksplisit agar aman jika redirect middleware mencarinya
+    Route::get('/login', Login::class);
 });
 
 // ==========================================
@@ -48,24 +53,26 @@ Route::middleware('auth')->group(function () {
     // Logout Route
     Route::get('/logout', function () {
         Auth::logout();
+        session()->invalidate();
+        session()->regenerateToken();
         return redirect()->route('login');
     })->name('logout');
 
-    // --- HALAMAN UMUM (Bisa diakses Inspektor, Super Admin, Verification) ---
+    // --- HALAMAN UMUM (Bisa diakses Semua User Login) ---
     
-    // Dashboard
-    Route::get('/dashboard', DashboardGabah::class)->name('dashboard'); 
+    // PENTING: Nama route ini diganti jadi 'dashboard.gabah' agar sesuai dengan Login.php
+    Route::get('/dashboard', DashboardGabah::class)->name('dashboard.gabah'); 
     
     // Halaman Serapan
     Route::get('/serapan', Serapan::class)->name('serapan');
 
-    // Halaman Settings / Update Profile (BARU)
+    // Halaman Settings / Update Profile
     Route::get('/settings', UpdateProfile::class)->name('settings');
 
 
     // --- HALAMAN KHUSUS INSPEKTOR ---
     // (Input, Edit, List, Upload, Laporan)
-    // Middleware 'role:inspektor' memblokir Admin/Verifikator masuk sini
+    // Hanya bisa diakses jika user punya role 'inspektor' atau sesuai middleware Anda
     Route::middleware(['role:inspektor'])->group(function () {
         
         // Operasional Gabah
@@ -78,7 +85,7 @@ Route::middleware('auth')->group(function () {
         // Operasional Beras
         Route::get('/input-beras', InputBeras::class)->name('input.beras');
         Route::get('/list-beras', ListBeras::class)->name('list.beras');
-        // Route::get('/edit-beras/{id}', EditBeras::class)->name('edit.beras'); // Aktifkan jika ada componentnya
+        // Route::get('/edit-beras/{id}', EditBeras::class)->name('edit.beras'); // Uncomment jika sudah ada
         Route::get('/upload-foto-beras/{id}', UploadFotoBeras::class)->name('upload.beras');
         Route::get('/print/beras/{id}/{type}', [BerasPdfController::class, 'print'])->name('print.beras');
 

@@ -31,4 +31,4 @@ class BerasPdfController extends Controller
 
         return abort(404);
     }
-}
+}   
