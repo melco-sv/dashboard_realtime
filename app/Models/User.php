@@ -10,56 +10,55 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
-    protected $table = 'mas_user'; // Nama tabel sesuai database
-    protected $primaryKey = 'username'; // Primary key string
-    public $incrementing = false;
-    protected $keyType = 'string';
+    // === KONFIGURASI TABEL ===
+    protected $table = 'mas_user'; 
+    
+    // Primary Key (Sesuai screenshot database Anda: userid)
+    protected $primaryKey = 'userid'; 
+    
+    // Auto Increment (Biasanya kolom ID berupa angka auto-increment)
+    public $incrementing = true;      
+    protected $keyType = 'int';
 
-    // KOLOM YANG BISA DIEDIT (WAJIB DITAMBAHKAN AGAR FORM UPDATE BERFUNGSI)
-    protected $fillable = [
-        'username', 
-        'nama', 
-        'password', 
-        'level', 
-        'group', 
-        'status', 
-        'nama_client',
-        // Tambahan kolom baru untuk fitur Update Profile:
-        'email',
-        'phone',
-        'position',
-        'password_md5' 
-    ];
+    // === MASS ASSIGNMENT ===
+    // Saya menggunakan $guarded = [] agar SEMUA kolom di database 
+    // (termasuk photo, nama_client, dll) otomatis bisa diisi tanpa perlu ditulis satu per satu.
+    protected $guarded = []; 
 
-    // Sembunyikan password dari return array/json
+    // === SECURITY ===
+    // Sembunyikan data sensitif saat model dikonversi ke Array/JSON
     protected $hidden = [
-        'password', 'password_md5',
+        'password', 
+        'password_md5',
+        'remember_token',
     ];
 
-    // Override validasi password karena database menggunakan MD5
+    // === AUTHENTICATION HELPER ===
+    // Mengembalikan password utama untuk verifikasi Auth
     public function getAuthPassword()
     {
         return $this->password;
     }
 
-    // --- Helper Cek Role ---
-    public function isInspektor() {
-        return strtolower($this->level) === 'inspektor';
-    }
-
+    // === ROLE HELPERS (Case Insensitive) ===
+    // Memudahkan pengecekan di Blade: @if($user->isSuperAdmin())
     public function isSuperAdmin() {
         return strtolower($this->level) === 'super admin';
+    }
+
+    public function isInspektor() {
+        return strtolower($this->level) === 'inspektor';
     }
 
     public function isVerification() {
         return strtolower($this->level) === 'verification';
     }
 
-    // --- Relasi ke Tabel Cabang (RefCabang) ---
-    // Digunakan untuk menampilkan Nama Cabang di Header
+    // === RELATIONSHIPS ===
+    // Relasi ke Tabel RefCabang untuk mengambil Nama Cabang berdasarkan Group
     public function cabang()
     {
-        // Menghubungkan kolom 'group' di tabel user dengan 'code_cabang' di tabel ref_cabang
+        // belongsTo(ModelTujuan, Foreign Key di tabel user, Owner Key di tabel cabang)
         return $this->belongsTo(RefCabang::class, 'group', 'code_cabang');
     }
 }

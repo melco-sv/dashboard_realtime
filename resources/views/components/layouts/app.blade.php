@@ -6,9 +6,7 @@
     <title>Sistem Monitoring Gabah</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script> 
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
     
@@ -75,13 +73,11 @@
                     
                     <div class="flex-1 min-w-0">
                         <h4 class="text-sm font-bold text-white truncate">{{ Auth::user()->name }}</h4>
-                        
                         <div class="mt-1 space-y-0.5">
                             <p class="text-[10px] text-gray-400 flex items-center gap-1.5">
                                 <i class="fa-solid fa-id-card text-orange-500 text-[10px]"></i> 
                                 {{ Auth::user()->level ?? '-' }}
                             </p>
-                            
                             <p class="text-[10px] text-gray-400 flex items-center gap-1.5">
                                 <i class="fa-solid fa-layer-group text-blue-500 text-[10px]"></i> 
                                 Group: {{ Auth::user()->group ?? '-' }}
@@ -91,11 +87,9 @@
                 </div>
 
                 <div class="mt-4 pt-3 border-t border-gray-700/50 flex gap-2">
-                    <button class="flex-1 bg-gray-800 hover:bg-gray-700 text-gray-300 text-[10px] font-bold py-1.5 rounded-lg transition-colors flex items-center justify-center gap-1.5">
-                       <a href="{{ route('settings') }}" wire:navigate class="flex-1 bg-gray-800 hover:bg-gray-700 text-gray-300 text-[10px] font-bold py-1.5 rounded-lg transition-colors flex items-center justify-center gap-1.5">
-    <i class="fa-solid fa-gear"></i> Settings
-</a>
-                    </button>
+                    <a href="{{ route('settings') }}" wire:navigate class="flex-1 bg-gray-800 hover:bg-gray-700 text-gray-300 text-[10px] font-bold py-1.5 rounded-lg transition-colors flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-gear"></i> Settings
+                    </a>
                     <a href="{{ route('logout') }}" class="flex-1 bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 text-[10px] font-bold py-1.5 rounded-lg transition-colors flex items-center justify-center gap-1.5">
                         <i class="fa-solid fa-power-off"></i> Log Out
                     </a>
@@ -118,11 +112,21 @@
                 </div>
             </div>
 
+            @if(Auth::check() && Auth::user()->isSuperAdmin())
+            <div>
+                <h3 class="px-4 text-xs font-bold text-red-500 uppercase tracking-wider mb-2">Admin Panel</h3>
+                <div class="space-y-1">
+                    <a href="{{ route('manage.users') }}" wire:navigate class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all group {{ request()->routeIs('manage.users') ? 'bg-red-600 text-white shadow-lg shadow-red-500/20' : 'text-gray-400 hover:text-white hover:bg-gray-800' }}">
+                        <i class="fa-solid fa-users-gear text-lg"></i>
+                        <span class="font-medium">Manage Users</span>
+                    </a>
+                </div>
+            </div>
+            @endif
             @if(Auth::check() && Auth::user()->level == 'Inspektor')
             <div>
                 <h3 class="px-4 text-xs font-bold text-orange-600 uppercase tracking-wider mb-2">Form</h3>
                 <div class="space-y-1">
-                    
                     <div x-data="{ open: false }">
                         <button @click="open = !open" class="w-full flex items-center justify-between px-4 py-3 text-gray-400 hover:text-white hover:bg-gray-800 rounded-xl transition-all group">
                             <div class="flex items-center gap-3">
@@ -133,15 +137,11 @@
                         </button>
                         <div x-show="open" x-cloak class="mt-1 ml-4 border-l border-gray-700 pl-4 space-y-1">
                             <a href="{{ route('input.gabah') }}" wire:navigate class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group {{ request()->routeIs('input.gabah') ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
-                                <div class="p-2 rounded-lg {{ request()->routeIs('input.gabah') ? 'bg-white/20' : 'bg-gray-800 group-hover:bg-gray-700' }}">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-                                </div>
+                                <div class="p-2 rounded-lg {{ request()->routeIs('input.gabah') ? 'bg-white/20' : 'bg-gray-800 group-hover:bg-gray-700' }}"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg></div>
                                 <span class="font-bold tracking-wide">Input Gabah</span>
                             </a>
                             <a href="{{ route('input.beras') }}" wire:navigate class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group {{ request()->routeIs('input.beras') ? 'bg-green-600 text-white shadow-lg shadow-green-500/30' : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
-                                <div class="p-2 rounded-lg {{ request()->routeIs('input.beras') ? 'bg-white/20' : 'bg-gray-800 group-hover:bg-gray-700' }}">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
-                                </div>
+                                <div class="p-2 rounded-lg {{ request()->routeIs('input.beras') ? 'bg-white/20' : 'bg-gray-800 group-hover:bg-gray-700' }}"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg></div>
                                 <span class="font-bold tracking-wide">Input Beras</span>
                             </a>
                         </div>
@@ -150,23 +150,16 @@
                     <div x-data="{ open: false }" class="relative">
                         <button @click="open = !open" class="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl transition-all duration-300 text-gray-400 hover:bg-gray-800 hover:text-white group">
                             <div class="flex items-center gap-3">
-                                <div class="p-2 rounded-lg bg-gray-800 group-hover:bg-gray-700">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-                                </div>
+                                <div class="p-2 rounded-lg bg-gray-800 group-hover:bg-gray-700"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg></div>
                                 <span class="font-bold tracking-wide">Laporan</span>
                             </div>
                             <svg xmlns="http://www.w3.org/2000/svg" :class="{'rotate-180': open}" class="h-4 w-4 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
                         </button>
                         <div x-show="open" x-transition class="pl-4 mt-1 space-y-1">
-                            <a href="{{ route('laporan.gkp') }}" wire:navigate class="block px-4 py-2 rounded-lg text-sm font-bold text-gray-400 hover:text-white hover:bg-gray-800 {{ request()->routeIs('laporan.gkp') ? 'text-white bg-gray-800' : '' }}">
-                                - Laporan GKP
-                            </a>
-                            <a href="{{ route('laporan.hgl') }}" wire:navigate class="block px-4 py-2 rounded-lg text-sm font-bold text-gray-400 hover:text-white hover:bg-gray-800 {{ request()->routeIs('laporan.hgl') ? 'text-white bg-gray-800' : '' }}">
-                                - Laporan HGL
-                            </a>
+                            <a href="{{ route('laporan.gkp') }}" wire:navigate class="block px-4 py-2 rounded-lg text-sm font-bold text-gray-400 hover:text-white hover:bg-gray-800 {{ request()->routeIs('laporan.gkp') ? 'text-white bg-gray-800' : '' }}">- Laporan GKP</a>
+                            <a href="{{ route('laporan.hgl') }}" wire:navigate class="block px-4 py-2 rounded-lg text-sm font-bold text-gray-400 hover:text-white hover:bg-gray-800 {{ request()->routeIs('laporan.hgl') ? 'text-white bg-gray-800' : '' }}">- Laporan HGL</a>
                         </div>
                     </div>
-
                 </div>
             </div>
             @endif

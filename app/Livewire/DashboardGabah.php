@@ -9,42 +9,59 @@ use Illuminate\Support\Facades\DB;
 
 class DashboardGabah extends Component
 {
+    // Properti Data Mentah (untuk Chart)
     public $totalGabahKg;
-    public $totalGabahAnalisa;
     public $totalBerasKg;
+    
+    // Properti Tampilan (Sudah diformat Rp/Kg)
+    public $totalGabahKgDisplay;
+    public $totalBerasKgDisplay;
+    
+    public $totalGabahAnalisa;
     public $totalBerasAnalisa;
 
     public function render()
     {
-        // 1. DATA GABAH (Total & Grafik)
-        $this->totalGabahKg = MasHpkkGabah::sum('jumlah_timbangan');
+        // === 1. DATA GABAH ===
+        // Hitung Total Berat (Handle koma desimal agar akurat)
+        $this->totalGabahKg = MasHpkkGabah::sum(DB::raw("CAST(REPLACE(jumlah_timbangan, ',', '.') AS DECIMAL(15,2))"));
         $this->totalGabahAnalisa = MasHpkkGabah::count();
 
+        // Format Tampilan (Contoh: 12.500,00)
+        $this->totalGabahKgDisplay = number_format($this->totalGabahKg, 2, ',', '.');
+
+        // Data Grafik Gabah (Group by Bulan)
         $dataGabah = MasHpkkGabah::select(
                 DB::raw("DATE_FORMAT(tanggal_pelaksanaan, '%Y-%m') as bulan"), 
-                DB::raw('SUM(jumlah_timbangan) as total')
+                DB::raw("SUM(CAST(REPLACE(jumlah_timbangan, ',', '.') AS DECIMAL(15,2))) as total")
             )
             ->whereNotNull('tanggal_pelaksanaan')
-            ->where('tanggal_pelaksanaan', '!=', '0000-00-00')
             ->groupBy(DB::raw("DATE_FORMAT(tanggal_pelaksanaan, '%Y-%m')"))
             ->orderBy('bulan', 'asc')
             ->get();
 
-        // 2. DATA BERAS (Total & Grafik)
-        $this->totalBerasKg = MasHpkkBeras::sum('kuantum_beras');
+
+        // === 2. DATA BERAS ===
+        // Hitung Total Berat
+        $this->totalBerasKg = MasHpkkBeras::sum(DB::raw("CAST(REPLACE(kuantum_beras, ',', '.') AS DECIMAL(15,2))"));
         $this->totalBerasAnalisa = MasHpkkBeras::count();
 
+        // Format Tampilan
+        $this->totalBerasKgDisplay = number_format($this->totalBerasKg, 2, ',', '.');
+
+        // Data Grafik Beras (Group by Bulan)
         $dataBeras = MasHpkkBeras::select(
                 DB::raw("DATE_FORMAT(tanggal_pemeriksaan, '%Y-%m') as bulan"), 
-                DB::raw('SUM(kuantum_beras) as total')
+                DB::raw("SUM(CAST(REPLACE(kuantum_beras, ',', '.') AS DECIMAL(15,2))) as total")
             )
             ->whereNotNull('tanggal_pemeriksaan')
-            ->where('tanggal_pemeriksaan', '!=', '0000-00-00')
             ->groupBy(DB::raw("DATE_FORMAT(tanggal_pemeriksaan, '%Y-%m')"))
             ->orderBy('bulan', 'asc')
             ->get();
 
-        // 3. Dispatch Data ke JavaScript (Format Array Murni)
+
+        // === 3. DISPATCH KE CHART JS ===
+        // Mengirim data bersih ke JavaScript
         $this->dispatch('update-charts', [
             'gabah_labels' => $dataGabah->pluck('bulan')->values()->all(),
             'gabah_values' => $dataGabah->pluck('total')->map(fn($v) => (float)$v)->values()->all(),

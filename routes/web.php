@@ -69,6 +69,7 @@ Route::middleware('auth')->group(function () {
     // Halaman Settings / Update Profile
     Route::get('/settings', UpdateProfile::class)->name('settings');
 
+    Route::get('/manage-users', \App\Livewire\ManageUser::class)->name('manage.users');
 
     // --- HALAMAN KHUSUS INSPEKTOR ---
     // (Input, Edit, List, Upload, Laporan)
