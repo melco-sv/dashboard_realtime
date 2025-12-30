@@ -66,6 +66,12 @@ Route::middleware('auth')->group(function () {
     // Halaman Serapan
     Route::get('/serapan', Serapan::class)->name('serapan');
 
+    // Route untuk Halaman Compare PO GKP
+Route::get('/compare-po-gkp', \App\Livewire\ComparePoGkp::class)->name('compare.po.gkp');
+
+// Route Compare MO HGL
+Route::get('/compare-mo-hgl', \App\Livewire\CompareMoHgl::class)->name('compare.mo.hgl');
+
     // Halaman Settings / Update Profile
     Route::get('/settings', UpdateProfile::class)->name('settings');
 

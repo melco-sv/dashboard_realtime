@@ -100,6 +100,7 @@
             <div>
                 <h3 class="px-4 text-xs font-bold text-orange-600 uppercase tracking-wider mb-2">Main</h3>
                 <div class="space-y-1">
+                    
                     <a href="/" class="flex items-center gap-3 px-4 py-3 {{ Request::is('/') || Request::is('dashboard') ? 'bg-orange-600 text-white shadow-lg shadow-orange-500/20' : 'text-gray-400 hover:text-white hover:bg-gray-800' }} rounded-xl transition-all group" wire:navigate>
                         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
                         <span class="font-medium">Home</span>
@@ -109,6 +110,33 @@
                         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
                         <span class="font-medium">Serapan</span>
                     </a>
+
+                    <div x-data="{ open: false }" class="relative">
+                        <button @click="open = !open" class="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl transition-all duration-300 text-gray-400 hover:bg-gray-800 hover:text-white group">
+                            <div class="flex items-center gap-3">
+                                <div class="p-2 rounded-lg bg-gray-800 group-hover:bg-gray-700">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                    </svg>
+                                </div>
+                                <span class="font-bold tracking-wide">Compare Data</span>
+                            </div>
+                            <svg xmlns="http://www.w3.org/2000/svg" :class="{'rotate-180': open}" class="h-4 w-4 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                        
+                        <div x-show="open" x-transition class="pl-4 mt-1 space-y-1">
+                            <a href="{{ route('compare.po.gkp') }}" wire:navigate class="block px-4 py-2 ...">
+    - Compare PO GKP
+</a>
+                            
+                            <a href="{{ route('compare.mo.hgl') }}" wire:navigate class="block px-4 py-2 ...">
+    - Compare MO HGL
+</a>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
@@ -123,10 +151,12 @@
                 </div>
             </div>
             @endif
+
             @if(Auth::check() && Auth::user()->level == 'Inspektor')
             <div>
                 <h3 class="px-4 text-xs font-bold text-orange-600 uppercase tracking-wider mb-2">Form</h3>
                 <div class="space-y-1">
+                    
                     <div x-data="{ open: false }">
                         <button @click="open = !open" class="w-full flex items-center justify-between px-4 py-3 text-gray-400 hover:text-white hover:bg-gray-800 rounded-xl transition-all group">
                             <div class="flex items-center gap-3">
