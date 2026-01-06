@@ -6,6 +6,7 @@ use Livewire\Component;
 use App\Models\MasHpkkGabah;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class InputGabah extends Component
 {
@@ -19,9 +20,7 @@ class InputGabah extends Component
     public $jenis_alat_angkut;
     public $nomor_registrasi_alat_angkut;
     public $hama_penyakit; 
-    
-    public $metode_timbang; // Dropdown Form
-    
+    public $metode_timbang; 
     public $jumlah_timbangan;
     public $kode_sample;
     
@@ -41,19 +40,87 @@ class InputGabah extends Component
     public $catatan;
     public $group; 
 
-    // === MOUNT (Dipanggil saat halaman dibuka) ===
+    // === MOUNT ===
     public function mount()
     {
         $this->tanggal_pelaksanaan = date('Y-m-d');
         $this->tanggal_doc = date('Y-m-d');
         
-        // Isi Group Otomatis
         if (Auth::check()) {
             $this->group = Auth::user()->group;
         }
 
-        // Generate nomor bayangan untuk tampilan awal (Preview)
         $this->generateNomorSurat(true);
+    }
+
+    // === REAL-TIME VALIDATION & AUTO RESET (SWEETALERT) ===
+    public function updated($propertyName)
+    {
+        $val = $this->parseNumber($this->{$propertyName});
+
+        // 1. CEK ULANGAN 1, 2, 3 (Range 10 - 38)
+        if (in_array($propertyName, ['ulangan_1', 'ulangan_2', 'ulangan_3'])) {
+            if ($val > 0 && ($val < 10 || $val > 38)) {
+                // Tampilkan SweetAlert Error
+                $this->dispatch('swal:error', [
+                    'title' => 'Input Diluar Batas!',
+                    'text'  => "Nilai $propertyName harus berada di rentang 10 s/d 38!",
+                ]);
+                
+                // Auto Reset: Kosongkan inputan
+                $this->{$propertyName} = null;
+            }
+            $this->hitungRataRata();
+        }
+
+        // 2. CEK KADAR HAMPA (Maksimal 40)
+        if ($propertyName == 'kadar_hampa') {
+            if ($val > 40) {
+                $this->dispatch('swal:error', [
+                    'title' => 'Input Diluar Batas!',
+                    'text'  => 'Kadar Hampa tidak boleh melebihi 40%!',
+                ]);
+                
+                // Auto Reset
+                $this->kadar_hampa = null;
+            }
+        }
+
+        // 3. CEK BUTIR HIJAU (Maksimal 30)
+        if ($propertyName == 'butir_hijau') {
+            if ($val > 30) {
+                $this->dispatch('swal:error', [
+                    'title' => 'Input Diluar Batas!',
+                    'text'  => 'Butir Hijau tidak boleh melebihi 30%!',
+                ]);
+                
+                // Auto Reset
+                $this->butir_hijau = null;
+            }
+        }
+    }
+
+    // === LOGIKA HITUNGAN ===
+    private function hitungRataRata()
+    {
+        $val1 = $this->parseNumber($this->ulangan_1);
+        $val2 = $this->parseNumber($this->ulangan_2);
+        $val3 = $this->parseNumber($this->ulangan_3);
+        
+        $count = 0; $sum = 0;
+        if ($val1 > 0) { $sum += $val1; $count++; }
+        if ($val2 > 0) { $sum += $val2; $count++; }
+        if ($val3 > 0) { $sum += $val3; $count++; }
+        
+        $this->kadar_air_rata_rata = $count > 0 ? round($sum / $count, 2) : 0;
+    }
+
+    // === HELPER: BERSIHKAN ANGKA ===
+    private function parseNumber($value)
+    {
+        if (empty($value)) return 0;
+        $cleanValue = str_replace(',', '.', $value); 
+        return floatval($cleanValue);
     }
 
     // === GENERATE NOMOR SURAT ===
@@ -63,13 +130,10 @@ class InputGabah extends Component
         $tahun = date('Y');
         $groupCode = $this->group ?? '0000';
         
-        // Hitung jumlah data berdasarkan tahun dan group
         $query = MasHpkkGabah::whereYear('tanggal_pelaksanaan', $tahun)
-                    ->where('group', $this->group);
+                     ->where('group', $this->group);
         
         $count = $query->count();
-        
-        // Tambah 1 untuk nomor urut berikutnya
         $nextNo = $count + 1;
         
         $noUrut = sprintf("%05d", $nextNo);
@@ -77,13 +141,11 @@ class InputGabah extends Component
         
         $generated = "$noUrut/GPK/$groupCode/SCI/$romawi/$tahun";
 
-        // Jika hanya preview (saat mount), return string tanpa set property
         if ($preview) {
             $this->nomor_hpkk_gabah = $generated;
             return $generated;
         }
 
-        // Jika saat save, return value untuk disimpan ke DB
         $this->nomor_hpkk_gabah = $generated;
         return $generated;
     }
@@ -95,55 +157,78 @@ class InputGabah extends Component
         return $map[$bulan] ?? '';
     }
 
-    // === HITUNG RATA-RATA OTOMATIS SAAT KETIK ===
-    public function updated($propertyName)
-    {
-        if (in_array($propertyName, ['ulangan_1', 'ulangan_2', 'ulangan_3'])) {
-            $val1 = (float) $this->ulangan_1;
-            $val2 = (float) $this->ulangan_2;
-            $val3 = (float) $this->ulangan_3;
-            
-            if ($val1 > 0 || $val2 > 0 || $val3 > 0) {
-                $count = 0; $sum = 0;
-                if($val1 > 0) { $sum+=$val1; $count++; }
-                if($val2 > 0) { $sum+=$val2; $count++; }
-                if($val3 > 0) { $sum+=$val3; $count++; }
-                
-                $this->kadar_air_rata_rata = $count > 0 ? round($sum / $count, 2) : 0;
-            } else {
-                $this->kadar_air_rata_rata = 0;
-            }
-        }
-    }
-
     // === SIMPAN DATA (STORE) ===
     public function store()
     {
-        // 1. Validasi Input
-        $this->validate([
-            'mitra' => 'required',
-            'group' => 'required',
-            'jumlah_timbangan' => 'required|numeric|min:1',
-            'metode_timbang' => 'required',
-            'kadar_air_rata_rata' => 'required|numeric|min:0',
-        ], [
-            'mitra.required' => 'Nama Mitra wajib diisi.',
-            'jumlah_timbangan.required' => 'Jumlah timbangan tidak boleh kosong.',
-            'metode_timbang.required' => 'Silakan pilih metode timbang.',
-        ]);
+        // 1. VALIDASI FORMAT (Laravel)
+        try {
+            $this->validate([
+                'no_order_pembelian'           => 'required',
+                'nomor_order'                  => 'required',
+                'mitra'                        => 'required',
+                'pengirim'                     => 'required',
+                'tanggal_pelaksanaan'          => 'required|date',
+                'jenis_alat_angkut'            => 'required',
+                'nomor_registrasi_alat_angkut' => 'required',
+                'hama_penyakit'                => 'required',
+                'group'                        => 'required',
+                'jumlah_timbangan'             => 'required|numeric',
+                'metode_timbang'               => 'required',
+                'kode_sample'                  => 'required',
+                'ulangan_1'                    => 'required|numeric',
+                'ulangan_2'                    => 'required|numeric',
+                'ulangan_3'                    => 'required|numeric',
+                'kadar_air_rata_rata'          => 'required|numeric',
+                'kadar_hampa'                  => 'required|numeric',
+                'butir_hijau'                  => 'required|numeric',
+                'tanggal_doc'                  => 'required|date',
+                'lokasi'                       => 'required',
+                'mengetahui'                   => 'required',
+                'petugas'                      => 'required',
+                'catatan'                      => 'nullable', 
+            ]);
+            
+        } catch (ValidationException $e) {
+            // SweetAlert Error jika form belum lengkap
+            $this->dispatch('swal:error', [
+                'title' => 'Gagal Disimpan!',
+                'text'  => 'Mohon lengkapi semua form yang wajib diisi.',
+            ]);
+            throw $e;
+        }
 
-        // Mulai Transaksi Database
+        // 2. VALIDASI LIMITER (SAFETY NET SAAT SAVE)
+        $val_u1 = $this->parseNumber($this->ulangan_1);
+        $val_u2 = $this->parseNumber($this->ulangan_2);
+        $val_u3 = $this->parseNumber($this->ulangan_3);
+
+        if (($val_u1 < 10 || $val_u1 > 38) || 
+            ($val_u2 < 10 || $val_u2 > 38) || 
+            ($val_u3 < 10 || $val_u3 > 38)) {
+            
+            $this->dispatch('swal:error', ['title' => 'Data Invalid!', 'text' => 'Nilai Ulangan harus 10-38!']); 
+            return;
+        }
+
+        if ($this->parseNumber($this->kadar_hampa) > 40) {
+            $this->dispatch('swal:error', ['title' => 'Data Invalid!', 'text' => 'Kadar Hampa > 40%!']); 
+            return;
+        }
+
+        if ($this->parseNumber($this->butir_hijau) > 30) {
+            $this->dispatch('swal:error', ['title' => 'Data Invalid!', 'text' => 'Butir Hijau > 30%!']); 
+            return;
+        }
+
+        // 3. PROSES SIMPAN DB
         DB::beginTransaction();
 
         try {
-            // 2. Generate Nomor Surat FINAL (Penting agar tidak duplikat)
             $finalNomorSurat = $this->generateNomorSurat(false);
 
-            // 3. Mapping Metode Timbang (Dropdown -> Kolom DB)
             $val_weighbridge = ($this->metode_timbang === 'Weightbridge') ? 'Weightbridge' : null;
             $val_non_weighbridge = ($this->metode_timbang !== 'Weightbridge') ? $this->metode_timbang : null;
 
-            // 4. Simpan ke Database
             MasHpkkGabah::create([
                 'nomor_hpkk_gabah' => $finalNomorSurat,
                 'no_order_pembelian' => $this->no_order_pembelian,
@@ -154,22 +239,16 @@ class InputGabah extends Component
                 'jenis_alat_angkut' => $this->jenis_alat_angkut,
                 'nomor_registrasi_alat_angkut' => $this->nomor_registrasi_alat_angkut,
                 'hama_penyakit' => $this->hama_penyakit,
-                
-                // Hasil Mapping
                 'weighbridge' => $val_weighbridge,
                 'non_weighbridge' => $val_non_weighbridge,
-                
                 'kode_sample' => $this->kode_sample,
-                
-                // Gunakan Null Coalescing (?? 0) agar tidak error jika kosong
-                'jumlah_timbangan' => $this->jumlah_timbangan ?? 0,
-                'ulangan_1' => $this->ulangan_1 ?? 0,
-                'ulangan_2' => $this->ulangan_2 ?? 0,
-                'ulangan_3' => $this->ulangan_3 ?? 0,
+                'jumlah_timbangan' => $this->parseNumber($this->jumlah_timbangan),
+                'ulangan_1' => $this->parseNumber($this->ulangan_1),
+                'ulangan_2' => $this->parseNumber($this->ulangan_2),
+                'ulangan_3' => $this->parseNumber($this->ulangan_3),
                 'kadar_air_rata_rata' => $this->kadar_air_rata_rata ?? 0,
-                'kadar_hampa' => $this->kadar_hampa ?? 0,
-                'butir_hijau' => $this->butir_hijau ?? 0,
-                
+                'kadar_hampa' => $this->parseNumber($this->kadar_hampa),
+                'butir_hijau' => $this->parseNumber($this->butir_hijau),
                 'tanggal_doc' => $this->tanggal_doc,
                 'lokasi' => $this->lokasi,
                 'mengetahui' => $this->mengetahui,
@@ -178,29 +257,29 @@ class InputGabah extends Component
                 'group' => $this->group,
             ]);
 
-            // Commit Transaksi (Simpan Permanen)
             DB::commit();
 
-            // 5. Notifikasi Sukses
-            session()->flash('message', "Data berhasil disimpan! No: $finalNomorSurat");
+            // SweetAlert Sukses
+            $this->dispatch('swal:success', [
+                'title' => 'Berhasil!',
+                'text'  => "Data Gabah disimpan dengan No: $finalNomorSurat",
+            ]);
 
-            // 6. Reset Form
             $this->reset([
                 'mitra', 'pengirim', 'jenis_alat_angkut', 
                 'nomor_registrasi_alat_angkut', 'jumlah_timbangan', 
                 'ulangan_1', 'ulangan_2', 'ulangan_3', 
                 'kadar_air_rata_rata', 'kadar_hampa', 'butir_hijau',
                 'no_order_pembelian', 'nomor_order', 'kode_sample', 'catatan',
-                'metode_timbang','lokasi','mengetahui','petugas'
+                'metode_timbang','lokasi','mengetahui','petugas', 'hama_penyakit'
             ]);
             
-            // Generate nomor bayangan baru untuk input selanjutnya
             $this->generateNomorSurat(true);
 
         } catch (\Exception $e) {
-            // Rollback Transaksi (Batalkan jika ada error)
             DB::rollBack();
-            session()->flash('error', 'Gagal menyimpan: ' . $e->getMessage());
+            // SweetAlert Error System
+            $this->dispatch('swal:error', ['title' => 'Error System', 'text' => $e->getMessage()]);
         }
     }
 

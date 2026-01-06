@@ -6,6 +6,7 @@ use Livewire\Component;
 use App\Models\MasHpkkGabah;
 use App\Models\MasHpkkBeras;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth; // TAMBAHAN: Import Auth
 
 class Serapan extends Component
 {
@@ -22,16 +23,43 @@ class Serapan extends Component
 
     public function mount()
     {
-        // Default Periode (Bulan Ini)
+        // 1. Default Periode (Bulan Ini)
         $this->periode = date('Y-m'); 
 
-        // Ambil Daftar Cabang dari ref_cabang (Code & Name)
+        // 2. Ambil User yang sedang Login
+        $user = Auth::user();
+
+        // 3. Query Dasar ke ref_cabang
+        $query = DB::table('ref_cabang')
+            ->whereNotNull('name_cabang')
+            ->orderBy('name_cabang', 'asc');
+
+        // === LOGIKA FILTER OTOMATIS BERDASARKAN LEVEL USER ===
+        if ($user) {
+            
+            // A. JIKA USER ADALAH KANTOR WILAYAH (Level: Verification)
+            // Di database, nama user Kanwil (contoh: "02001 - KANTOR WILAYAH SUMUT")
+            // sama persis dengan isi kolom 'parent_company' di tabel ref_cabang.
+            if ($user->level == 'Verification') {
+                $query->where('parent_company', $user->nama);
+            }
+            
+            // B. JIKA USER ADALAH KANTOR CABANG (Level: Inspektor)
+            // Inspektor hanya boleh melihat datanya sendiri.
+            // Di database user, kolom 'group' menyimpan kode cabang (contoh: "1701")
+            elseif ($user->level == 'Inspektor') {
+                if (!empty($user->group)) {
+                    $query->where('code_cabang', $user->group);
+                }
+            }
+            
+            // C. JIKA SUPER ADMIN / CLIENT
+            // Tidak ada filter tambahan, bisa melihat semua list cabang.
+        }
+
+        // 4. Eksekusi Query
         try {
-            $this->listCabang = DB::table('ref_cabang')
-                ->whereNotNull('name_cabang') 
-                ->orderBy('name_cabang', 'asc')
-                ->pluck('name_cabang', 'code_cabang') // Value=Code, Label=Name
-                ->toArray();
+            $this->listCabang = $query->pluck('name_cabang', 'code_cabang')->toArray();
         } catch (\Exception $e) {
             $this->listCabang = [];
         }
@@ -48,15 +76,15 @@ class Serapan extends Component
         $this->gabahStats = [
             // Kadar Air
             'ka'    => $this->getStats(MasHpkkGabah::class, 'kadar_air_rata_rata', 'tanggal_pelaksanaan', $colCabangGabah),
-            // Kadar Hampa (Sesuai kolom di foto: kadar_hampa)
+            // Kadar Hampa
             'hampa' => $this->getStats(MasHpkkGabah::class, 'kadar_hampa', 'tanggal_pelaksanaan', $colCabangGabah), 
-            // Butir Hijau (Sesuai kolom di foto: butir_hijau)
+            // Butir Hijau
             'hijau' => $this->getStats(MasHpkkGabah::class, 'butir_hijau', 'tanggal_pelaksanaan', $colCabangGabah), 
         ];
 
         // === 2. HITUNG DATA BERAS (Sesuai Foto mas_hpkk_beras) ===
         $this->berasStats = [
-            // Kadar Air diambil dari 'rata_rata' (Sesuai Request)
+            // Kadar Air diambil dari 'rata_rata'
             'ka'       => $this->getStats(MasHpkkBeras::class, 'rata_rata', 'tanggal_pemeriksaan', $colCabangBeras),
             // Derajat Sosoh
             'sosoh'    => $this->getStats(MasHpkkBeras::class, 'derajat_sosoh', 'tanggal_pemeriksaan', $colCabangBeras),

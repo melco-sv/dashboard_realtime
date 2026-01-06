@@ -50,7 +50,9 @@
                                 <a href="{{ route('print.beras', ['id' => $item->id_hpkk_beras, 'type' => 'lhpk']) }}" target="_blank" class="w-32 bg-blue-500 hover:bg-blue-600 text-white py-1 px-2 rounded text-[10px] font-bold text-center uppercase tracking-wide">Print LHPK</a>
                                 <a href="{{ route('print.beras', ['id' => $item->id_hpkk_beras, 'type' => 'witnessing']) }}" target="_blank" class="w-32 bg-indigo-600 hover:bg-indigo-700 text-white py-1 px-2 rounded text-[10px] font-bold text-center uppercase tracking-wide">Print Witnessing</a>
 
-                                <button class="w-32 bg-green-600 hover:bg-green-700 text-white py-1 px-2 rounded text-[10px] font-bold text-center uppercase tracking-wide">Update</button>
+                                <a href="{{ route('edit.beras', $item->id_hpkk_beras) }}" wire:navigate class="w-32 bg-green-600 hover:bg-green-700 text-white py-1 px-2 rounded text-[10px] font-bold text-center uppercase tracking-wide flex justify-center items-center">
+    Update
+</a>
                                 
                                 <a href="{{ route('upload.beras', $item->id_hpkk_beras) }}" wire:navigate class="w-32 bg-pink-600 hover:bg-pink-700 text-white py-1 px-2 rounded text-[10px] font-bold text-center uppercase tracking-wide flex justify-center items-center">
                                     Upload Foto
@@ -61,7 +63,7 @@
                         </td>
 
                         <td class="px-6 py-4 font-mono text-gray-300">{{ $item->nomor_hpkk_beras }}</td>
-                        <!-- <td class="px-6 py-4 font-bold {{ $item->status == 'Approve' ? 'text-green-400' : 'text-yellow-400' }}">{{ $item->status }}</td> -->
+                        <td class="px-6 py-4 font-bold {{ $item->status == 'Approve' ? 'text-green-400' : 'text-yellow-400' }}">{{ $item->status }}</td>
                         <td class="px-6 py-4">{{ $item->tanggal_pemeriksaan }}</td>
                         <td class="px-6 py-4 uppercase">{{ $item->lokasi }}</td>
                         <td class="px-6 py-4 font-mono text-xs">{{ $item->kode_sample }}</td>

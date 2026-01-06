@@ -6,6 +6,7 @@ use Livewire\Component;
 use App\Models\MasHpkkBeras;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class InputBeras extends Component
 {
@@ -17,37 +18,25 @@ class InputBeras extends Component
     public $tanggal_pemeriksaan;
     public $kode_sample;
     public $dasar_pemeriksaan;
-    
-    // Kualitas Fisik
     public $kondisi_kemasan;
     public $hama; 
     public $dedak_katul_sekam;
     public $bau; 
     public $bahan_kimia; 
-
-    // Lab Kadar Air
     public $ulangan_1;
     public $ulangan_2;
     public $ulangan_3;
     public $rata_rata; 
-
-    // Fisik Beras
     public $derajat_sosoh;
     public $butir_patah;
     public $menir;
-
-    // Kuantum
     public $kuantum_gabah_sesuai_mo; 
     public $kuantum_beras; 
     public $rendemen_pengolahan; 
-
-    // Hasil Samping
     public $hasil_samping_menir;
     public $hasil_samping_butir_patah;
     public $hasil_samping_dedak_katul;
     public $hasil_samping_butir_kuning_rusak;
-
-    // Footer
     public $tanggal_doc;
     public $lokasi;
     public $mengetahui;
@@ -56,54 +45,115 @@ class InputBeras extends Component
     public $group; 
     public $status = 'Active';
 
-    // === MOUNT ===
     public function mount()
     {
         $this->tanggal_pemeriksaan = date('Y-m-d');
         $this->tanggal_doc = date('Y-m-d');
         
-        // 1. ISI GROUP OTOMATIS
         if (Auth::check()) {
             $this->group = Auth::user()->group;
         }
 
-        // 2. GENERATE NOMOR SURAT (Preview Saja)
         $this->generateNomorSurat(true);
     }
 
-    // === AUTO CALCULATIONS ===
+    // === REAL-TIME VALIDATION (SWEETALERT & AUTO RESET) ===
     public function updated($propertyName)
     {
-        // 1. Hitung Rata-rata Kadar Air
+        $val = $this->parseNumber($this->{$propertyName});
+
+        // 1. CEK ULANGAN 1, 2, 3 (Range 10.01 - 14)
         if (in_array($propertyName, ['ulangan_1', 'ulangan_2', 'ulangan_3'])) {
-            $u1 = (float) $this->ulangan_1;
-            $u2 = (float) $this->ulangan_2;
-            $u3 = (float) $this->ulangan_3;
+            if ($val > 0 && ($val < 10.01 || $val > 14)) {
+                // Tampilkan SweetAlert Error
+                $this->dispatch('swal:error', [
+                    'title' => 'Input Diluar Batas!',
+                    'text'  => "Nilai $propertyName harus diantara 10.01 s/d 14!",
+                ]);
+                
+                // Auto Reset: Kosongkan inputan
+                $this->{$propertyName} = null; 
+            }
+            $this->hitungRataRata();
+        }
 
-            if ($u1 > 0 || $u2 > 0 || $u3 > 0) {
-                $count = 0; $sum = 0;
-                if($u1 > 0) { $sum += $u1; $count++; }
-                if($u2 > 0) { $sum += $u2; $count++; }
-                if($u3 > 0) { $sum += $u3; $count++; }
-
-                $this->rata_rata = $count > 0 ? round($sum / $count, 2) : 0;
-            } else {
-                $this->rata_rata = 0;
+        // 2. CEK DERAJAT SOSOH (Harus 85, 95, 100)
+        if ($propertyName == 'derajat_sosoh') {
+            if ($val > 0 && !in_array($val, [85, 95, 100])) {
+                $this->dispatch('swal:error', [
+                    'title' => 'Data Invalid!',
+                    'text'  => 'Derajat Sosoh hanya boleh bernilai 85, 95, atau 100!',
+                ]);
+                
+                // Auto Reset
+                $this->derajat_sosoh = null; 
             }
         }
 
-        // 2. Hitung Rendemen Pengolahan
+        // 3. CEK BUTIR PATAH (Max 40)
+        if ($propertyName == 'butir_patah') {
+            if ($val > 40) {
+                $this->dispatch('swal:error', [
+                    'title' => 'Input Diluar Batas!',
+                    'text'  => 'Butir Patah tidak boleh melebihi 40%!',
+                ]);
+                
+                // Auto Reset
+                $this->butir_patah = null;
+            }
+        }
+
+        // 4. CEK MENIR (Max 5)
+        if ($propertyName == 'menir') {
+            if ($val > 5) {
+                $this->dispatch('swal:error', [
+                    'title' => 'Input Diluar Batas!',
+                    'text'  => 'Menir tidak boleh melebihi 5%!',
+                ]);
+                
+                // Auto Reset
+                $this->menir = null;
+            }
+        }
+
+        // 5. Hitung Rendemen
         if (in_array($propertyName, ['kuantum_beras', 'kuantum_gabah_sesuai_mo'])) {
-            $beras = (float) $this->kuantum_beras;
-            $gabah = (float) $this->kuantum_gabah_sesuai_mo;
-
-            if ($gabah > 0 && $beras > 0) {
-                $rendemen = ($beras / $gabah) * 100; 
-                $this->rendemen_pengolahan = round($rendemen, 2);
-            } else {
-                $this->rendemen_pengolahan = 0;
-            }
+            $this->hitungRendemen();
         }
+    }
+
+    // === LOGIKA HITUNGAN ===
+    private function hitungRataRata() {
+        $u1 = $this->parseNumber($this->ulangan_1);
+        $u2 = $this->parseNumber($this->ulangan_2);
+        $u3 = $this->parseNumber($this->ulangan_3);
+
+        $count = 0; $sum = 0;
+        if ($u1 > 0) { $sum += $u1; $count++; }
+        if ($u2 > 0) { $sum += $u2; $count++; }
+        if ($u3 > 0) { $sum += $u3; $count++; }
+
+        $this->rata_rata = $count > 0 ? round($sum / $count, 2) : 0;
+    }
+
+    private function hitungRendemen() {
+        $beras = $this->parseNumber($this->kuantum_beras);
+        $gabah = $this->parseNumber($this->kuantum_gabah_sesuai_mo);
+
+        if ($gabah > 0 && $beras > 0) {
+            $rendemen = ($beras / $gabah) * 100; 
+            $this->rendemen_pengolahan = round($rendemen, 2);
+        } else {
+            $this->rendemen_pengolahan = 0;
+        }
+    }
+
+    // Helper: Membersihkan input angka
+    private function parseNumber($value)
+    {
+        if (empty($value)) return 0;
+        $cleanValue = str_replace(',', '.', $value); 
+        return floatval($cleanValue);
     }
 
     // === GENERATE NOMOR SURAT ===
@@ -113,14 +163,12 @@ class InputBeras extends Component
         $tahun = date('Y');
         $groupCode = $this->group ?? '0000';
         
-        // Hitung count berdasarkan tahun dan group
         $query = MasHpkkBeras::whereYear('tanggal_pemeriksaan', $tahun)
-                        ->where('group', $this->group);
+                              ->where('group', $this->group);
 
         $count = $query->count();
         $nextNo = $count + 1;
         
-        // Format: 00001/HGL/4101/SCI/XII/2025
         $noUrut = sprintf("%05d", $nextNo);
         $romawi = $this->getRomawi($bulan);
         
@@ -144,25 +192,88 @@ class InputBeras extends Component
     // === SIMPAN DATA (STORE) ===
     public function store()
     {
-        // 1. Validasi Input Wajib
-        $this->validate([
-            'id_mo' => 'required',
-            'group' => 'required',
-            'tanggal_pemeriksaan' => 'required|date',
-            // Validasi numeric agar tidak error di database
-            'ulangan_1' => 'nullable|numeric',
-            'kuantum_beras' => 'nullable|numeric',
-            'kuantum_gabah_sesuai_mo' => 'nullable|numeric',
-        ]);
+        try {
+            $this->validate([
+                'id_mo' => 'required',
+                'nomor_order' => 'required',
+                'tempat_pemeriksaan' => 'required',
+                'tanggal_pemeriksaan' => 'required|date',
+                'kode_sample' => 'required',
+                'dasar_pemeriksaan' => 'required',
+                'group' => 'required',
+                'kondisi_kemasan' => 'required',
+                'hama' => 'required',
+                'dedak_katul_sekam' => 'required',
+                'bau' => 'required',
+                'bahan_kimia' => 'required',
+                'ulangan_1' => 'required|numeric',
+                'ulangan_2' => 'required|numeric',
+                'ulangan_3' => 'required|numeric',
+                'derajat_sosoh' => 'required|numeric',
+                'butir_patah' => 'required|numeric',
+                'menir' => 'required|numeric',
+                'kuantum_gabah_sesuai_mo' => 'required|numeric',
+                'kuantum_beras' => 'required|numeric',
+                'hasil_samping_menir' => 'required|numeric',
+                'hasil_samping_butir_patah' => 'required|numeric',
+                'hasil_samping_dedak_katul' => 'required|numeric',
+                'hasil_samping_butir_kuning_rusak' => 'required|numeric',
+                'tanggal_doc' => 'required|date',
+                'lokasi' => 'required',
+                'mengetahui' => 'required',
+                'petugas' => 'required',
+                'catatan' => 'nullable', 
+            ]);
 
-        // Gunakan Transaksi Database
+        } catch (ValidationException $e) {
+            // SweetAlert Error Form Belum Lengkap
+            $this->dispatch('swal:error', [
+                'title' => 'Gagal Disimpan!',
+                'text'  => 'Mohon lengkapi semua form yang wajib diisi.',
+            ]);
+            throw $e;
+        }
+
+        // ============================================================
+        // 2. VALIDASI LIMITER (SAFETY NET SAAT SAVE)
+        // ============================================================
+
+        $val_u1 = $this->parseNumber($this->ulangan_1);
+        $val_u2 = $this->parseNumber($this->ulangan_2);
+        $val_u3 = $this->parseNumber($this->ulangan_3);
+
+        if (($val_u1 < 10.01 || $val_u1 > 14) || 
+            ($val_u2 < 10.01 || $val_u2 > 14) || 
+            ($val_u3 < 10.01 || $val_u3 > 14)) {
+            
+            $this->dispatch('swal:error', ['title' => 'Data Invalid!', 'text' => 'Nilai Ulangan harus 10.01 - 14!']); 
+            return;
+        }
+
+        if (!in_array($this->parseNumber($this->derajat_sosoh), [85, 95, 100])) {
+            $this->dispatch('swal:error', ['title' => 'Data Invalid!', 'text' => 'Derajat Sosoh harus 85, 95, atau 100!']); 
+            return;
+        }
+
+        if ($this->parseNumber($this->butir_patah) > 40) {
+            $this->dispatch('swal:error', ['title' => 'Data Invalid!', 'text' => 'Butir Patah melebihi 40%!']); 
+            return;
+        }
+
+        if ($this->parseNumber($this->menir) > 5) {
+            $this->dispatch('swal:error', ['title' => 'Data Invalid!', 'text' => 'Menir melebihi 5%!']); 
+            return;
+        }
+
+        // ============================================================
+        // 3. PROSES SIMPAN DB
+        // ============================================================
+
         DB::beginTransaction();
 
         try {
-            // 2. GENERATE NOMOR FINAL (Agar tidak duplikat)
             $finalNomorSurat = $this->generateNomorSurat(false);
 
-            // 3. PERSIAPAN DATA (SANITASI INPUT)
             $data = [
                 'nomor_hpkk_beras' => $finalNomorSurat,
                 'id_mo' => $this->id_mo,
@@ -171,34 +282,25 @@ class InputBeras extends Component
                 'tanggal_pemeriksaan' => $this->tanggal_pemeriksaan,
                 'kode_sample' => $this->kode_sample,
                 'dasar_pemeriksaan' => $this->dasar_pemeriksaan,
-                
-                // Dropdowns
                 'kondisi_kemasan' => $this->kondisi_kemasan,
                 'hama' => $this->hama,
                 'dedak_katul_sekam' => $this->dedak_katul_sekam,
                 'bau' => $this->bau,
                 'bahan_kimia' => $this->bahan_kimia,
-
-                // Gunakan Null Coalescing (?? 0) agar aman
-                'ulangan_1' => $this->ulangan_1 ?? 0,
-                'ulangan_2' => $this->ulangan_2 ?? 0,
-                'ulangan_3' => $this->ulangan_3 ?? 0,
+                'ulangan_1' => $this->parseNumber($this->ulangan_1),
+                'ulangan_2' => $this->parseNumber($this->ulangan_2),
+                'ulangan_3' => $this->parseNumber($this->ulangan_3),
                 'rata_rata' => $this->rata_rata ?? 0,
-
-                'derajat_sosoh' => $this->derajat_sosoh ?? 0,
-                'butir_patah' => $this->butir_patah ?? 0,
-                'menir' => $this->menir ?? 0,
-
-                'kuantum_gabah_sesuai_mo' => $this->kuantum_gabah_sesuai_mo ?? 0,
-                'kuantum_beras' => $this->kuantum_beras ?? 0,
+                'derajat_sosoh' => $this->parseNumber($this->derajat_sosoh),
+                'butir_patah' => $this->parseNumber($this->butir_patah),
+                'menir' => $this->parseNumber($this->menir),
+                'kuantum_gabah_sesuai_mo' => $this->parseNumber($this->kuantum_gabah_sesuai_mo),
+                'kuantum_beras' => $this->parseNumber($this->kuantum_beras),
                 'rendemen_pengolahan' => $this->rendemen_pengolahan ?? 0,
-
-                'hasil_samping_menir' => $this->hasil_samping_menir ?? 0,
-                'hasil_samping_butir_patah' => $this->hasil_samping_butir_patah ?? 0,
-                'hasil_samping_dedak_katul' => $this->hasil_samping_dedak_katul ?? 0,
-                'hasil_samping_butir_kuning_rusak' => $this->hasil_samping_butir_kuning_rusak ?? 0,
-
-                // Footer
+                'hasil_samping_menir' => $this->parseNumber($this->hasil_samping_menir),
+                'hasil_samping_butir_patah' => $this->parseNumber($this->hasil_samping_butir_patah),
+                'hasil_samping_dedak_katul' => $this->parseNumber($this->hasil_samping_dedak_katul),
+                'hasil_samping_butir_kuning_rusak' => $this->parseNumber($this->hasil_samping_butir_kuning_rusak),
                 'tanggal_doc' => $this->tanggal_doc,
                 'lokasi' => $this->lokasi,
                 'mengetahui' => $this->mengetahui,
@@ -208,15 +310,17 @@ class InputBeras extends Component
                 'status' => $this->status,
             ];
 
-            // 4. Simpan ke Database
             MasHpkkBeras::create($data);
 
-            DB::commit(); // Simpan Permanen
+            DB::commit();
 
-            // 5. Beri Pesan Sukses
-            session()->flash('message', "Data HPKK Beras berhasil disimpan! No: $finalNomorSurat");
+            // SweetAlert Sukses
+            $this->dispatch('swal:success', [
+                'title' => 'Berhasil!',
+                'text'  => "Data Beras disimpan dengan No: $finalNomorSurat",
+            ]);
             
-            // 6. RESET FORM
+            // Reset Form
             $this->reset([
                 'id_mo', 'nomor_order', 'tempat_pemeriksaan', 'kode_sample', 'dasar_pemeriksaan',
                 'kondisi_kemasan', 'hama', 'dedak_katul_sekam', 'bau', 'bahan_kimia',
@@ -227,12 +331,12 @@ class InputBeras extends Component
                 'catatan', 'lokasi', 'mengetahui', 'petugas'
             ]);
             
-            // 7. Generate nomor baru untuk input selanjutnya
             $this->generateNomorSurat(true);
 
         } catch (\Exception $e) {
-            DB::rollBack(); // Batalkan jika error
-            session()->flash('error', 'Gagal menyimpan: ' . $e->getMessage());
+            DB::rollBack(); 
+            // SweetAlert Error System
+            $this->dispatch('swal:error', ['title' => 'Error System', 'text' => $e->getMessage()]);
         }
     }
 

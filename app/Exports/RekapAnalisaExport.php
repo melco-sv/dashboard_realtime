@@ -15,18 +15,21 @@ class RekapAnalisaExport implements FromCollection, WithMapping, WithEvents, Wit
 {
     protected $startDate;
     protected $endDate;
-    protected $groupId; // Properti untuk filter security
+    protected $groupId;
+    protected $tempat; // Filter Baru
+    protected $mitra;  // Filter Baru
     protected $counter = 0;
 
-    // Constructor menerima 3 parameter (termasuk groupId untuk filter cabang)
-    public function __construct($startDate, $endDate, $groupId = null)
+    // UPDATE CONSTRUCTOR: Menerima 5 Parameter
+    public function __construct($startDate, $endDate, $groupId = null, $tempat = null, $mitra = null)
     {
         $this->startDate = $startDate;
-        $this->endDate = $endDate;
-        $this->groupId = $groupId;
+        $this->endDate   = $endDate;
+        $this->groupId   = $groupId;
+        $this->tempat    = $tempat;
+        $this->mitra     = $mitra;
     }
 
-    // 1. QUERY DATA (JOIN KE TABEL CABANG)
     public function collection()
     {
         $query = DB::table('mas_hpkk_gabah as m')
@@ -34,28 +37,36 @@ class RekapAnalisaExport implements FromCollection, WithMapping, WithEvents, Wit
             ->select(
                 'm.*', 
                 'r.name_cabang', 
-                'r.parent_company' // Wilayah
+                'r.parent_company'
             )
             ->whereBetween('m.tanggal_pelaksanaan', [
                 $this->startDate . ' 00:00:00', 
                 $this->endDate . ' 23:59:59'
             ]);
 
-        // Filter Security (Jika Inspektor/Admin memilih cabang)
+        // 1. Filter Cabang
         if (!empty($this->groupId)) {
             $query->where('m.group', $this->groupId);
+        }
+
+        // 2. Filter Tempat (Baru)
+        if (!empty($this->tempat)) {
+            $query->where('m.lokasi', $this->tempat);
+        }
+
+        // 3. Filter Mitra (Baru)
+        if (!empty($this->mitra)) {
+            $query->where('m.mitra', $this->mitra);
         }
 
         return $query->orderBy('m.tanggal_pelaksanaan', 'asc')->get();
     }
 
-    // 2. DATA DIMULAI DARI BARIS KE-7 (Karena Row 1-6 untuk Header)
     public function startCell(): string
     {
         return 'A7';
     }
 
-    // 3. MAPPING DATA KE KOLOM EXCEL
     public function map($row): array
     {
         $this->counter++;
@@ -64,28 +75,26 @@ class RekapAnalisaExport implements FromCollection, WithMapping, WithEvents, Wit
         $namaCabang = !empty($row->name_cabang) ? strtoupper($row->name_cabang) : '-';
         $namaWilayah = !empty($row->parent_company) ? strtoupper($row->parent_company) : '-';
         
-        // Bersihkan angka (ganti koma jadi titik jika perlu)
         $kuantum = floatval(str_replace(',', '.', $row->jumlah_timbangan));
 
         return [
-            $this->counter,             // A: No
-            $namaWilayah,               // B: Kantor Wilayah
-            $namaCabang,                // C: Kantor Cabang
-            strtoupper($row->mitra),    // D: Pelaksana Pengolahan
-            $tanggal,                   // E: Tanggal
-            $row->no_order_pembelian,   // F: No. PO
-            $row->nomor_hpkk_gabah,     // G: No. LHPK
-            $kuantum,                   // H: Kuantum
-            $row->ulangan_1,            // I: KA 1
-            $row->ulangan_2,            // J: KA 2
-            $row->ulangan_3,            // K: KA 3
-            $row->kadar_air_rata_rata,  // L: KA Rata-rata
-            $row->kadar_hampa,          // M: Hampa
-            $row->butir_hijau,          // N: Butir Hijau
+            $this->counter,
+            $namaWilayah,
+            $namaCabang,
+            strtoupper($row->mitra),
+            $tanggal,
+            $row->no_order_pembelian,
+            $row->nomor_hpkk_gabah,
+            $kuantum,
+            $row->ulangan_1,
+            $row->ulangan_2,
+            $row->ulangan_3,
+            $row->kadar_air_rata_rata,
+            $row->kadar_hampa,
+            $row->butir_hijau,
         ];
     }
 
-    // 4. STYLING & HEADER CUSTOM (SESUAI GAMBAR)
     public function registerEvents(): array
     {
         return [
@@ -94,7 +103,7 @@ class RekapAnalisaExport implements FromCollection, WithMapping, WithEvents, Wit
                 $start = Carbon::parse($this->startDate)->isoFormat('D MMMM Y');
                 $end = Carbon::parse($this->endDate)->isoFormat('D MMMM Y');
 
-                // --- BAGIAN A: JUDUL UTAMA (Row 1-3) ---
+                // Header Judul
                 $sheet->mergeCells('A1:N1'); 
                 $sheet->setCellValue('A1', 'REKAP PELAKSANAAN PEMERIKSAAN KUALITAS DAN KUANTITAS GABAH KERING PANEN (GKP)');
                 
@@ -109,9 +118,7 @@ class RekapAnalisaExport implements FromCollection, WithMapping, WithEvents, Wit
                     'alignment' => ['horizontal' => 'center']
                 ]);
 
-                // --- BAGIAN B: HEADER TABEL (Row 5-6) ---
-                
-                // Set Judul Kolom Row 5
+                // Header Tabel
                 $sheet->setCellValue('A5', 'No');
                 $sheet->setCellValue('B5', 'Kantor Wilayah');
                 $sheet->setCellValue('C5', 'Kantor Cabang');
@@ -120,9 +127,8 @@ class RekapAnalisaExport implements FromCollection, WithMapping, WithEvents, Wit
                 $sheet->setCellValue('F5', 'No. PO');
                 $sheet->setCellValue('G5', 'No. LHPK');
                 $sheet->setCellValue('H5', 'Kuantum GKP' . PHP_EOL . '(Kg)');
-                $sheet->setCellValue('I5', 'Hasil Analisa'); // Header Group
+                $sheet->setCellValue('I5', 'Hasil Analisa');
 
-                // Merge Sel Vertikal (Row 5 ke 6)
                 $sheet->mergeCells('A5:A6');
                 $sheet->mergeCells('B5:B6');
                 $sheet->mergeCells('C5:C6');
@@ -131,59 +137,46 @@ class RekapAnalisaExport implements FromCollection, WithMapping, WithEvents, Wit
                 $sheet->mergeCells('F5:F6');
                 $sheet->mergeCells('G5:G6');
                 $sheet->mergeCells('H5:H6');
-
-                // Merge Sel Horizontal untuk "Hasil Analisa" (I5 sampai N5)
                 $sheet->mergeCells('I5:N5');
 
-                // Set Sub-Header di Row 6
                 $sheet->setCellValue('I6', 'Kadar Air 1 (%)');
                 $sheet->setCellValue('J6', 'Kadar Air 2 (%)');
                 $sheet->setCellValue('K6', 'Kadar Air 3 (%)');
                 $sheet->setCellValue('L6', 'Kadar Air Rata Rata (%)');
                 $sheet->setCellValue('M6', 'Kadar Hampa (%)');
-                $sheet->setCellValue('N6', 'Kadar Butir Hijau (%) (%)');
+                $sheet->setCellValue('N6', 'Kadar Butir Hijau (%)');
 
-                // Styling Header Tabel (Warna Abu-abu & Border)
                 $sheet->getStyle('A5:N6')->applyFromArray([
                     'font' => ['bold' => true],
                     'alignment' => ['horizontal' => 'center', 'vertical' => 'center', 'wrapText' => true],
                     'borders' => ['allBorders' => ['borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN]],
-                    'fill' => ['fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID, 'startColor' => ['argb' => 'FFD9D9D9']], // Abu-abu
+                    'fill' => ['fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID, 'startColor' => ['argb' => 'FFD9D9D9']],
                 ]);
 
-                // --- BAGIAN C: FORMATTING DATA (Row 7 ke bawah) ---
+                // Data Formatting
                 $lastRow = $sheet->getHighestRow();
                 
                 if ($lastRow >= 7) {
-                    // Border Semua Data
                     $sheet->getStyle('A7:N' . $lastRow)->applyFromArray([
                         'borders' => ['allBorders' => ['borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN]],
                         'alignment' => ['vertical' => 'center']
                     ]);
 
-                    // Format Angka Desimal (Kolom H sampai N)
-                    $sheet->getStyle('H7:H' . $lastRow)->getNumberFormat()->setFormatCode('#,##0.00'); // Kuantum
-                    $sheet->getStyle('I7:N' . $lastRow)->getNumberFormat()->setFormatCode('#,##0.00'); // Hasil Lab
+                    $sheet->getStyle('H7:H' . $lastRow)->getNumberFormat()->setFormatCode('#,##0.00');
+                    $sheet->getStyle('I7:N' . $lastRow)->getNumberFormat()->setFormatCode('#,##0.00');
+                    $sheet->getStyle('A7:A' . $lastRow)->getAlignment()->setHorizontal('center');
+                    $sheet->getStyle('H7:N' . $lastRow)->getAlignment()->setHorizontal('right');
 
-                    // Alignment
-                    $sheet->getStyle('A7:A' . $lastRow)->getAlignment()->setHorizontal('center'); // No
-                    $sheet->getStyle('H7:N' . $lastRow)->getAlignment()->setHorizontal('right');  // Angka
-
-                    // --- BAGIAN D: TOTAL ROW ---
+                    // Total Row
                     $totalRow = $lastRow + 1;
-                    
-                    // Merge Label Total (A sampai G)
                     $sheet->mergeCells('A' . $totalRow . ':G' . $totalRow);
                     $sheet->setCellValue('A' . $totalRow, 'TOTAL');
-                    
-                    // Rumus SUM Kuantum (Kolom H)
                     $sheet->setCellValue('H' . $totalRow, '=SUM(H7:H' . $lastRow . ')');
 
-                    // Styling Baris Total
                     $sheet->getStyle('A' . $totalRow . ':N' . $totalRow)->applyFromArray([
                         'font' => ['bold' => true],
                         'borders' => ['allBorders' => ['borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN]],
-                        'fill' => ['fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID, 'startColor' => ['argb' => 'FFEEEEEE']], // Abu-abu muda
+                        'fill' => ['fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID, 'startColor' => ['argb' => 'FFEEEEEE']],
                     ]);
 
                     $sheet->getStyle('A' . $totalRow)->getAlignment()->setHorizontal('right');

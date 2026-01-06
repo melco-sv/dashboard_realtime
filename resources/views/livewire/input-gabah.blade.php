@@ -118,7 +118,7 @@
              <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4 relative z-10">
                 <div>
                     <label class="block text-gray-400 text-xs font-bold mb-2">Jumlah Timbangan (Kg) <span class="text-red-500">*</span></label>
-                    <input type="number" step="0.01" wire:model="jumlah_timbangan" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 focus:border-purple-500 focus:outline-none">
+                    <input type="number" step="0.01" wire:model.blur="jumlah_timbangan" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 focus:border-purple-500 focus:outline-none">
                     @error('jumlah_timbangan') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
                 </div>
                 <div>
@@ -140,15 +140,15 @@
                     <div class="space-y-3">
                          <div class="flex items-center justify-between">
                             <label class="text-xs text-gray-400">Ulangan 1</label>
-                            <input type="number" step="0.01" wire:model.live="ulangan_1" class="w-24 bg-gray-800 border border-gray-700 text-white text-sm rounded px-2 py-1 focus:border-green-500 focus:outline-none">
+                            <input type="number" step="0.01" wire:model.blur="ulangan_1" class="w-24 bg-gray-800 border border-gray-700 text-white text-sm rounded px-2 py-1 focus:border-green-500 focus:outline-none">
                         </div>
                         <div class="flex items-center justify-between">
                             <label class="text-xs text-gray-400">Ulangan 2</label>
-                            <input type="number" step="0.01" wire:model.live="ulangan_2" class="w-24 bg-gray-800 border border-gray-700 text-white text-sm rounded px-2 py-1 focus:border-green-500 focus:outline-none">
+                            <input type="number" step="0.01" wire:model.blur="ulangan_2" class="w-24 bg-gray-800 border border-gray-700 text-white text-sm rounded px-2 py-1 focus:border-green-500 focus:outline-none">
                         </div>
                         <div class="flex items-center justify-between">
                             <label class="text-xs text-gray-400">Ulangan 3</label>
-                            <input type="number" step="0.01" wire:model.live="ulangan_3" class="w-24 bg-gray-800 border border-gray-700 text-white text-sm rounded px-2 py-1 focus:border-green-500 focus:outline-none">
+                            <input type="number" step="0.01" wire:model.blur="ulangan_3" class="w-24 bg-gray-800 border border-gray-700 text-white text-sm rounded px-2 py-1 focus:border-green-500 focus:outline-none">
                         </div>
                          <div class="flex items-center justify-between pt-2 border-t border-gray-700">
                             <label class="text-xs text-white font-bold">Rata-rata</label>
@@ -160,11 +160,11 @@
                 <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
                      <div>
                         <label class="block text-gray-400 text-xs font-bold mb-2">2. Kadar Hampa / Kotoran (%)</label>
-                        <input type="number" step="0.01" wire:model="kadar_hampa" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 focus:border-green-500 focus:outline-none">
+                        <input type="number" step="0.01" wire:model.blur="kadar_hampa" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 focus:border-green-500 focus:outline-none">
                     </div>
                     <div>
                         <label class="block text-gray-400 text-xs font-bold mb-2">3. Butir Hijau / Mengapur (%)</label>
-                        <input type="number" step="0.01" wire:model="butir_hijau" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 focus:border-green-500 focus:outline-none">
+                        <input type="number" step="0.01" wire:model.blur="butir_hijau" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 focus:border-green-500 focus:outline-none">
                     </div>
                 </div>
             </div>
@@ -224,4 +224,44 @@
             </button>
         </div>
     </form>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener('livewire:init', () => {
+            
+            // Listener untuk Error/Peringatan
+            Livewire.on('swal:error', (data) => {
+                Swal.fire({
+                    icon: 'error',
+                    title: data[0].title,
+                    text: data[0].text,
+                    background: '#1a1d2d', // Warna Card sesuai tema Anda
+                    color: '#e5e7eb',      // Warna Text Putih/Abu
+                    confirmButtonColor: '#d33', // Merah untuk error
+                    confirmButtonText: 'OK, Perbaiki',
+                    customClass: {
+                        popup: 'border border-gray-700 shadow-2xl rounded-2xl'
+                    }
+                });
+            });
+
+            // Listener untuk Sukses
+            Livewire.on('swal:success', (data) => {
+                Swal.fire({
+                    icon: 'success',
+                    title: data[0].title,
+                    text: data[0].text,
+                    background: '#1a1d2d',
+                    color: '#e5e7eb',
+                    confirmButtonColor: '#3b82f6', // Biru (sesuai tema Gabah)
+                    confirmButtonText: 'Sip, Lanjut!',
+                    customClass: {
+                        popup: 'border border-gray-700 shadow-2xl rounded-2xl'
+                    }
+                });
+            });
+
+        });
+    </script>
+
 </div>

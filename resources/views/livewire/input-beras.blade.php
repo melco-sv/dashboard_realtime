@@ -21,14 +21,18 @@
     <div class="max-w-7xl mx-auto mb-6">
         @if (session()->has('message'))
             <div class="px-4 py-3 bg-green-500/10 border border-green-500/50 text-green-400 rounded-xl text-sm font-bold flex items-center gap-3 animate-pulse">
-                <i class="bi bi-check-circle-fill text-xl"></i>
-                {{ session('message') }}
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span>{{ session('message') }}</span>
             </div>
         @endif
         @if (session()->has('error'))
             <div class="px-4 py-3 bg-red-500/10 border border-red-500/50 text-red-400 rounded-xl text-sm font-bold flex items-center gap-3">
-                <i class="bi bi-exclamation-triangle-fill text-xl"></i>
-                {{ session('error') }}
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+                <span>{{ session('error') }}</span>
             </div>
         @endif
     </div>
@@ -135,15 +139,15 @@
                 <div class="bg-[#11131f] p-4 rounded-xl border border-gray-800 space-y-3">
                      <div class="flex items-center justify-between">
                         <label class="text-xs text-gray-400">Ulangan 1</label>
-                        <input type="number" step="0.01" wire:model.live="ulangan_1" class="w-24 bg-gray-800 border border-gray-700 text-white text-sm rounded px-2 py-1 focus:border-cyan-500 focus:outline-none">
+                        <input type="number" step="0.01" wire:model.blur="ulangan_1" class="w-24 bg-gray-800 border border-gray-700 text-white text-sm rounded px-2 py-1 focus:border-cyan-500 focus:outline-none">
                     </div>
                     <div class="flex items-center justify-between">
                         <label class="text-xs text-gray-400">Ulangan 2</label>
-                        <input type="number" step="0.01" wire:model.live="ulangan_2" class="w-24 bg-gray-800 border border-gray-700 text-white text-sm rounded px-2 py-1 focus:border-cyan-500 focus:outline-none">
+                        <input type="number" step="0.01" wire:model.blur="ulangan_2" class="w-24 bg-gray-800 border border-gray-700 text-white text-sm rounded px-2 py-1 focus:border-cyan-500 focus:outline-none">
                     </div>
                     <div class="flex items-center justify-between">
                         <label class="text-xs text-gray-400">Ulangan 3</label>
-                        <input type="number" step="0.01" wire:model.live="ulangan_3" class="w-24 bg-gray-800 border border-gray-700 text-white text-sm rounded px-2 py-1 focus:border-cyan-500 focus:outline-none">
+                        <input type="number" step="0.01" wire:model.blur="ulangan_3" class="w-24 bg-gray-800 border border-gray-700 text-white text-sm rounded px-2 py-1 focus:border-cyan-500 focus:outline-none">
                     </div>
                      <div class="flex items-center justify-between pt-2 border-t border-gray-700">
                         <label class="text-xs text-white font-bold">Rata-rata</label>
@@ -159,16 +163,16 @@
                 </h2>
                 <div class="space-y-4">
                      <div>
-                        <label class="block text-gray-400 text-xs font-bold mb-2">Derajat Sosoh</label>
-                        <input type="number" step="0.01" wire:model="derajat_sosoh" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-2 focus:border-cyan-500">
+                        <label class="block text-gray-400 text-xs font-bold mb-2">Derajat Sosoh (85/95/100)</label>
+                        <input type="number" step="0.01" wire:model.blur="derajat_sosoh" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-2 focus:border-cyan-500">
                     </div>
                      <div>
-                        <label class="block text-gray-400 text-xs font-bold mb-2">Butir Patah</label>
-                        <input type="number" step="0.01" wire:model="butir_patah" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-2 focus:border-cyan-500">
+                        <label class="block text-gray-400 text-xs font-bold mb-2">Butir Patah (Max 40)</label>
+                        <input type="number" step="0.01" wire:model.blur="butir_patah" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-2 focus:border-cyan-500">
                     </div>
                      <div>
-                        <label class="block text-gray-400 text-xs font-bold mb-2">Menir</label>
-                        <input type="number" step="0.01" wire:model="menir" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-2 focus:border-cyan-500">
+                        <label class="block text-gray-400 text-xs font-bold mb-2">Menir (Max 5)</label>
+                        <input type="number" step="0.01" wire:model.blur="menir" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-2 focus:border-cyan-500">
                     </div>
                 </div>
             </div>
@@ -182,11 +186,11 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                  <div>
                     <label class="block text-gray-400 text-xs font-bold mb-2">Kuantum Gabah Sesuai MO (Kg)</label>
-                    <input type="number" step="0.01" wire:model.live="kuantum_gabah_sesuai_mo" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 focus:border-orange-500">
+                    <input type="number" step="0.01" wire:model.blur="kuantum_gabah_sesuai_mo" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 focus:border-orange-500">
                 </div>
                  <div>
                     <label class="block text-gray-400 text-xs font-bold mb-2">Kuantum Beras (Kg)</label>
-                    <input type="number" step="0.01" wire:model.live="kuantum_beras" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 focus:border-orange-500">
+                    <input type="number" step="0.01" wire:model.blur="kuantum_beras" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 focus:border-orange-500">
                 </div>
                 <div>
                     <label class="block text-gray-400 text-xs font-bold mb-2">Rendemen Pengolahan (%)</label>
@@ -266,4 +270,44 @@
             </button>
         </div>
     </form>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener('livewire:init', () => {
+            
+            // Listener untuk Error/Peringatan
+            Livewire.on('swal:error', (data) => {
+                Swal.fire({
+                    icon: 'error',
+                    title: data[0].title,
+                    text: data[0].text,
+                    background: '#1a1d2d',
+                    color: '#e5e7eb',
+                    confirmButtonColor: '#d33', 
+                    confirmButtonText: 'OK, Perbaiki',
+                    customClass: {
+                        popup: 'border border-gray-700 shadow-2xl rounded-2xl'
+                    }
+                });
+            });
+
+            // Listener untuk Sukses (Warna Tombol Hijau)
+            Livewire.on('swal:success', (data) => {
+                Swal.fire({
+                    icon: 'success',
+                    title: data[0].title,
+                    text: data[0].text,
+                    background: '#1a1d2d',
+                    color: '#e5e7eb',
+                    confirmButtonColor: '#10b981', // Hijau (Sesuai tema Beras)
+                    confirmButtonText: 'Sip, Lanjut!',
+                    customClass: {
+                        popup: 'border border-gray-700 shadow-2xl rounded-2xl'
+                    }
+                });
+            });
+
+        });
+    </script>
+
 </div>

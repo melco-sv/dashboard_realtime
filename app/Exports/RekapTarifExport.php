@@ -15,20 +15,23 @@ class RekapTarifExport implements FromCollection, WithMapping, WithEvents, WithC
 {
     protected $startDate;
     protected $endDate;
-    protected $groupId; // <--- 1. Properti Baru
+    protected $groupId;
+    protected $tempat; // Filter Baru
+    protected $mitra;  // Filter Baru
     protected $counter = 0;
 
-    // <--- 2. Update Constructor untuk menerima groupId
-    public function __construct($startDate, $endDate, $groupId = null)
+    // UPDATE CONSTRUCTOR: Menerima 5 Parameter
+    public function __construct($startDate, $endDate, $groupId = null, $tempat = null, $mitra = null)
     {
         $this->startDate = $startDate;
-        $this->endDate = $endDate;
-        $this->groupId = $groupId; // <--- Simpan ke properti
+        $this->endDate   = $endDate;
+        $this->groupId   = $groupId;
+        $this->tempat    = $tempat;
+        $this->mitra     = $mitra;
     }
 
     public function collection()
     {
-        // Gunakan Query Builder agar kita bisa menambahkan kondisi 'where' secara dinamis
         $query = DB::table('mas_hpkk_gabah as m')
             ->leftJoin('ref_cabang as r', 'm.group', '=', 'r.code_cabang')
             ->select(
@@ -41,11 +44,19 @@ class RekapTarifExport implements FromCollection, WithMapping, WithEvents, WithC
                 $this->endDate . ' 23:59:59'
             ]);
 
-        // <--- 3. LOGIKA FILTER GROUP (PENTING) --->
-        // Jika ada groupId (Inspektor atau Admin yang memilih cabang), filter datanya.
-        // Jika null (Super Admin tanpa filter), tampilkan semua.
+        // 1. Filter Cabang
         if (!empty($this->groupId)) {
             $query->where('m.group', $this->groupId);
+        }
+
+        // 2. Filter Tempat (Baru)
+        if (!empty($this->tempat)) {
+            $query->where('m.lokasi', $this->tempat);
+        }
+
+        // 3. Filter Mitra (Baru)
+        if (!empty($this->mitra)) {
+            $query->where('m.mitra', $this->mitra);
         }
 
         return $query->orderBy('m.tanggal_pelaksanaan', 'asc')->get();
@@ -60,22 +71,20 @@ class RekapTarifExport implements FromCollection, WithMapping, WithEvents, WithC
     {
         $this->counter++;
         
-        // Sanitasi Angka
         $beratRaw = str_replace(',', '.', $row->jumlah_timbangan); 
         $berat = floatval($beratRaw); 
         $tarif = 36.63; 
         $biaya = $berat * $tarif;
         $tanggal = Carbon::parse($row->tanggal_pelaksanaan)->isoFormat('D MMMM');
 
-        // Data dari SQL Join
         $namaCabang = !empty($row->name_cabang) ? strtoupper($row->name_cabang) : '-';
         $namaWilayah = !empty($row->parent_company) ? strtoupper($row->parent_company) : '-';
 
         return [
             $this->counter,             
-            $namaWilayah,               // Kolom B
-            $namaCabang,                // Kolom C
-            strtoupper($row->mitra),    // Kolom D
+            $namaWilayah,               
+            $namaCabang,                
+            strtoupper($row->mitra),    
             $tanggal,                   
             $row->no_order_pembelian,   
             $row->nomor_hpkk_gabah,     
@@ -94,10 +103,19 @@ class RekapTarifExport implements FromCollection, WithMapping, WithEvents, WithC
                 $end = Carbon::parse($this->endDate)->isoFormat('D MMMM Y');
 
                 // Header Judul
-                $sheet->mergeCells('A1:J1'); $sheet->setCellValue('A1', 'REKAP PELAKSANAAN PEMERIKSAAN KUALITAS DAN KUANTITAS GABAH KERING PANEN (GKP)');
-                $sheet->mergeCells('A2:J2'); $sheet->setCellValue('A2', 'OLEH PT SUCOFINDO');
-                $sheet->mergeCells('A3:J3'); $sheet->setCellValue('A3', 'PERIODE ' . $start . ' s.d ' . $end);
-                $sheet->getStyle('A1:A3')->applyFromArray(['font' => ['bold' => true, 'size' => 12], 'alignment' => ['horizontal' => 'center']]);
+                $sheet->mergeCells('A1:J1'); 
+                $sheet->setCellValue('A1', 'REKAP PELAKSANAAN PEMERIKSAAN KUALITAS DAN KUANTITAS GABAH KERING PANEN (GKP)');
+                
+                $sheet->mergeCells('A2:J2'); 
+                $sheet->setCellValue('A2', 'OLEH PT SUCOFINDO');
+                
+                $sheet->mergeCells('A3:J3'); 
+                $sheet->setCellValue('A3', 'PERIODE ' . $start . ' s.d ' . $end);
+                
+                $sheet->getStyle('A1:A3')->applyFromArray([
+                    'font' => ['bold' => true, 'size' => 12], 
+                    'alignment' => ['horizontal' => 'center']
+                ]);
 
                 // Header Tabel
                 $sheet->setCellValue('A5', 'No.');
@@ -112,9 +130,15 @@ class RekapTarifExport implements FromCollection, WithMapping, WithEvents, WithC
                 $sheet->setCellValue('I6', 'Tarif (Rp/Kg)');
                 $sheet->setCellValue('J6', 'Biaya (Rp)');
 
-                $sheet->mergeCells('A5:A6'); $sheet->mergeCells('B5:B6'); $sheet->mergeCells('C5:C6');
-                $sheet->mergeCells('D5:D6'); $sheet->mergeCells('E5:E6'); $sheet->mergeCells('F5:F6');
-                $sheet->mergeCells('G5:G6'); $sheet->mergeCells('H5:H6'); $sheet->mergeCells('I5:J5');
+                $sheet->mergeCells('A5:A6'); 
+                $sheet->mergeCells('B5:B6'); 
+                $sheet->mergeCells('C5:C6');
+                $sheet->mergeCells('D5:D6'); 
+                $sheet->mergeCells('E5:E6'); 
+                $sheet->mergeCells('F5:F6');
+                $sheet->mergeCells('G5:G6'); 
+                $sheet->mergeCells('H5:H6'); 
+                $sheet->mergeCells('I5:J5');
 
                 $sheet->getStyle('A5:J6')->applyFromArray([
                     'font' => ['bold' => true],
@@ -123,7 +147,7 @@ class RekapTarifExport implements FromCollection, WithMapping, WithEvents, WithC
                     'fill' => ['fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID, 'startColor' => ['argb' => 'FFD9D9D9']],
                 ]);
 
-                // Data & Total
+                // Data Formatting
                 $lastRow = $sheet->getHighestRow();
                 if ($lastRow >= 7) {
                     $sheet->getStyle('A7:J' . $lastRow)->applyFromArray([
@@ -136,7 +160,7 @@ class RekapTarifExport implements FromCollection, WithMapping, WithEvents, WithC
                     $sheet->getStyle('A7:A' . $lastRow)->getAlignment()->setHorizontal('center');
                     $sheet->getStyle('H7:J' . $lastRow)->getAlignment()->setHorizontal('right');
 
-                    // Total
+                    // Total Row
                     $totalRow = $lastRow + 1;
                     $sheet->mergeCells('A' . $totalRow . ':G' . $totalRow);
                     $sheet->setCellValue('A' . $totalRow, 'TOTAL');

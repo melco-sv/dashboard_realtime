@@ -28,6 +28,10 @@ use App\Http\Controllers\BerasPdfController;
 use App\Livewire\LaporanGkp;
 use App\Livewire\LaporanHgl;
 
+use App\Livewire\EditBeras; // Pastikan nanti component ini dibuat
+
+// Route untuk update/edit
+Route::get('/beras/edit/{id}', EditBeras::class)->name('edit.beras');
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -59,6 +63,7 @@ Route::middleware('auth')->group(function () {
     })->name('logout');
 
     // --- HALAMAN UMUM (Bisa diakses Semua User Login) ---
+    
     
     // PENTING: Nama route ini diganti jadi 'dashboard.gabah' agar sesuai dengan Login.php
     Route::get('/dashboard', DashboardGabah::class)->name('dashboard.gabah'); 
