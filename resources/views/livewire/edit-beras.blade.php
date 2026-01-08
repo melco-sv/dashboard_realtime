@@ -22,10 +22,10 @@
             <h3 class="text-green-500 font-bold text-lg mb-4 border-b border-gray-800 pb-2">A. Identitas Dokumen</h3>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
-                    <label class="text-gray-400 text-sm">Nomor HPKK</label>
-                    <input type="text" wire:model="nomor_hpkk_beras" class="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 mt-1 focus:border-green-500 outline-none">
-                    @error('nomor_hpkk_beras') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-                </div>
+                    <label class="block text-gray-400 text-xs font-bold mb-2">Nomor HPK</label>
+                        <input type="text" wire:model="nomor_hpkk_beras" readonly 
+                            class="w-full bg-gray-800/50 border border-gray-700 text-gray-300 rounded-lg px-4 py-3 cursor-not-allowed font-mono">
+                    </div>
                 <div>
                     <label class="text-gray-400 text-sm">ID MO</label>
                     <input type="text" wire:model="id_mo" class="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 mt-1 focus:border-green-500 outline-none">

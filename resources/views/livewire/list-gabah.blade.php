@@ -31,7 +31,7 @@
                         <th class="px-6 py-4">No</th>
                         <th class="px-6 py-4 text-center">Action</th>
                         <th class="px-6 py-4">No HPK LHPK</th>
-                        <th class="px-6 py-4">Status</th>
+                        <!-- <th class="px-6 py-4">Status</th> -->
                         <th class="px-6 py-4">Bln Sesuai PO</th>
                         <th class="px-6 py-4">Tgl Pelaksanaan</th>
                         <th class="px-6 py-4">Total Penerimaan</th>
@@ -71,9 +71,9 @@
 
                         <td class="px-6 py-4 font-mono text-gray-300">{{ $item->nomor_hpkk_gabah }}</td>
                         
-                        <td class="px-6 py-4 font-bold {{ $item->status_data == 'Approve' ? 'text-green-400' : 'text-yellow-400' }}">
+                        <!-- <td class="px-6 py-4 font-bold {{ $item->status_data == 'Approve' ? 'text-green-400' : 'text-yellow-400' }}">
                             {{ $item->status_data ?? '-' }}
-                        </td>
+                        </td> -->
 
                         <td class="px-6 py-4 text-center">{{ date('m', strtotime($item->tanggal_pelaksanaan)) }}</td>
                         <td class="px-6 py-4">{{ $item->tanggal_pelaksanaan }}</td>

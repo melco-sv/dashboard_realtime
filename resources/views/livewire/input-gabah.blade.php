@@ -99,8 +99,8 @@
                     <label class="block text-gray-400 text-xs font-bold mb-2">Hama Penyakit</label>
                     <select wire:model="hama_penyakit" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 focus:border-purple-500 focus:outline-none">
                         <option value="">Pilih...</option>
-                        <option value="Ada">Ada</option>
-                        <option value="Tidak Ada">Tidak Ada</option>
+                        <option value="Ada">Bebas</option>
+                        <option value="Tidak Ada">Tidak Bebas</option>
                     </select>
                 </div>
                  <div>

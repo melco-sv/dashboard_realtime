@@ -64,6 +64,7 @@
             <tr><td align="center">10</td><td>Pemeriksaan Butir Menir</td><td align="center">v</td><td>{{ $d->menir }}%</td></tr>
         </tbody>
     </table>
+  <p style="font-size: 10px;">Kesimpulan : Pelaksanaan pemeriksaan kualitas beras *) sesuai/tidak sesuai dengan standard pemeriksaan.<br>Note : *) coret yang tidak perlu</p>
 
     <table class="signature-table">
         <tr>

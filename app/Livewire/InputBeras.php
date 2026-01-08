@@ -64,11 +64,11 @@ class InputBeras extends Component
 
         // 1. CEK ULANGAN 1, 2, 3 (Range 10.01 - 14)
         if (in_array($propertyName, ['ulangan_1', 'ulangan_2', 'ulangan_3'])) {
-            if ($val > 0 && ($val < 10.01 || $val > 14)) {
+            if ($val > 0 && ($val < 10 || $val > 14)) {
                 // Tampilkan SweetAlert Error
                 $this->dispatch('swal:error', [
                     'title' => 'Input Diluar Batas!',
-                    'text'  => "Nilai $propertyName harus diantara 10.01 s/d 14!",
+                    'text'  => "Nilai $propertyName harus diantara 10 s/d 14!",
                 ]);
                 
                 // Auto Reset: Kosongkan inputan
@@ -79,10 +79,10 @@ class InputBeras extends Component
 
         // 2. CEK DERAJAT SOSOH (Harus 85, 95, 100)
         if ($propertyName == 'derajat_sosoh') {
-            if ($val > 0 && !in_array($val, [85, 95, 100])) {
+            if ($val > 0 && !in_array($val, [95, 100])) {
                 $this->dispatch('swal:error', [
                     'title' => 'Data Invalid!',
-                    'text'  => 'Derajat Sosoh hanya boleh bernilai 85, 95, atau 100!',
+                    'text'  => 'Derajat Sosoh hanya boleh bernilai 95, atau 100!',
                 ]);
                 
                 // Auto Reset
@@ -92,10 +92,10 @@ class InputBeras extends Component
 
         // 3. CEK BUTIR PATAH (Max 40)
         if ($propertyName == 'butir_patah') {
-            if ($val > 40) {
+            if ($val > 25) {
                 $this->dispatch('swal:error', [
                     'title' => 'Input Diluar Batas!',
-                    'text'  => 'Butir Patah tidak boleh melebihi 40%!',
+                    'text'  => 'Butir Patah tidak boleh melebihi 25%!',
                 ]);
                 
                 // Auto Reset
@@ -105,10 +105,10 @@ class InputBeras extends Component
 
         // 4. CEK MENIR (Max 5)
         if ($propertyName == 'menir') {
-            if ($val > 5) {
+            if ($val > 2) {
                 $this->dispatch('swal:error', [
                     'title' => 'Input Diluar Batas!',
-                    'text'  => 'Menir tidak boleh melebihi 5%!',
+                    'text'  => 'Menir tidak boleh melebihi 2%!',
                 ]);
                 
                 // Auto Reset
@@ -242,16 +242,16 @@ class InputBeras extends Component
         $val_u2 = $this->parseNumber($this->ulangan_2);
         $val_u3 = $this->parseNumber($this->ulangan_3);
 
-        if (($val_u1 < 10.01 || $val_u1 > 14) || 
-            ($val_u2 < 10.01 || $val_u2 > 14) || 
-            ($val_u3 < 10.01 || $val_u3 > 14)) {
+        if (($val_u1 < 10 || $val_u1 > 14) || 
+            ($val_u2 < 10 || $val_u2 > 14) || 
+            ($val_u3 < 10 || $val_u3 > 14)) {
             
-            $this->dispatch('swal:error', ['title' => 'Data Invalid!', 'text' => 'Nilai Ulangan harus 10.01 - 14!']); 
+            $this->dispatch('swal:error', ['title' => 'Data Invalid!', 'text' => 'Nilai Ulangan harus 10 - 14!']); 
             return;
         }
 
-        if (!in_array($this->parseNumber($this->derajat_sosoh), [85, 95, 100])) {
-            $this->dispatch('swal:error', ['title' => 'Data Invalid!', 'text' => 'Derajat Sosoh harus 85, 95, atau 100!']); 
+        if (!in_array($this->parseNumber($this->derajat_sosoh), [ 95, 100])) {
+            $this->dispatch('swal:error', ['title' => 'Data Invalid!', 'text' => 'Derajat Sosoh harus  95, atau 100!']); 
             return;
         }
 
@@ -260,8 +260,8 @@ class InputBeras extends Component
             return;
         }
 
-        if ($this->parseNumber($this->menir) > 5) {
-            $this->dispatch('swal:error', ['title' => 'Data Invalid!', 'text' => 'Menir melebihi 5%!']); 
+        if ($this->parseNumber($this->menir) > 2) {
+            $this->dispatch('swal:error', ['title' => 'Data Invalid!', 'text' => 'Menir melebihi 2%!']); 
             return;
         }
 

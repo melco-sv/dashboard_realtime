@@ -107,9 +107,9 @@
                 {{ strtoupper($d->lokasi) }}, {{ \Carbon\Carbon::parse($d->tanggal_doc)->isoFormat('D MMMM Y') }}<br>
                 Petugas<br><br><br><br><br>
                 <b>{{ $d->petugas }}</b><br>
-                <br>
+                <!-- <br>
                 Mengetahui<br>
-                <b>{{ $d->mengetahui }}</b>
+                <b>{{ $d->mengetahui }}</b> -->
             </td>
         </tr>
     </table>

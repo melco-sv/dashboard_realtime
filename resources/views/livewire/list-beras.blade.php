@@ -31,12 +31,14 @@
                         <th class="px-6 py-4">No</th>
                         <th class="px-6 py-4 text-center">Action</th>
                         <th class="px-6 py-4">NO HPK / LHPK</th>
-                        <th class="px-6 py-4">Status</th>
+                        <!-- <th class="px-6 py-4">Status</th> -->
                         <th class="px-6 py-4">Tanggal Pelaksanaan</th>
                         <th class="px-6 py-4">Lokasi</th>
                         <th class="px-6 py-4">Kode Sampel</th>
                         <th class="px-6 py-4">Tempat Pemeriksaan</th>
                         <th class="px-6 py-4">Nomor Manufacturing Order</th>
+                        <th class="px-6 py-4 text-right">Rencana Kuantum</th>
+                        <th class="px-6 py-4 text-right">Hasil Kuantum</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-800">
@@ -63,12 +65,20 @@
                         </td>
 
                         <td class="px-6 py-4 font-mono text-gray-300">{{ $item->nomor_hpkk_beras }}</td>
-                        <td class="px-6 py-4 font-bold {{ $item->status == 'Approve' ? 'text-green-400' : 'text-yellow-400' }}">{{ $item->status }}</td>
+                        <!-- <td class="px-6 py-4 font-bold {{ $item->status == 'Approve' ? 'text-green-400' : 'text-yellow-400' }}">{{ $item->status }}</td> -->
+
                         <td class="px-6 py-4">{{ $item->tanggal_pemeriksaan }}</td>
                         <td class="px-6 py-4 uppercase">{{ $item->lokasi }}</td>
                         <td class="px-6 py-4 font-mono text-xs">{{ $item->kode_sample }}</td>
                         <td class="px-6 py-4 uppercase">{{ $item->tempat_pemeriksaan }}</td>
                         <td class="px-6 py-4 font-mono text-gray-400">{{ $item->id_mo }}</td>
+                        <td class="px-6 py-4 text-right font-mono text-gray-300">
+            {{ number_format($item->kuantum_gabah_sesuai_mo, 2, ',', '.') }} Kg
+        </td>
+        
+        <td class="px-6 py-4 text-right font-mono font-bold text-green-400">
+            {{ number_format($item->kuantum_beras, 2, ',', '.') }} Kg
+        </td>
                     </tr>
                     @empty
                     <tr>
