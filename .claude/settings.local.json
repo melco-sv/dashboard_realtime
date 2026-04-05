@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(rm \"c:/dashboard-saya/app/Http/Controllers/AiReportController.php\")",
+      "Bash(rm \"c:/dashboard-saya/resources/views/ai-dashboard.blade.php\")"
+    ]
+  }
+}

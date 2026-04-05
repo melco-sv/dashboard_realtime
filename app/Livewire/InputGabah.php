@@ -19,33 +19,33 @@ class InputGabah extends Component
     public $tanggal_pelaksanaan;
     public $jenis_alat_angkut;
     public $nomor_registrasi_alat_angkut;
-    public $hama_penyakit; 
-    public $metode_timbang; 
+    public $hama_penyakit;
+    public $metode_timbang;
     public $jumlah_timbangan;
     public $kode_sample;
-    
+
     // Data Lab
     public $ulangan_1;
     public $ulangan_2;
     public $ulangan_3;
-    public $kadar_air_rata_rata; 
+    public $kadar_air_rata_rata;
     public $kadar_hampa;
     public $butir_hijau;
-    
+
     // Footer Form
     public $tanggal_doc;
     public $lokasi;
     public $mengetahui;
     public $petugas;
     public $catatan;
-    public $group; 
+    public $group;
 
     // === MOUNT ===
     public function mount()
     {
         $this->tanggal_pelaksanaan = date('Y-m-d');
         $this->tanggal_doc = date('Y-m-d');
-        
+
         if (Auth::check()) {
             $this->group = Auth::user()->group;
         }
@@ -66,7 +66,7 @@ class InputGabah extends Component
                     'title' => 'Input Diluar Batas!',
                     'text'  => "Nilai $propertyName harus berada di rentang 10 s/d 38!",
                 ]);
-                
+
                 // Auto Reset: Kosongkan inputan
                 $this->{$propertyName} = null;
             }
@@ -80,7 +80,7 @@ class InputGabah extends Component
                     'title' => 'Input Diluar Batas!',
                     'text'  => 'Kadar Hampa tidak boleh melebihi 40%!',
                 ]);
-                
+
                 // Auto Reset
                 $this->kadar_hampa = null;
             }
@@ -93,7 +93,7 @@ class InputGabah extends Component
                     'title' => 'Input Diluar Batas!',
                     'text'  => 'Butir Hijau tidak boleh melebihi 30%!',
                 ]);
-                
+
                 // Auto Reset
                 $this->butir_hijau = null;
             }
@@ -106,12 +106,22 @@ class InputGabah extends Component
         $val1 = $this->parseNumber($this->ulangan_1);
         $val2 = $this->parseNumber($this->ulangan_2);
         $val3 = $this->parseNumber($this->ulangan_3);
-        
-        $count = 0; $sum = 0;
-        if ($val1 > 0) { $sum += $val1; $count++; }
-        if ($val2 > 0) { $sum += $val2; $count++; }
-        if ($val3 > 0) { $sum += $val3; $count++; }
-        
+
+        $count = 0;
+        $sum = 0;
+        if ($val1 > 0) {
+            $sum += $val1;
+            $count++;
+        }
+        if ($val2 > 0) {
+            $sum += $val2;
+            $count++;
+        }
+        if ($val3 > 0) {
+            $sum += $val3;
+            $count++;
+        }
+
         $this->kadar_air_rata_rata = $count > 0 ? round($sum / $count, 2) : 0;
     }
 
@@ -119,7 +129,7 @@ class InputGabah extends Component
     private function parseNumber($value)
     {
         if (empty($value)) return 0;
-        $cleanValue = str_replace(',', '.', $value); 
+        $cleanValue = str_replace(',', '.', $value);
         return floatval($cleanValue);
     }
 
@@ -129,16 +139,16 @@ class InputGabah extends Component
         $bulan = date('m');
         $tahun = date('Y');
         $groupCode = $this->group ?? '0000';
-        
+
         $query = MasHpkkGabah::whereYear('tanggal_pelaksanaan', $tahun)
-                     ->where('group', $this->group);
-        
+            ->where('group', $this->group);
+
         $count = $query->count();
         $nextNo = $count + 1;
-        
+
         $noUrut = sprintf("%05d", $nextNo);
         $romawi = $this->getRomawi($bulan);
-        
+
         $generated = "$noUrut/GPK/$groupCode/SCI/$romawi/$tahun";
 
         if ($preview) {
@@ -185,9 +195,8 @@ class InputGabah extends Component
                 'lokasi'                       => 'required',
                 'mengetahui'                   => 'required',
                 'petugas'                      => 'required',
-                'catatan'                      => 'nullable', 
+                'catatan'                      => 'nullable',
             ]);
-            
         } catch (ValidationException $e) {
             // SweetAlert Error jika form belum lengkap
             $this->dispatch('swal:error', [
@@ -202,21 +211,22 @@ class InputGabah extends Component
         $val_u2 = $this->parseNumber($this->ulangan_2);
         $val_u3 = $this->parseNumber($this->ulangan_3);
 
-        if (($val_u1 < 10 || $val_u1 > 38) || 
-            ($val_u2 < 10 || $val_u2 > 38) || 
-            ($val_u3 < 10 || $val_u3 > 38)) {
-            
-            $this->dispatch('swal:error', ['title' => 'Data Invalid!', 'text' => 'Nilai Ulangan harus 10-38!']); 
+        if (($val_u1 < 10 || $val_u1 > 38) ||
+            ($val_u2 < 10 || $val_u2 > 38) ||
+            ($val_u3 < 10 || $val_u3 > 38)
+        ) {
+
+            $this->dispatch('swal:error', ['title' => 'Data Invalid!', 'text' => 'Nilai Ulangan harus 10-38!']);
             return;
         }
 
         if ($this->parseNumber($this->kadar_hampa) > 40) {
-            $this->dispatch('swal:error', ['title' => 'Data Invalid!', 'text' => 'Kadar Hampa > 40%!']); 
+            $this->dispatch('swal:error', ['title' => 'Data Invalid!', 'text' => 'Kadar Hampa > 40%!']);
             return;
         }
 
         if ($this->parseNumber($this->butir_hijau) > 30) {
-            $this->dispatch('swal:error', ['title' => 'Data Invalid!', 'text' => 'Butir Hijau > 30%!']); 
+            $this->dispatch('swal:error', ['title' => 'Data Invalid!', 'text' => 'Butir Hijau > 30%!']);
             return;
         }
 
@@ -266,16 +276,29 @@ class InputGabah extends Component
             ]);
 
             $this->reset([
-                'mitra', 'pengirim', 'jenis_alat_angkut', 
-                'nomor_registrasi_alat_angkut', 'jumlah_timbangan', 
-                'ulangan_1', 'ulangan_2', 'ulangan_3', 
-                'kadar_air_rata_rata', 'kadar_hampa', 'butir_hijau',
-                'no_order_pembelian', 'nomor_order', 'kode_sample', 'catatan',
-                'metode_timbang','lokasi','mengetahui','petugas', 'hama_penyakit'
+                'mitra',
+                'pengirim',
+                'jenis_alat_angkut',
+                'nomor_registrasi_alat_angkut',
+                'jumlah_timbangan',
+                'ulangan_1',
+                'ulangan_2',
+                'ulangan_3',
+                'kadar_air_rata_rata',
+                'kadar_hampa',
+                'butir_hijau',
+                'no_order_pembelian',
+                'nomor_order',
+                'kode_sample',
+                'catatan',
+                'metode_timbang',
+                'lokasi',
+                'mengetahui',
+                'petugas',
+                'hama_penyakit'
             ]);
-            
-            $this->generateNomorSurat(true);
 
+            $this->generateNomorSurat(true);
         } catch (\Exception $e) {
             DB::rollBack();
             // SweetAlert Error System

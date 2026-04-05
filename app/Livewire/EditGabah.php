@@ -22,14 +22,14 @@ class EditGabah extends Component
     public $metode_timbang;
     public $jumlah_timbangan;
     public $kode_sample;
-    
+
     public $ulangan_1;
     public $ulangan_2;
     public $ulangan_3;
     public $kadar_air_rata_rata;
     public $kadar_hampa;
     public $butir_hijau;
-    
+
     public $tanggal_doc;
     public $lokasi;
     public $mengetahui;
@@ -53,7 +53,7 @@ class EditGabah extends Component
         $this->jenis_alat_angkut = $data->jenis_alat_angkut;
         $this->nomor_registrasi_alat_angkut = $data->nomor_registrasi_alat_angkut;
         $this->hama_penyakit = $data->hama_penyakit;
-        
+
         // Logika Reverse Metode Timbang
         if ($data->weighbridge == 'Weightbridge') {
             $this->metode_timbang = 'Weightbridge';
@@ -69,7 +69,7 @@ class EditGabah extends Component
         $this->kadar_air_rata_rata = $data->kadar_air_rata_rata;
         $this->kadar_hampa = $data->kadar_hampa;
         $this->butir_hijau = $data->butir_hijau;
-        
+
         $this->tanggal_doc = $data->tanggal_doc;
         $this->lokasi = $data->lokasi;
         $this->mengetahui = $data->mengetahui;
@@ -108,16 +108,16 @@ class EditGabah extends Component
             $wbVal = null;
             $nonWbVal = null;
             if ($this->metode_timbang == 'Weightbridge') {
-                $wbVal = 'Weightbridge'; 
+                $wbVal = 'Weightbridge';
             } else {
-                $nonWbVal = $this->metode_timbang; 
+                $nonWbVal = $this->metode_timbang;
             }
 
             $data->update([
                 // Nomor HPKK biasanya TIDAK diubah saat edit agar konsisten, 
                 // tapi jika mau diubah, uncomment baris bawah:
                 // 'nomor_hpkk_gabah' => $this->nomor_hpkk_gabah,
-                
+
                 'no_order_pembelian' => $this->no_order_pembelian,
                 'nomor_order' => $this->nomor_order,
                 'mitra' => $this->mitra,
@@ -126,7 +126,7 @@ class EditGabah extends Component
                 'jenis_alat_angkut' => $this->jenis_alat_angkut,
                 'nomor_registrasi_alat_angkut' => $this->nomor_registrasi_alat_angkut,
                 'hama_penyakit' => $this->hama_penyakit,
-                
+
                 'weighbridge' => $wbVal,
                 'non_weighbridge' => $nonWbVal,
                 'jumlah_timbangan' => $this->jumlah_timbangan,
@@ -138,7 +138,7 @@ class EditGabah extends Component
                 'kadar_air_rata_rata' => $this->kadar_air_rata_rata,
                 'kadar_hampa' => $this->kadar_hampa,
                 'butir_hijau' => $this->butir_hijau,
-                
+
                 'tanggal_doc' => $this->tanggal_doc,
                 'lokasi' => $this->lokasi,
                 'mengetahui' => $this->mengetahui,
@@ -149,7 +149,6 @@ class EditGabah extends Component
 
             session()->flash('message', 'Data berhasil diperbarui!');
             return redirect()->route('list.gabah');
-
         } catch (\Exception $e) {
             session()->flash('error', 'Gagal update: ' . $e->getMessage());
         }

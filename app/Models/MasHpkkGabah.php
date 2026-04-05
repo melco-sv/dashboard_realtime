@@ -11,15 +11,15 @@ class MasHpkkGabah extends Model
     use HasFactory;
 
     protected $table = 'mas_hpkk_gabah';
-    protected $primaryKey = 'id_hpkk_gabah'; // Pastikan ini sesuai dengan PK di database
-    
+    protected $primaryKey = 'id_po'; // Pastikan ini sesuai dengan PK di database
+
     // KUNCI PENTING: guarded kosong [] mengizinkan 'Mass Assignment'
     // Ini wajib agar MasHpkkGabah::create($data) di Livewire bisa berjalan
     protected $guarded = [];
 
     // Set ke 'true' jika tabel Anda memiliki kolom created_at dan updated_at
     // Set ke 'false' jika tidak punya
-    public $timestamps = false; 
+    public $timestamps = false;
 
     // OPTIONAL TAPI BAGUS: Casting Data
     // Mengubah data string dari database menjadi tipe data asli (Date/Float)

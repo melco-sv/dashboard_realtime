@@ -17,7 +17,7 @@ class LaporanHgl extends Component
     // --- FILTER ---
     public $tgl_mulai;
     public $tgl_akhir;
-    public $filter_cabang = ''; 
+    public $filter_cabang = '';
     public $filter_tempat = ''; // Filter Baru: Tempat Pemeriksaan
 
     // --- STATISTIK ---
@@ -28,7 +28,7 @@ class LaporanHgl extends Component
     {
         $this->tgl_mulai = date('Y-m-01');
         $this->tgl_akhir = date('Y-m-d');
-        
+
         // Security: Jika User adalah Inspektor, kunci filter cabang ke grupnya sendiri
         if (Auth::check() && Auth::user()->level == 'Inspektor') {
             $this->filter_cabang = Auth::user()->group;
@@ -50,7 +50,7 @@ class LaporanHgl extends Component
         $query = DB::table('mas_hpkk_beras as m')
             ->leftJoin('ref_cabang as r', 'm.group', '=', 'r.code_cabang')
             ->whereBetween('m.tanggal_pemeriksaan', [
-                $this->tgl_mulai . ' 00:00:00', 
+                $this->tgl_mulai . ' 00:00:00',
                 $this->tgl_akhir . ' 23:59:59'
             ]);
 
@@ -75,7 +75,7 @@ class LaporanHgl extends Component
         $query = $this->getBaseQuery();
 
         $this->total_record = $query->count();
-        
+
         // Handling koma pada jumlah kuantum (cth: 10,50 menjadi 10.50)
         $this->total_penerimaan = $query->sum(DB::raw("CAST(REPLACE(kuantum_beras, ',', '.') AS DECIMAL(15,2))"));
     }
@@ -86,16 +86,16 @@ class LaporanHgl extends Component
         // A. Ambil Data Utama (Tabel)
         $query = $this->getBaseQuery()
             ->select(
-                'm.*', 
-                'r.name_cabang', 
-                'r.parent_company' 
+                'm.*',
+                'r.name_cabang',
+                'r.parent_company'
             )
             ->orderBy('m.tanggal_pemeriksaan', 'asc');
 
         $data_laporan = $query->simplePaginate(50);
 
         // B. Siapkan Data untuk Dropdown Filter
-        
+
         // 1. List Cabang (Khusus Admin)
         $list_cabang = [];
         if (Auth::check() && Auth::user()->level !== 'Inspektor') {
@@ -128,14 +128,14 @@ class LaporanHgl extends Component
     public function downloadExcel()
     {
         // Tentukan Group ID
-        $groupId = (Auth::check() && Auth::user()->level == 'Inspektor') 
-                    ? Auth::user()->group 
-                    : $this->filter_cabang;
+        $groupId = (Auth::check() && Auth::user()->level == 'Inspektor')
+            ? Auth::user()->group
+            : $this->filter_cabang;
 
         // Pastikan Class RekapHglExport Anda menerima parameter filter di constructor
         return Excel::download(new RekapHglExport(
-            $this->tgl_mulai, 
-            $this->tgl_akhir, 
+            $this->tgl_mulai,
+            $this->tgl_akhir,
             $groupId,
             $this->filter_tempat // Kirim filter tempat
         ), 'Rekap_HGL.xlsx');
@@ -146,10 +146,10 @@ class LaporanHgl extends Component
     {
         // Gunakan getBaseQuery agar hasil PDF sama persis dengan tabel
         $data = $this->getBaseQuery()
-            ->select('m.*', 'r.name_cabang', 'r.parent_company') 
+            ->select('m.*', 'r.name_cabang', 'r.parent_company')
             ->orderBy('m.tanggal_pemeriksaan', 'asc')
             ->get();
-        
+
         $pdf = Pdf::loadView('pdf.laporan_rekap_hgl', [
             'data'   => $data,
             'start'  => $this->tgl_mulai,

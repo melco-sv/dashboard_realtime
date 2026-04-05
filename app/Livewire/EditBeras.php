@@ -36,12 +36,12 @@ class EditBeras extends Component
     public $derajat_sosoh;
     public $butir_patah;
     public $menir;
-    
+
     // --- GROUP 4: Kuantum & Hasil Samping ---
     public $kuantum_gabah_sesuai_mo;
     public $kuantum_beras;
     public $rendemen_pengolahan;
-    
+
     public $hasil_samping_menir;
     public $hasil_samping_butir_patah;
     public $hasil_samping_dedak_katul;
@@ -58,10 +58,10 @@ class EditBeras extends Component
     public function mount($id)
     {
         $data = MasHpkkBeras::findOrFail($id);
-        
+
         // Mapping semua kolom database ke variable public
-        $this->fill($data->toArray()); 
-        
+        $this->fill($data->toArray());
+
         // Khusus ID harus diset manual jika fill() tidak menangkap primary key yang protected
         $this->id_hpkk_beras = $data->id_hpkk_beras;
     }
@@ -83,14 +83,14 @@ class EditBeras extends Component
                 'tempat_pemeriksaan' => $this->tempat_pemeriksaan,
                 'lokasi' => $this->lokasi,
                 'periode' => $this->periode,
-                
+
                 'dasar_pemeriksaan' => $this->dasar_pemeriksaan,
                 'kondisi_kemasan' => $this->kondisi_kemasan,
                 'hama' => $this->hama,
                 'dedak_katul_sekam' => $this->dedak_katul_sekam,
                 'bau' => $this->bau,
                 'bahan_kimia' => $this->bahan_kimia,
-                
+
                 'ulangan_1' => $this->ulangan_1,
                 'ulangan_2' => $this->ulangan_2,
                 'ulangan_3' => $this->ulangan_3,
@@ -98,16 +98,16 @@ class EditBeras extends Component
                 'derajat_sosoh' => $this->derajat_sosoh,
                 'butir_patah' => $this->butir_patah,
                 'menir' => $this->menir,
-                
+
                 'kuantum_gabah_sesuai_mo' => $this->kuantum_gabah_sesuai_mo,
                 'kuantum_beras' => $this->kuantum_beras,
                 'rendemen_pengolahan' => $this->rendemen_pengolahan,
-                
+
                 'hasil_samping_menir' => $this->hasil_samping_menir,
                 'hasil_samping_butir_patah' => $this->hasil_samping_butir_patah,
                 'hasil_samping_dedak_katul' => $this->hasil_samping_dedak_katul,
                 'hasil_samping_butir_kuning_rusak' => $this->hasil_samping_butir_kuning_rusak,
-                
+
                 'catatan' => $this->catatan,
                 'petugas' => $this->petugas,
                 'mengetahui' => $this->mengetahui,
@@ -116,10 +116,9 @@ class EditBeras extends Component
             ]);
 
             session()->flash('message', 'Data HPKK Beras berhasil diperbarui.');
-            
+
             // Redirect kembali ke list
             return $this->redirect(route('list.beras'), navigate: true);
-
         } catch (\Exception $e) {
             session()->flash('error', 'Gagal update: ' . $e->getMessage());
         }

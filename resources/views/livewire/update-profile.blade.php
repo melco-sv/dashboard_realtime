@@ -7,17 +7,17 @@
     </div>
 
     @if (session()->has('message'))
-        <div class="bg-green-500/10 border border-green-500/50 text-green-400 p-4 rounded-xl flex items-center gap-3 animate-pulse">
-            <i class="fa-solid fa-circle-check"></i>
-            <span class="font-medium">{{ session('message') }}</span>
-        </div>
+    <div class="bg-green-500/10 border border-green-500/50 text-green-400 p-4 rounded-xl flex items-center gap-3 animate-pulse">
+        <i class="fa-solid fa-circle-check"></i>
+        <span class="font-medium">{{ session('message') }}</span>
+    </div>
     @endif
 
     <div class="bg-[#1a1d2d] border border-gray-700/50 rounded-xl p-6 shadow-2xl">
         <form wire:submit.prevent="update" class="space-y-6">
-            
+
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                
+
                 <div class="space-y-1">
                     <label class="text-xs font-bold text-gray-400 uppercase tracking-wider">Username</label>
                     <input type="text" wire:model="username" readonly disabled
@@ -86,7 +86,7 @@
                 <h3 class="text-sm font-bold text-white mb-4 flex items-center gap-2">
                     <i class="fa-solid fa-lock text-orange-500"></i> Change Password
                 </h3>
-                
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-[#0b0c15] p-4 rounded-xl border border-gray-800">
                     <div class="space-y-1">
                         <label class="text-xs font-bold text-gray-400">New Password</label>
@@ -106,7 +106,7 @@
             </div>
 
             <div class="flex justify-end pt-4">
-                <button type="submit" 
+                <button type="submit"
                     class="flex items-center gap-2 bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-500 hover:to-red-500 text-white font-bold py-3 px-8 rounded-xl shadow-lg shadow-orange-500/20 transition-all transform hover:scale-105">
                     <i class="fa-solid fa-floppy-disk"></i>
                     Save Changes

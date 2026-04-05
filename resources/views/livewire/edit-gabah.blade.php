@@ -1,5 +1,5 @@
 <div class="min-h-screen bg-[#0b0c15] p-6 text-white font-['Space_Grotesk']">
-    
+
     <div class="max-w-7xl mx-auto mb-8 flex justify-between items-center border-b border-gray-800 pb-4">
         <div>
             <h1 class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-yellow-400 to-orange-600">
@@ -13,16 +13,16 @@
         <div class="absolute top-0 right-0 w-64 h-64 bg-orange-600/5 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
 
         <form wire:submit.prevent="update" class="relative z-10">
-            
+
             <div class="mb-8">
                 <h3 class="text-blue-400 font-bold uppercase tracking-widest text-xs mb-4 border-l-2 border-blue-500 pl-3">
                     Informasi Dokumen & Pengiriman
                 </h3>
-                
+
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div class="md:col-span-1">
                         <label class="block text-gray-400 text-xs font-bold mb-2">Nomor HPK/LHPK</label>
-                        <input type="text" wire:model="nomor_hpkk_gabah" readonly 
+                        <input type="text" wire:model="nomor_hpkk_gabah" readonly
                             class="w-full bg-gray-800/50 border border-gray-700 text-gray-300 rounded-lg px-4 py-3 cursor-not-allowed font-mono">
                     </div>
 
@@ -50,7 +50,7 @@
             </div>
 
             <div class="mb-8">
-                 <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
                     <div>
                         <label class="block text-gray-400 text-xs font-bold mb-2">Jenis Kendaraan</label>
                         <input type="text" wire:model="jenis_alat_angkut" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 focus:border-green-500 focus:outline-none">
@@ -128,5 +128,10 @@
 
         </form>
     </div>
-    <style>.dark-date-input::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }</style>
+    <style>
+        .dark-date-input::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+            cursor: pointer;
+        }
+    </style>
 </div>

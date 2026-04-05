@@ -15,12 +15,15 @@ class ListGabah extends Component
     public function render()
     {
         $data = MasHpkkGabah::query()
-            ->when($this->search, function($q) {
-                $q->where('nomor_hpkk_gabah', 'like', '%'.$this->search.'%')
-                  ->orWhere('mitra', 'like', '%'.$this->search.'%')
-                  ->orWhere('kode_sample', 'like', '%'.$this->search.'%');
+            ->when($this->search, function ($q) {
+                $q->where('nomor_hpkk_gabah', 'like', '%' . $this->search . '%')
+                    ->orWhere('mitra', 'like', '%' . $this->search . '%')
+                    ->orWhere('kode_sample', 'like', '%' . $this->search . '%');
             })
-            ->orderBy('id_hpkk_gabah', 'desc')
+            // --- PERBAIKAN DI SINI ---
+            // Ganti 'id_hpkk_gabah' menjadi 'id_po'
+            ->orderBy('id_po', 'desc')
+            // -------------------------
             ->paginate(10);
 
         return view('livewire.list-gabah', [

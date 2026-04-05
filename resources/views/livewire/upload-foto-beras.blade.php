@@ -1,7 +1,7 @@
 <div class="min-h-screen bg-[#0b0c15] p-6 text-white font-['Space_Grotesk'] flex items-center justify-center">
-    
+
     <div class="w-full max-w-2xl bg-gray-900 border border-gray-800 rounded-2xl p-8 shadow-2xl relative overflow-hidden">
-        
+
         <div class="absolute top-0 right-0 w-64 h-64 bg-green-600/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
 
         <div class="mb-8 border-b border-gray-800 pb-4">
@@ -12,10 +12,10 @@
         </div>
 
         <form wire:submit.prevent="save" class="relative z-10 space-y-6">
-            
+
             <div>
                 <label class="block text-gray-400 text-xs font-bold mb-2 uppercase tracking-wider">Id Hpkk Beras</label>
-                <input type="text" wire:model="id_hpkk_beras" readonly 
+                <input type="text" wire:model="id_hpkk_beras" readonly
                     class="w-full bg-gray-800/50 border border-gray-700 text-gray-500 rounded-xl px-4 py-3 cursor-not-allowed font-mono">
             </div>
 
@@ -28,25 +28,27 @@
 
             <div>
                 <label class="block text-gray-400 text-xs font-bold mb-2 uppercase tracking-wider">File Photo (Max 10MB)</label>
-                
+
                 <div class="flex items-center justify-center w-full">
                     <label for="dropzone-file" class="flex flex-col items-center justify-center w-full h-48 border-2 border-gray-700 border-dashed rounded-xl cursor-pointer bg-gray-800 hover:bg-gray-750 hover:border-green-500 transition-all relative overflow-hidden group">
-                        
+
                         @if ($photo)
-                            <img src="{{ $photo->temporaryUrl() }}" class="absolute inset-0 w-full h-full object-cover opacity-50 group-hover:opacity-30 transition-opacity">
-                            <div class="z-10 flex flex-col items-center justify-center pt-5 pb-6">
-                                <p class="text-sm text-green-400 font-bold">Foto Terpilih!</p>
-                            </div>
+                        <img src="{{ $photo->temporaryUrl() }}" class="absolute inset-0 w-full h-full object-cover opacity-50 group-hover:opacity-30 transition-opacity">
+                        <div class="z-10 flex flex-col items-center justify-center pt-5 pb-6">
+                            <p class="text-sm text-green-400 font-bold">Foto Terpilih!</p>
+                        </div>
                         @else
-                            <div class="flex flex-col items-center justify-center pt-5 pb-6">
-                                <svg class="w-10 h-10 mb-3 text-gray-400 group-hover:text-green-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
-                                <p class="text-sm text-gray-400">Click to upload</p>
-                            </div>
+                        <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                            <svg class="w-10 h-10 mb-3 text-gray-400 group-hover:text-green-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                            </svg>
+                            <p class="text-sm text-gray-400">Click to upload</p>
+                        </div>
                         @endif
 
                         <input id="dropzone-file" type="file" wire:model="photo" class="hidden" accept="image/*" />
                     </label>
-                </div> 
+                </div>
                 <div wire:loading wire:target="photo" class="text-green-400 text-xs mt-2 font-bold animate-pulse">Processing...</div>
                 @error('photo') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
             </div>

@@ -1,16 +1,16 @@
 <div class="min-h-screen bg-[#0b0c15] p-6 text-white font-['Space_Grotesk']">
-    
+
     <div class="max-w-7xl mx-auto mb-8 flex flex-col md:flex-row justify-between items-start md:items-center border-b border-gray-800 pb-4 gap-4">
         <div>
             <h1 class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600">
                 Laporan GKP (Gabah)
             </h1>
             <p class="text-gray-400 text-sm mt-1">
-                Periode {{ \Carbon\Carbon::parse($tgl_mulai)->format('d F Y') }} 
+                Periode {{ \Carbon\Carbon::parse($tgl_mulai)->format('d F Y') }}
                 S/D {{ \Carbon\Carbon::parse($tgl_akhir)->format('d F Y') }}
             </p>
         </div>
-        
+
         <div class="flex gap-2 flex-wrap">
             <button wire:click="downloadExcelAnalisa" class="px-4 py-2 bg-green-900/30 border border-green-600/50 text-green-400 rounded-lg text-xs font-bold hover:bg-green-600 hover:text-white transition flex items-center gap-2">
                 <i class="bi bi-file-earmark-excel"></i> Excel Analisa
@@ -27,7 +27,7 @@
     <div class="max-w-7xl mx-auto mb-6">
         <div class="bg-[#1a1d2d] border border-gray-700/50 rounded-2xl p-5 shadow-xl">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 items-end">
-                
+
                 <div>
                     <label class="text-gray-400 text-xs font-bold mb-1 block">Dari Tanggal</label>
                     <input type="date" wire:model="tgl_mulai" class="w-full bg-gray-800 border border-gray-600 text-white text-sm rounded-lg px-3 py-2 focus:border-blue-500 focus:outline-none">
@@ -44,7 +44,7 @@
                     <select wire:model="filter_cabang" class="w-full bg-gray-800 border border-gray-600 text-white text-sm rounded-lg px-3 py-2 focus:border-blue-500 focus:outline-none">
                         <option value="">Semua Cabang</option>
                         @foreach($list_cabang as $cabang)
-                            <option value="{{ $cabang->code_cabang }}">{{ $cabang->name_cabang }}</option>
+                        <option value="{{ $cabang->code_cabang }}">{{ $cabang->name_cabang }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -55,7 +55,7 @@
                     <select wire:model="filter_tempat" class="w-full bg-gray-800 border border-gray-600 text-white text-sm rounded-lg px-3 py-2 focus:border-purple-500 focus:outline-none">
                         <option value="">Semua Lokasi</option>
                         @foreach($list_tempat as $tempat)
-                            <option value="{{ $tempat }}">{{ $tempat }}</option>
+                        <option value="{{ $tempat }}">{{ $tempat }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -65,7 +65,7 @@
                     <select wire:model="filter_mitra" class="w-full bg-gray-800 border border-gray-600 text-white text-sm rounded-lg px-3 py-2 focus:border-green-500 focus:outline-none">
                         <option value="">Semua Mitra</option>
                         @foreach($list_mitra as $mitra)
-                            <option value="{{ $mitra }}">{{ $mitra }}</option>
+                        <option value="{{ $mitra }}">{{ $mitra }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -113,11 +113,11 @@
                         <th class="px-6 py-4 font-bold border-r border-gray-700/50">Mitra / Pengirim</th>
                         <th class="px-6 py-4 font-bold border-r border-gray-700/50">Lokasi</th>
                         <th class="px-6 py-4 text-center font-bold border-r border-gray-700/50">Kuantum (Kg)</th>
-                        
+
                         <th class="px-2 py-2 text-center border-r border-gray-700/50 text-gray-500">U1</th>
                         <th class="px-2 py-2 text-center border-r border-gray-700/50 text-gray-500">U2</th>
                         <th class="px-2 py-2 text-center border-r border-gray-700/50 text-gray-500">U3</th>
-                        
+
                         <th class="px-4 py-4 text-center font-bold text-yellow-500 border-r border-gray-700/50">KA (%)</th>
                         <th class="px-4 py-4 text-center font-bold border-r border-gray-700/50">Hampa (%)</th>
                         <th class="px-4 py-4 text-center font-bold border-r border-gray-700/50">Hijau (%)</th>
@@ -130,7 +130,7 @@
                         <td class="px-6 py-4 font-mono text-xs border-r border-gray-700/30">
                             {{ \Carbon\Carbon::parse($item->tanggal_pelaksanaan)->format('d-m-Y') }}
                         </td>
-                        
+
                         <td class="px-6 py-4 font-mono text-xs font-bold text-blue-400 border-r border-gray-700/30">
                             {{ $item->nomor_hpkk_gabah }}
                             <div class="text-[10px] text-gray-500 mt-1 font-normal">PO: {{ $item->no_order_pembelian }}</div>
@@ -180,13 +180,13 @@
                 </tbody>
             </table>
         </div>
-        
+
         <div class="p-4 border-t border-gray-700 bg-[#1a1d2d] flex justify-between items-center text-xs text-gray-500">
             <div>
                 Menampilkan data {{ $data_laporan->firstItem() }} - {{ $data_laporan->lastItem() }} dari {{ $total_record }}
             </div>
             <div>
-                {{ $data_laporan->links() }} 
+                {{ $data_laporan->links() }}
             </div>
         </div>
     </div>

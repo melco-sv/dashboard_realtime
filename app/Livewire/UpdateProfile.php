@@ -14,7 +14,7 @@ class UpdateProfile extends Component
     public $email;
     public $phone;
     public $position;
-    
+
     // Read Only Property
     public $level;
     public $group;
@@ -34,7 +34,7 @@ class UpdateProfile extends Component
         $this->email    = $user->email;
         $this->phone    = $user->phone;
         $this->position = $user->position;
-        
+
         // Data Read Only
         $this->level    = $user->level;
         $this->group    = $user->group;
@@ -55,7 +55,7 @@ class UpdateProfile extends Component
 
         // 2. Ambil User yang sedang login
         $user = User::find(Auth::id());
-        
+
         // 3. Siapkan data yang akan diupdate
         $dataToUpdate = [
             'nama' => $this->nama,
@@ -68,7 +68,7 @@ class UpdateProfile extends Component
         if (!empty($this->new_password)) {
             // Enkripsi MD5 sesuai standar database Anda
             $dataToUpdate['password'] = md5($this->new_password);
-            $dataToUpdate['password_md5'] = md5($this->new_password); 
+            $dataToUpdate['password_md5'] = md5($this->new_password);
         }
 
         // 5. Simpan ke Database
@@ -77,7 +77,7 @@ class UpdateProfile extends Component
         // 6. Reset field password & Kirim pesan sukses
         $this->new_password = '';
         $this->new_password_confirmation = '';
-        
+
         session()->flash('message', 'Data user berhasil diperbarui!');
     }
 

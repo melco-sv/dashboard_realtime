@@ -1,5 +1,5 @@
 <div class="min-h-screen bg-[#0b0c15] p-6 text-white font-['Space_Grotesk']">
-    
+
     <div class="max-w-7xl mx-auto mb-8 flex justify-between items-center border-b border-gray-800 pb-4">
         <div>
             <h1 class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-orange-400 to-red-600">
@@ -7,7 +7,7 @@
             </h1>
             <p class="text-gray-400 text-sm mt-1">Kelola Akun & Hak Akses Pengguna</p>
         </div>
-        
+
         <button wire:click="create" class="px-5 py-2.5 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-bold shadow-lg shadow-orange-500/20 transition-all flex items-center gap-2">
             <i class="fa-solid fa-plus"></i> Add User
         </button>
@@ -15,21 +15,21 @@
 
     <div class="max-w-7xl mx-auto mb-4">
         @if (session()->has('message'))
-            <div class="px-4 py-3 bg-green-500/10 border border-green-500/50 text-green-400 rounded-xl text-sm font-bold flex items-center gap-3">
-                <i class="fa-solid fa-check-circle"></i> {{ session('message') }}
-            </div>
+        <div class="px-4 py-3 bg-green-500/10 border border-green-500/50 text-green-400 rounded-xl text-sm font-bold flex items-center gap-3">
+            <i class="fa-solid fa-check-circle"></i> {{ session('message') }}
+        </div>
         @endif
         @if (session()->has('error'))
-            <div class="px-4 py-3 bg-red-500/10 border border-red-500/50 text-red-400 rounded-xl text-sm font-bold flex items-center gap-3">
-                <i class="fa-solid fa-circle-exclamation"></i> {{ session('error') }}
-            </div>
+        <div class="px-4 py-3 bg-red-500/10 border border-red-500/50 text-red-400 rounded-xl text-sm font-bold flex items-center gap-3">
+            <i class="fa-solid fa-circle-exclamation"></i> {{ session('error') }}
+        </div>
         @endif
     </div>
 
     <div class="max-w-7xl mx-auto">
-        
+
         <div class="mb-4 relative">
-            <input type="text" wire:model.live.debounce.300ms="search" placeholder="Cari nama atau username..." 
+            <input type="text" wire:model.live.debounce.300ms="search" placeholder="Cari nama atau username..."
                 class="w-full md:w-1/3 bg-[#1a1d2d] border border-gray-700 rounded-xl px-4 py-2.5 text-white focus:border-orange-500 focus:outline-none pl-10">
             <i class="fa-solid fa-search absolute left-3.5 top-3.5 text-gray-500"></i>
         </div>
@@ -69,13 +69,13 @@
                             </td>
                             <td class="px-6 py-4">
                                 @if($user->status == 'Active')
-                                    <span class="text-green-400 flex items-center gap-1.5 font-bold text-xs">
-                                        <span class="w-2 h-2 rounded-full bg-green-500"></span> Active
-                                    </span>
+                                <span class="text-green-400 flex items-center gap-1.5 font-bold text-xs">
+                                    <span class="w-2 h-2 rounded-full bg-green-500"></span> Active
+                                </span>
                                 @else
-                                    <span class="text-red-400 flex items-center gap-1.5 font-bold text-xs">
-                                        <span class="w-2 h-2 rounded-full bg-red-500"></span> Non-Active
-                                    </span>
+                                <span class="text-red-400 flex items-center gap-1.5 font-bold text-xs">
+                                    <span class="w-2 h-2 rounded-full bg-red-500"></span> Non-Active
+                                </span>
                                 @endif
                             </td>
                             <td class="px-6 py-4 text-center">
@@ -94,7 +94,7 @@
                 </table>
             </div>
             <div class="p-4 border-t border-gray-700">
-                {{ $users->links() }} 
+                {{ $users->links() }}
             </div>
         </div>
     </div>
@@ -102,7 +102,7 @@
     @if($showModal)
     <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
         <div class="bg-[#1a1d2d] w-full max-w-2xl rounded-2xl border border-gray-700 shadow-2xl overflow-hidden">
-            
+
             <div class="px-6 py-4 border-b border-gray-700 flex justify-between items-center bg-[#11131f]">
                 <h3 class="text-lg font-bold text-white">
                     {{ $isEditMode ? 'Edit User' : 'Add New User' }}
@@ -114,11 +114,11 @@
 
             <form wire:submit.prevent="store" class="p-6 max-h-[80vh] overflow-y-auto">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    
+
                     <div>
                         <label class="block text-gray-400 text-xs font-bold mb-2">Username <span class="text-red-500">*</span></label>
-                        <input type="text" wire:model="username" {{ $isEditMode ? 'readonly' : '' }} 
-                               class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-2.5 focus:border-orange-500 focus:outline-none {{ $isEditMode ? 'cursor-not-allowed opacity-60' : '' }}">
+                        <input type="text" wire:model="username" {{ $isEditMode ? 'readonly' : '' }}
+                            class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-2.5 focus:border-orange-500 focus:outline-none {{ $isEditMode ? 'cursor-not-allowed opacity-60' : '' }}">
                         @error('username') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                     </div>
 
@@ -143,7 +143,7 @@
                         <select wire:model="group" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-2.5 focus:border-orange-500 focus:outline-none">
                             <option value="">Pilih Cabang...</option>
                             @foreach($listCabang as $cabang)
-                                <option value="{{ $cabang->code_cabang }}">{{ $cabang->name_cabang }}</option>
+                            <option value="{{ $cabang->code_cabang }}">{{ $cabang->name_cabang }}</option>
                             @endforeach
                         </select>
                         @error('group') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
@@ -154,7 +154,7 @@
                         <select wire:model="level" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-2.5 focus:border-orange-500 focus:outline-none">
                             <option value="">Pilih Level...</option>
                             @foreach($listLevel as $lvl)
-                                <option value="{{ $lvl }}">{{ $lvl }}</option>
+                            <option value="{{ $lvl }}">{{ $lvl }}</option>
                             @endforeach
                         </select>
                         @error('level') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
@@ -178,7 +178,7 @@
                     <div class="md:col-span-2 mt-4 pt-4 border-t border-gray-700">
                         <h4 class="text-orange-400 font-bold text-sm mb-4">Pengaturan Password</h4>
                         @if($isEditMode)
-                            <p class="text-xs text-gray-500 mb-2">*Kosongkan jika tidak ingin mengubah password</p>
+                        <p class="text-xs text-gray-500 mb-2">*Kosongkan jika tidak ingin mengubah password</p>
                         @endif
                     </div>
 

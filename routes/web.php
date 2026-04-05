@@ -44,7 +44,7 @@ Route::get('/beras/edit/{id}', EditBeras::class)->name('edit.beras');
 Route::middleware('guest')->group(function () {
     // Halaman Root (/) diarahkan ke Login
     Route::get('/', Login::class)->name('login');
-    
+
     // Opsional: Tambahkan juga route /login eksplisit agar aman jika redirect middleware mencarinya
     Route::get('/login', Login::class);
 });
@@ -63,19 +63,19 @@ Route::middleware('auth')->group(function () {
     })->name('logout');
 
     // --- HALAMAN UMUM (Bisa diakses Semua User Login) ---
-    
-    
+
+
     // PENTING: Nama route ini diganti jadi 'dashboard.gabah' agar sesuai dengan Login.php
-    Route::get('/dashboard', DashboardGabah::class)->name('dashboard.gabah'); 
-    
+    Route::get('/dashboard', DashboardGabah::class)->name('dashboard.gabah');
+
     // Halaman Serapan
     Route::get('/serapan', Serapan::class)->name('serapan');
 
     // Route untuk Halaman Compare PO GKP
-Route::get('/compare-po-gkp', \App\Livewire\ComparePoGkp::class)->name('compare.po.gkp');
+    Route::get('/compare-po-gkp', \App\Livewire\ComparePoGkp::class)->name('compare.po.gkp');
 
-// Route Compare MO HGL
-Route::get('/compare-mo-hgl', \App\Livewire\CompareMoHgl::class)->name('compare.mo.hgl');
+    // Route Compare MO HGL
+    Route::get('/compare-mo-hgl', \App\Livewire\CompareMoHgl::class)->name('compare.mo.hgl');
 
     // Halaman Settings / Update Profile
     Route::get('/settings', UpdateProfile::class)->name('settings');
@@ -86,7 +86,7 @@ Route::get('/compare-mo-hgl', \App\Livewire\CompareMoHgl::class)->name('compare.
     // (Input, Edit, List, Upload, Laporan)
     // Hanya bisa diakses jika user punya role 'inspektor' atau sesuai middleware Anda
     Route::middleware(['role:inspektor'])->group(function () {
-        
+
         // Operasional Gabah
         Route::get('/input-gabah', InputGabah::class)->name('input.gabah');
         Route::get('/list-gabah', ListGabah::class)->name('list.gabah');
@@ -105,5 +105,4 @@ Route::get('/compare-mo-hgl', \App\Livewire\CompareMoHgl::class)->name('compare.
         Route::get('/laporan-gkp', LaporanGkp::class)->name('laporan.gkp');
         Route::get('/laporan-hgl', LaporanHgl::class)->name('laporan.hgl');
     });
-
 });

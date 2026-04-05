@@ -18,21 +18,21 @@
 
     <div class="max-w-7xl mx-auto mb-6">
         @if (session()->has('message'))
-            <div class="px-4 py-3 bg-green-500/10 border border-green-500/50 text-green-400 rounded-xl text-sm font-bold flex items-center gap-3 animate-pulse">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span>{{ session('message') }}</span>
-            </div>
+        <div class="px-4 py-3 bg-green-500/10 border border-green-500/50 text-green-400 rounded-xl text-sm font-bold flex items-center gap-3 animate-pulse">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span>{{ session('message') }}</span>
+        </div>
         @endif
 
         @if (session()->has('error'))
-            <div class="px-4 py-3 bg-red-500/10 border border-red-500/50 text-red-400 rounded-xl text-sm font-bold flex items-center gap-3">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                </svg>
-                <span>{{ session('error') }}</span>
-            </div>
+        <div class="px-4 py-3 bg-red-500/10 border border-red-500/50 text-red-400 rounded-xl text-sm font-bold flex items-center gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <span>{{ session('error') }}</span>
+        </div>
         @endif
     </div>
 
@@ -40,7 +40,7 @@
 
         <div class="bg-[#1a1d2d] border border-gray-700/50 rounded-2xl p-6 shadow-xl mb-6 relative overflow-hidden group">
             <div class="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-blue-500/10 rounded-full blur-2xl group-hover:bg-blue-500/20 transition-all"></div>
-            
+
             <h2 class="text-lg font-bold text-blue-400 mb-4 flex items-center gap-2">
                 <span class="w-2 h-8 bg-blue-500 rounded-full"></span>
                 Identitas Dokumen
@@ -62,7 +62,7 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4 relative z-10">
-                 <div>
+                <div>
                     <label class="block text-gray-400 text-xs font-bold mb-2">Mitra <span class="text-red-500">*</span></label>
                     <input type="text" wire:model="mitra" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 focus:border-blue-500 focus:outline-none">
                     @error('mitra') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
@@ -79,8 +79,8 @@
         </div>
 
         <div class="bg-[#1a1d2d] border border-gray-700/50 rounded-2xl p-6 shadow-xl mb-6 relative overflow-hidden group">
-             <div class="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-purple-500/10 rounded-full blur-2xl group-hover:bg-purple-500/20 transition-all"></div>
-            
+            <div class="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-purple-500/10 rounded-full blur-2xl group-hover:bg-purple-500/20 transition-all"></div>
+
             <h2 class="text-lg font-bold text-purple-400 mb-4 flex items-center gap-2">
                 <span class="w-2 h-8 bg-purple-500 rounded-full"></span>
                 Data Transport & Muatan
@@ -95,7 +95,7 @@
                     <label class="block text-gray-400 text-xs font-bold mb-2">No. Plat / Registrasi</label>
                     <input type="text" wire:model="nomor_registrasi_alat_angkut" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 focus:border-purple-500 focus:outline-none">
                 </div>
-                 <div>
+                <div>
                     <label class="block text-gray-400 text-xs font-bold mb-2">Hama Penyakit</label>
                     <select wire:model="hama_penyakit" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 focus:border-purple-500 focus:outline-none">
                         <option value="">Pilih...</option>
@@ -103,19 +103,19 @@
                         <option value="Tidak Ada">Tidak Bebas</option>
                     </select>
                 </div>
-                 <div>
+                <div>
                     <label class="block text-gray-400 text-xs font-bold mb-2">Metode Timbang <span class="text-red-500">*</span></label>
-                     <select wire:model="metode_timbang" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 focus:border-purple-500 focus:outline-none">
+                    <select wire:model="metode_timbang" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 focus:border-purple-500 focus:outline-none">
                         <option value="">Pilih...</option>
                         <option value="Weightbridge">Weightbridge</option>
                         <option value="Non Weightbridge - Sawah">Non Weightbridge - Sawah</option>
-                        <option value="Non Weightbridge - MPP">Non Weightbridge - MPP</option>    
+                        <option value="Non Weightbridge - MPP">Non Weightbridge - MPP</option>
                     </select>
                     @error('metode_timbang') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
                 </div>
             </div>
 
-             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4 relative z-10">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4 relative z-10">
                 <div>
                     <label class="block text-gray-400 text-xs font-bold mb-2">Jumlah Timbangan (Kg) <span class="text-red-500">*</span></label>
                     <input type="number" step="0.01" wire:model.blur="jumlah_timbangan" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 focus:border-purple-500 focus:outline-none">
@@ -138,7 +138,7 @@
                 <div class="bg-[#11131f] p-4 rounded-xl border border-gray-800">
                     <p class="text-green-500 font-bold mb-3 border-b border-gray-700 pb-2">1. Kadar Air (%)</p>
                     <div class="space-y-3">
-                         <div class="flex items-center justify-between">
+                        <div class="flex items-center justify-between">
                             <label class="text-xs text-gray-400">Ulangan 1</label>
                             <input type="number" step="0.01" wire:model.blur="ulangan_1" class="w-24 bg-gray-800 border border-gray-700 text-white text-sm rounded px-2 py-1 focus:border-green-500 focus:outline-none">
                         </div>
@@ -150,7 +150,7 @@
                             <label class="text-xs text-gray-400">Ulangan 3</label>
                             <input type="number" step="0.01" wire:model.blur="ulangan_3" class="w-24 bg-gray-800 border border-gray-700 text-white text-sm rounded px-2 py-1 focus:border-green-500 focus:outline-none">
                         </div>
-                         <div class="flex items-center justify-between pt-2 border-t border-gray-700">
+                        <div class="flex items-center justify-between pt-2 border-t border-gray-700">
                             <label class="text-xs text-white font-bold">Rata-rata</label>
                             <input type="text" wire:model="kadar_air_rata_rata" readonly class="w-24 bg-gray-900 border border-gray-700 text-green-400 font-bold text-sm rounded px-2 py-1 text-right">
                         </div>
@@ -158,7 +158,7 @@
                 </div>
 
                 <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
-                     <div>
+                    <div>
                         <label class="block text-gray-400 text-xs font-bold mb-2">2. Kadar Hampa / Kotoran (%)</label>
                         <input type="number" step="0.01" wire:model.blur="kadar_hampa" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 focus:border-green-500 focus:outline-none">
                     </div>
@@ -176,7 +176,7 @@
                 Penandatangan
             </h2>
 
-             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 relative z-10">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 relative z-10">
                 <div>
                     <label class="block text-gray-400 text-xs font-bold mb-2">Tanggal DOC</label>
                     <input type="date" wire:model="tanggal_doc" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3">
@@ -185,23 +185,23 @@
                     <label class="block text-gray-400 text-xs font-bold mb-2">Lokasi</label>
                     <input type="text" wire:model="lokasi" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3">
                 </div>
-                 <div>
+                <div>
                     <label class="block text-gray-400 text-xs font-bold mb-2">Mengetahui</label>
                     <input type="text" wire:model="mengetahui" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3">
                 </div>
-                 <div>
+                <div>
                     <label class="block text-gray-400 text-xs font-bold mb-2">Petugas</label>
                     <input type="text" wire:model="petugas" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3">
                 </div>
             </div>
 
-             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4 relative z-10">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4 relative z-10">
                 <div>
                     <label class="block text-gray-400 text-xs font-bold mb-2">Group / Cabang (Auto)</label>
                     <div class="flex gap-2">
-                        <input type="text" wire:model="group" readonly 
-                               class="w-full bg-[#11131f] border border-gray-700 text-gray-500 font-bold rounded-lg px-4 py-3 cursor-not-allowed focus:outline-none">
-                        
+                        <input type="text" wire:model="group" readonly
+                            class="w-full bg-[#11131f] border border-gray-700 text-gray-500 font-bold rounded-lg px-4 py-3 cursor-not-allowed focus:outline-none">
+
                         <div class="bg-[#11131f] border border-gray-700 rounded-lg px-4 py-3 text-gray-400 font-bold flex items-center justify-center min-w-[120px]">
                             {{ optional(Auth::user()->cabang)->name_cabang ?? '-' }}
                         </div>
@@ -228,7 +228,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         document.addEventListener('livewire:init', () => {
-            
+
             // Listener untuk Error/Peringatan
             Livewire.on('swal:error', (data) => {
                 Swal.fire({
@@ -236,7 +236,7 @@
                     title: data[0].title,
                     text: data[0].text,
                     background: '#1a1d2d', // Warna Card sesuai tema Anda
-                    color: '#e5e7eb',      // Warna Text Putih/Abu
+                    color: '#e5e7eb', // Warna Text Putih/Abu
                     confirmButtonColor: '#d33', // Merah untuk error
                     confirmButtonText: 'OK, Perbaiki',
                     customClass: {

@@ -13,7 +13,7 @@ class UploadFotoBeras extends Component
 
     public $id_hpkk_beras;
     public $nomor_hpkk_beras;
-    
+
     // Form Inputs
     public $nama;
     public $photo;
@@ -23,10 +23,10 @@ class UploadFotoBeras extends Component
     {
         // Ambil data Beras Induk
         $data = MasHpkkBeras::findOrFail($id);
-        
+
         $this->id_hpkk_beras = $data->id_hpkk_beras;
         $this->nomor_hpkk_beras = $data->nomor_hpkk_beras;
-        $this->group = $data->group; 
+        $this->group = $data->group;
     }
 
     public function save()
@@ -53,7 +53,6 @@ class UploadFotoBeras extends Component
 
             session()->flash('message', 'Foto Beras berhasil diupload!');
             return redirect()->route('list.beras');
-
         } catch (\Exception $e) {
             session()->flash('error', 'Gagal upload: ' . $e->getMessage());
         }

@@ -25,7 +25,7 @@ class ManageUser extends Component
 
     // === LIST DATA ===
     public $listCabang = [];
-    public $listLevel = ['Super Admin', 'Administrator', 'Inspektor', 'Client', 'Verification'];
+    public $listLevel = ['Super Admin',  'Inspektor', 'Verification'];
 
     public function mount()
     {
@@ -51,11 +51,11 @@ class ManageUser extends Component
         // Fitur Search
         if (!empty($this->search)) {
             $query->where('nama', 'like', '%' . $this->search . '%')
-                  ->orWhere('username', 'like', '%' . $this->search . '%');
+                ->orWhere('username', 'like', '%' . $this->search . '%');
         }
 
         // Tampilkan user terbaru dulu
-        $users = $query->orderBy('userid', 'desc')->paginate(10);
+        $users = $query->orderBy('id_user', 'desc')->paginate(10);
 
         return view('livewire.manage-user', [
             'users' => $users
@@ -85,7 +85,7 @@ class ManageUser extends Component
         $this->group = $user->group;
         $this->level = $user->level;
         $this->status = $user->status;
-        
+
         $this->isEditMode = true;
         $this->showModal = true;
     }
@@ -165,8 +165,17 @@ class ManageUser extends Component
     public function resetForm()
     {
         $this->reset([
-            'username', 'nama', 'email', 'phone', 'position', 'group', 'level', 'status', 
-            'password', 'password_confirmation', 'usernameBeingEdited'
+            'username',
+            'nama',
+            'email',
+            'phone',
+            'position',
+            'group',
+            'level',
+            'status',
+            'password',
+            'password_confirmation',
+            'usernameBeingEdited'
         ]);
         $this->resetValidation();
     }

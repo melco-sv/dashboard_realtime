@@ -4,7 +4,7 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use Livewire\WithPagination;
-use Illuminate\Support\Facades\DB; 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\RekapTarifExport;
@@ -18,7 +18,7 @@ class LaporanGkp extends Component
     // --- FILTER ---
     public $tgl_mulai;
     public $tgl_akhir;
-    public $filter_cabang = ''; 
+    public $filter_cabang = '';
     public $filter_tempat = ''; // Filter Baru: Pelaksanaan Pengolahan
     public $filter_mitra = '';  // Filter Baru: Mitra
 
@@ -30,7 +30,7 @@ class LaporanGkp extends Component
     {
         $this->tgl_mulai = date('Y-m-01');
         $this->tgl_akhir = date('Y-m-d');
-        
+
         // Security: Jika User adalah Inspektor, kunci filter cabang ke grupnya sendiri
         if (Auth::check() && Auth::user()->level == 'Inspektor') {
             $this->filter_cabang = Auth::user()->group;
@@ -52,7 +52,7 @@ class LaporanGkp extends Component
         $query = DB::table('mas_hpkk_gabah as m')
             ->leftJoin('ref_cabang as r', 'm.group', '=', 'r.code_cabang')
             ->whereBetween('m.tanggal_pelaksanaan', [
-                $this->tgl_mulai . ' 00:00:00', 
+                $this->tgl_mulai . ' 00:00:00',
                 $this->tgl_akhir . ' 23:59:59'
             ]);
 
@@ -82,7 +82,7 @@ class LaporanGkp extends Component
         $query = $this->getBaseQuery();
 
         $this->total_record = $query->count();
-        
+
         // Handling koma pada jumlah timbangan (cth: 10,50 menjadi 10.50)
         $this->total_penerimaan = $query->sum(DB::raw("CAST(REPLACE(jumlah_timbangan, ',', '.') AS DECIMAL(15,2))"));
     }
@@ -93,9 +93,9 @@ class LaporanGkp extends Component
         // A. Ambil Data Utama (Tabel)
         $query = $this->getBaseQuery()
             ->select(
-                'm.*', 
-                'r.name_cabang', 
-                'r.parent_company' 
+                'm.*',
+                'r.name_cabang',
+                'r.parent_company'
             )
             ->orderBy('m.tanggal_pelaksanaan', 'asc');
 
@@ -103,7 +103,7 @@ class LaporanGkp extends Component
 
         // B. Siapkan Data untuk Dropdown Filter
         // Kita query ulang (distinct) agar dropdown hanya memunculkan data yang ADA pada tanggal tersebut
-        
+
         // 1. List Cabang (Khusus Admin)
         $list_cabang = [];
         if (Auth::check() && Auth::user()->level !== 'Inspektor') {
@@ -129,7 +129,7 @@ class LaporanGkp extends Component
 
         // 3. List Mitra (Bisa difilter lebih lanjut berdasarkan lokasi yg dipilih)
         $list_mitra = (clone $dropdownQuery)
-            ->when(!empty($this->filter_tempat), function($q) {
+            ->when(!empty($this->filter_tempat), function ($q) {
                 $q->where('lokasi', $this->filter_tempat);
             })
             ->select('mitra')
@@ -149,14 +149,14 @@ class LaporanGkp extends Component
     public function downloadExcelTarif()
     {
         // Tentukan Group ID
-        $groupId = (Auth::check() && Auth::user()->level == 'Inspektor') 
-                    ? Auth::user()->group 
-                    : $this->filter_cabang;
+        $groupId = (Auth::check() && Auth::user()->level == 'Inspektor')
+            ? Auth::user()->group
+            : $this->filter_cabang;
 
         // Pastikan Class Export Anda menerima parameter filter tambahan di __construct
         return Excel::download(new RekapTarifExport(
-            $this->tgl_mulai, 
-            $this->tgl_akhir, 
+            $this->tgl_mulai,
+            $this->tgl_akhir,
             $groupId,
             $this->filter_tempat, // Kirim filter tempat
             $this->filter_mitra   // Kirim filter mitra
@@ -165,13 +165,13 @@ class LaporanGkp extends Component
 
     public function downloadExcelAnalisa()
     {
-        $groupId = (Auth::check() && Auth::user()->level == 'Inspektor') 
-                    ? Auth::user()->group 
-                    : $this->filter_cabang;
+        $groupId = (Auth::check() && Auth::user()->level == 'Inspektor')
+            ? Auth::user()->group
+            : $this->filter_cabang;
 
         return Excel::download(new RekapAnalisaExport(
-            $this->tgl_mulai, 
-            $this->tgl_akhir, 
+            $this->tgl_mulai,
+            $this->tgl_akhir,
             $groupId,
             $this->filter_tempat,
             $this->filter_mitra
@@ -183,10 +183,10 @@ class LaporanGkp extends Component
     {
         // Gunakan getBaseQuery agar hasil PDF sama persis dengan tabel di layar
         $data = $this->getBaseQuery()
-            ->select('m.*', 'r.name_cabang', 'r.parent_company') 
+            ->select('m.*', 'r.name_cabang', 'r.parent_company')
             ->orderBy('m.tanggal_pelaksanaan', 'asc')
             ->get();
-        
+
         $pdf = Pdf::loadView('pdf.laporan_rekap_gkp', [
             'data'   => $data,
             'start'  => $this->tgl_mulai,

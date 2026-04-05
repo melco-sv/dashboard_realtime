@@ -14,13 +14,13 @@
             <button type="submit" class="w-full md:w-auto px-8 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg shadow-lg flex items-center justify-center gap-2"><i class="fa-solid fa-magnifying-glass"></i> Cari</button>
         </form>
         @if (session()->has('error'))
-            <div class="mt-4 p-4 bg-red-500/10 border border-red-500/50 text-red-400 rounded-xl text-center font-bold animate-pulse">{{ session('error') }}</div>
+        <div class="mt-4 p-4 bg-red-500/10 border border-red-500/50 text-red-400 rounded-xl text-center font-bold animate-pulse">{{ session('error') }}</div>
         @endif
     </div>
 
     @if($resultData)
     <div class="max-w-7xl mx-auto space-y-8 animate-fade-in-up">
-        
+
         <div class="bg-[#1a1d2d] border border-gray-700 rounded-2xl overflow-hidden shadow-xl">
             <div class="overflow-x-auto">
                 <table class="w-full text-sm text-left">
@@ -43,7 +43,7 @@
                             <td class="px-4 py-3 text-center border-r border-gray-700/50">{{ $index + 1 }}</td>
                             <td class="px-4 py-3 border-r border-gray-700/50 font-medium text-blue-300">{{ $row->parent_company ?? '-' }}</td>
                             <td class="px-4 py-3 border-r border-gray-700/50 text-gray-300">{{ $row->no_order_pembelian }}</td>
-                            
+
                             <td class="px-4 py-3 text-right border-r border-gray-700/50 font-mono text-white">
                                 {{ $row->jumlah_timbangan }}
                             </td>
@@ -65,38 +65,38 @@
                     <h3 class="text-center font-bold text-blue-200 uppercase tracking-widest text-sm">Ringkasan Data (Rata-rata)</h3>
                 </div>
                 <div class="divide-y divide-gray-700 text-sm">
-    
-    <div class="flex justify-between items-center px-6 py-4 hover:bg-white/5">
-        <span class="font-bold text-gray-300">Total Kuantum</span>
-        <span class="font-bold text-xl text-white font-mono">{{ $this->formatSummary($totalKuantum) }}</span>
-    </div>
 
-    <div class="flex justify-between items-center px-6 py-3 hover:bg-white/5">
-        <span class="text-gray-400">Rata-rata Kadar Air 1</span>
-        <span class="font-medium text-gray-200">{{ $this->formatSummary($avgKa1) }}</span>
-    </div>
+                    <div class="flex justify-between items-center px-6 py-4 hover:bg-white/5">
+                        <span class="font-bold text-gray-300">Total Kuantum</span>
+                        <span class="font-bold text-xl text-white font-mono">{{ $this->formatSummary($totalKuantum) }}</span>
+                    </div>
 
-    <div class="flex justify-between items-center px-6 py-3 hover:bg-white/5">
-        <span class="text-gray-400">Rata-rata Kadar Air 2</span>
-        <span class="font-medium text-gray-200">{{ $this->formatSummary($avgKa2) }}</span>
-    </div>
+                    <div class="flex justify-between items-center px-6 py-3 hover:bg-white/5">
+                        <span class="text-gray-400">Rata-rata Kadar Air 1</span>
+                        <span class="font-medium text-gray-200">{{ $this->formatSummary($avgKa1) }}</span>
+                    </div>
 
-    <div class="flex justify-between items-center px-6 py-3 hover:bg-white/5">
-        <span class="text-gray-400">Rata-rata Kadar Air 3</span>
-        <span class="font-medium text-gray-200">{{ $this->formatSummary($avgKa3) }}</span>
-    </div>
+                    <div class="flex justify-between items-center px-6 py-3 hover:bg-white/5">
+                        <span class="text-gray-400">Rata-rata Kadar Air 2</span>
+                        <span class="font-medium text-gray-200">{{ $this->formatSummary($avgKa2) }}</span>
+                    </div>
 
-    <div class="flex justify-between items-center px-6 py-3 hover:bg-white/5">
-        <span class="text-gray-400">Rata-rata Kadar Hampa</span>
-        <span class="font-medium text-gray-200">{{ $this->formatSummary($avgHampa) }}</span>
-    </div>
+                    <div class="flex justify-between items-center px-6 py-3 hover:bg-white/5">
+                        <span class="text-gray-400">Rata-rata Kadar Air 3</span>
+                        <span class="font-medium text-gray-200">{{ $this->formatSummary($avgKa3) }}</span>
+                    </div>
 
-    <div class="flex justify-between items-center px-6 py-3 hover:bg-white/5">
-        <span class="text-gray-400">Rata-rata Butir Hijau</span>
-        <span class="font-medium text-gray-200">{{ $this->formatSummary($avgButirHijau) }}</span>
-    </div>
+                    <div class="flex justify-between items-center px-6 py-3 hover:bg-white/5">
+                        <span class="text-gray-400">Rata-rata Kadar Hampa</span>
+                        <span class="font-medium text-gray-200">{{ $this->formatSummary($avgHampa) }}</span>
+                    </div>
 
-</div>
+                    <div class="flex justify-between items-center px-6 py-3 hover:bg-white/5">
+                        <span class="text-gray-400">Rata-rata Butir Hijau</span>
+                        <span class="font-medium text-gray-200">{{ $this->formatSummary($avgButirHijau) }}</span>
+                    </div>
+
+                </div>
             </div>
         </div>
 

@@ -11,28 +11,28 @@ use Illuminate\Validation\ValidationException;
 class InputBeras extends Component
 {
     // === PROPERTI FORM ===
-    public $nomor_hpkk_beras; 
-    public $id_mo; 
+    public $nomor_hpkk_beras;
+    public $id_mo;
     public $nomor_order;
     public $tempat_pemeriksaan;
     public $tanggal_pemeriksaan;
     public $kode_sample;
     public $dasar_pemeriksaan;
     public $kondisi_kemasan;
-    public $hama; 
+    public $hama;
     public $dedak_katul_sekam;
-    public $bau; 
-    public $bahan_kimia; 
+    public $bau;
+    public $bahan_kimia;
     public $ulangan_1;
     public $ulangan_2;
     public $ulangan_3;
-    public $rata_rata; 
+    public $rata_rata;
     public $derajat_sosoh;
     public $butir_patah;
     public $menir;
-    public $kuantum_gabah_sesuai_mo; 
-    public $kuantum_beras; 
-    public $rendemen_pengolahan; 
+    public $kuantum_gabah_sesuai_mo;
+    public $kuantum_beras;
+    public $rendemen_pengolahan;
     public $hasil_samping_menir;
     public $hasil_samping_butir_patah;
     public $hasil_samping_dedak_katul;
@@ -42,14 +42,14 @@ class InputBeras extends Component
     public $mengetahui;
     public $petugas;
     public $catatan;
-    public $group; 
+    public $group;
     public $status = 'Active';
 
     public function mount()
     {
         $this->tanggal_pemeriksaan = date('Y-m-d');
         $this->tanggal_doc = date('Y-m-d');
-        
+
         if (Auth::check()) {
             $this->group = Auth::user()->group;
         }
@@ -70,9 +70,9 @@ class InputBeras extends Component
                     'title' => 'Input Diluar Batas!',
                     'text'  => "Nilai $propertyName harus diantara 10 s/d 14!",
                 ]);
-                
+
                 // Auto Reset: Kosongkan inputan
-                $this->{$propertyName} = null; 
+                $this->{$propertyName} = null;
             }
             $this->hitungRataRata();
         }
@@ -84,9 +84,9 @@ class InputBeras extends Component
                     'title' => 'Data Invalid!',
                     'text'  => 'Derajat Sosoh hanya boleh bernilai 95, atau 100!',
                 ]);
-                
+
                 // Auto Reset
-                $this->derajat_sosoh = null; 
+                $this->derajat_sosoh = null;
             }
         }
 
@@ -97,7 +97,7 @@ class InputBeras extends Component
                     'title' => 'Input Diluar Batas!',
                     'text'  => 'Butir Patah tidak boleh melebihi 25%!',
                 ]);
-                
+
                 // Auto Reset
                 $this->butir_patah = null;
             }
@@ -110,7 +110,7 @@ class InputBeras extends Component
                     'title' => 'Input Diluar Batas!',
                     'text'  => 'Menir tidak boleh melebihi 2%!',
                 ]);
-                
+
                 // Auto Reset
                 $this->menir = null;
             }
@@ -123,25 +123,37 @@ class InputBeras extends Component
     }
 
     // === LOGIKA HITUNGAN ===
-    private function hitungRataRata() {
+    private function hitungRataRata()
+    {
         $u1 = $this->parseNumber($this->ulangan_1);
         $u2 = $this->parseNumber($this->ulangan_2);
         $u3 = $this->parseNumber($this->ulangan_3);
 
-        $count = 0; $sum = 0;
-        if ($u1 > 0) { $sum += $u1; $count++; }
-        if ($u2 > 0) { $sum += $u2; $count++; }
-        if ($u3 > 0) { $sum += $u3; $count++; }
+        $count = 0;
+        $sum = 0;
+        if ($u1 > 0) {
+            $sum += $u1;
+            $count++;
+        }
+        if ($u2 > 0) {
+            $sum += $u2;
+            $count++;
+        }
+        if ($u3 > 0) {
+            $sum += $u3;
+            $count++;
+        }
 
         $this->rata_rata = $count > 0 ? round($sum / $count, 2) : 0;
     }
 
-    private function hitungRendemen() {
+    private function hitungRendemen()
+    {
         $beras = $this->parseNumber($this->kuantum_beras);
         $gabah = $this->parseNumber($this->kuantum_gabah_sesuai_mo);
 
         if ($gabah > 0 && $beras > 0) {
-            $rendemen = ($beras / $gabah) * 100; 
+            $rendemen = ($beras / $gabah) * 100;
             $this->rendemen_pengolahan = round($rendemen, 2);
         } else {
             $this->rendemen_pengolahan = 0;
@@ -152,7 +164,7 @@ class InputBeras extends Component
     private function parseNumber($value)
     {
         if (empty($value)) return 0;
-        $cleanValue = str_replace(',', '.', $value); 
+        $cleanValue = str_replace(',', '.', $value);
         return floatval($cleanValue);
     }
 
@@ -162,16 +174,16 @@ class InputBeras extends Component
         $bulan = date('m');
         $tahun = date('Y');
         $groupCode = $this->group ?? '0000';
-        
+
         $query = MasHpkkBeras::whereYear('tanggal_pemeriksaan', $tahun)
-                              ->where('group', $this->group);
+            ->where('group', $this->group);
 
         $count = $query->count();
         $nextNo = $count + 1;
-        
+
         $noUrut = sprintf("%05d", $nextNo);
         $romawi = $this->getRomawi($bulan);
-        
+
         $generated = "$noUrut/HGL/$groupCode/SCI/$romawi/$tahun";
 
         if ($preview) {
@@ -183,7 +195,8 @@ class InputBeras extends Component
         return $generated;
     }
 
-    private function getRomawi($bulan) {
+    private function getRomawi($bulan)
+    {
         $bulan = (int)$bulan;
         $map = ['', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII'];
         return $map[$bulan] ?? '';
@@ -222,9 +235,8 @@ class InputBeras extends Component
                 'lokasi' => 'required',
                 'mengetahui' => 'required',
                 'petugas' => 'required',
-                'catatan' => 'nullable', 
+                'catatan' => 'nullable',
             ]);
-
         } catch (ValidationException $e) {
             // SweetAlert Error Form Belum Lengkap
             $this->dispatch('swal:error', [
@@ -242,26 +254,27 @@ class InputBeras extends Component
         $val_u2 = $this->parseNumber($this->ulangan_2);
         $val_u3 = $this->parseNumber($this->ulangan_3);
 
-        if (($val_u1 < 10 || $val_u1 > 14) || 
-            ($val_u2 < 10 || $val_u2 > 14) || 
-            ($val_u3 < 10 || $val_u3 > 14)) {
-            
-            $this->dispatch('swal:error', ['title' => 'Data Invalid!', 'text' => 'Nilai Ulangan harus 10 - 14!']); 
+        if (($val_u1 < 10 || $val_u1 > 14) ||
+            ($val_u2 < 10 || $val_u2 > 14) ||
+            ($val_u3 < 10 || $val_u3 > 14)
+        ) {
+
+            $this->dispatch('swal:error', ['title' => 'Data Invalid!', 'text' => 'Nilai Ulangan harus 10 - 14!']);
             return;
         }
 
-        if (!in_array($this->parseNumber($this->derajat_sosoh), [ 95, 100])) {
-            $this->dispatch('swal:error', ['title' => 'Data Invalid!', 'text' => 'Derajat Sosoh harus  95, atau 100!']); 
+        if (!in_array($this->parseNumber($this->derajat_sosoh), [95, 100])) {
+            $this->dispatch('swal:error', ['title' => 'Data Invalid!', 'text' => 'Derajat Sosoh harus  95, atau 100!']);
             return;
         }
 
         if ($this->parseNumber($this->butir_patah) > 40) {
-            $this->dispatch('swal:error', ['title' => 'Data Invalid!', 'text' => 'Butir Patah melebihi 40%!']); 
+            $this->dispatch('swal:error', ['title' => 'Data Invalid!', 'text' => 'Butir Patah melebihi 40%!']);
             return;
         }
 
         if ($this->parseNumber($this->menir) > 2) {
-            $this->dispatch('swal:error', ['title' => 'Data Invalid!', 'text' => 'Menir melebihi 2%!']); 
+            $this->dispatch('swal:error', ['title' => 'Data Invalid!', 'text' => 'Menir melebihi 2%!']);
             return;
         }
 
@@ -319,22 +332,42 @@ class InputBeras extends Component
                 'title' => 'Berhasil!',
                 'text'  => "Data Beras disimpan dengan No: $finalNomorSurat",
             ]);
-            
+
             // Reset Form
             $this->reset([
-                'id_mo', 'nomor_order', 'tempat_pemeriksaan', 'kode_sample', 'dasar_pemeriksaan',
-                'kondisi_kemasan', 'hama', 'dedak_katul_sekam', 'bau', 'bahan_kimia',
-                'ulangan_1', 'ulangan_2', 'ulangan_3', 'rata_rata',
-                'derajat_sosoh', 'butir_patah', 'menir',
-                'kuantum_gabah_sesuai_mo', 'kuantum_beras', 'rendemen_pengolahan',
-                'hasil_samping_menir', 'hasil_samping_butir_patah', 'hasil_samping_dedak_katul', 'hasil_samping_butir_kuning_rusak',
-                'catatan', 'lokasi', 'mengetahui', 'petugas'
+                'id_mo',
+                'nomor_order',
+                'tempat_pemeriksaan',
+                'kode_sample',
+                'dasar_pemeriksaan',
+                'kondisi_kemasan',
+                'hama',
+                'dedak_katul_sekam',
+                'bau',
+                'bahan_kimia',
+                'ulangan_1',
+                'ulangan_2',
+                'ulangan_3',
+                'rata_rata',
+                'derajat_sosoh',
+                'butir_patah',
+                'menir',
+                'kuantum_gabah_sesuai_mo',
+                'kuantum_beras',
+                'rendemen_pengolahan',
+                'hasil_samping_menir',
+                'hasil_samping_butir_patah',
+                'hasil_samping_dedak_katul',
+                'hasil_samping_butir_kuning_rusak',
+                'catatan',
+                'lokasi',
+                'mengetahui',
+                'petugas'
             ]);
-            
-            $this->generateNomorSurat(true);
 
+            $this->generateNomorSurat(true);
         } catch (\Exception $e) {
-            DB::rollBack(); 
+            DB::rollBack();
             // SweetAlert Error System
             $this->dispatch('swal:error', ['title' => 'Error System', 'text' => $e->getMessage()]);
         }
