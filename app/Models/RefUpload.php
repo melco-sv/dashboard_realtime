@@ -9,16 +9,15 @@ class RefUpload extends Model
 {
     use HasFactory;
 
-    protected $table = 'ref_upload'; // Nama tabel sesuai database
-    protected $primaryKey = 'id_upload'; // Primary Key
-    
-    // Matikan timestamp jika tabel tidak punya kolom created_at/updated_at
-    public $timestamps = false; 
+    protected $table = 'ref_upload';
+    protected $primaryKey = 'id_upload';
+    public $timestamps = false;
 
     protected $fillable = [
         'id_hpkk_gabah',
+        'id_hpkk_beras',
         'nama',
         'file',
-        'group'
+        'group',
     ];
 }

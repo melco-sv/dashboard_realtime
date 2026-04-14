@@ -16,12 +16,14 @@ use App\Livewire\InputGabah;
 use App\Livewire\ListGabah;
 use App\Livewire\EditGabah;
 use App\Livewire\UploadFotoGabah;
+use App\Livewire\ViewFotoGabah;
 use App\Http\Controllers\GabahPdfController;
 
 // Import Livewire Components (Beras)
 use App\Livewire\InputBeras;
 use App\Livewire\ListBeras;
 use App\Livewire\UploadFotoBeras;
+use App\Livewire\ViewFotoBeras;
 use App\Http\Controllers\BerasPdfController;
 
 // Import Livewire Components (Laporan)
@@ -92,6 +94,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/list-gabah', ListGabah::class)->name('list.gabah');
         Route::get('/edit-gabah/{id}', EditGabah::class)->name('edit.gabah');
         Route::get('/upload-foto-gabah/{id}', UploadFotoGabah::class)->name('upload.gabah');
+        Route::get('/view-foto-gabah/{id}', ViewFotoGabah::class)->name('view.foto.gabah');
         Route::get('/print/gabah/{id}/{type}', [GabahPdfController::class, 'print'])->name('print.gabah');
 
         // Operasional Beras
@@ -99,6 +102,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/list-beras', ListBeras::class)->name('list.beras');
         // Route::get('/edit-beras/{id}', EditBeras::class)->name('edit.beras'); // Uncomment jika sudah ada
         Route::get('/upload-foto-beras/{id}', UploadFotoBeras::class)->name('upload.beras');
+        Route::get('/view-foto-beras/{id}', ViewFotoBeras::class)->name('view.foto.beras');
         Route::get('/print/beras/{id}/{type}', [BerasPdfController::class, 'print'])->name('print.beras');
 
         // Laporan

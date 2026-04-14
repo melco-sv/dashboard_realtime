@@ -39,8 +39,12 @@ class MasHpkkGabah extends Model
     // === RELATIONSHIP ===
     public function cabang()
     {
-        // Menghubungkan kolom 'group' (di tabel ini) ke 'code_cabang' (di tabel RefCabang)
         return $this->belongsTo(RefCabang::class, 'group', 'code_cabang');
+    }
+
+    public function fotos()
+    {
+        return $this->hasMany(\App\Models\RefUpload::class, 'id_hpkk_gabah', 'id_po');
     }
 
     // === GLOBAL SCOPE ===

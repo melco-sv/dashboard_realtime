@@ -21,7 +21,7 @@
                 <span class="title">LAPORAN HASIL PEMERIKSAAN KUALITAS (LHPK) GABAH</span>
             </td>
             <td style="width: 20%; text-align: center;">
-                <img src="{{ public_path('assets/logo-sucofindo.png') }}" class="logo" alt="LOGO">
+                @if($logo)<img src="{{ $logo }}" class="logo" alt="LOGO">@endif
                 <br><b>SUCOFINDO</b>
             </td>
         </tr>

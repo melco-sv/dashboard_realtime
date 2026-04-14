@@ -56,8 +56,12 @@ class MasHpkkBeras extends Model
      */
     public function cabang()
     {
-        // belongsTo(ModelTujuannya, 'Foreign Key di tabel ini', 'Primary Key di tabel tujuan')
         return $this->belongsTo(RefCabang::class, 'group', 'code_cabang');
+    }
+
+    public function fotos()
+    {
+        return $this->hasMany(\App\Models\RefUpload::class, 'id_hpkk_beras', 'id_hpkk_beras');
     }
 
     // === GLOBAL SCOPE ===

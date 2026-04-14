@@ -22,7 +22,7 @@
                 <span class="title">HASIL PEMERIKSAAN KUALITAS (HPK) BERAS</span>
             </td>
             <td style="width: 20%; text-align: center;">
-                <img src="{{ public_path('assets/logo-sucofindo.png') }}" class="logo"><br><b>SUCOFINDO</b>
+                @if($logo)<img src="{{ $logo }}" class="logo">@endif<br><b>SUCOFINDO</b>
             </td>
         </tr>
     </table>

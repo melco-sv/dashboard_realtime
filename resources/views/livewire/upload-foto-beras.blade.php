@@ -8,16 +8,30 @@
             <h1 class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-emerald-600">
                 Upload Foto Beras
             </h1>
-            <p class="text-gray-400 text-sm mt-1">Dokumentasi HGL: <span class="font-mono text-green-400">{{ $nomor_hpkk_beras }}</span></p>
+            <p class="text-gray-400 text-sm mt-1">Dokumentasi HGL: <span class="font-mono text-green-400">{{ $nomor_hpkk }}</span></p>
+        </div>
+
+        {{-- INFO CARD RECORD --}}
+        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-4 mb-6 grid grid-cols-2 gap-3">
+            <div>
+                <p class="text-[10px] text-gray-500 uppercase tracking-wider font-bold mb-0.5">Tempat Pemeriksaan</p>
+                <p class="text-sm text-white font-bold uppercase">{{ $tempat ?? '-' }}</p>
+            </div>
+            <div>
+                <p class="text-[10px] text-gray-500 uppercase tracking-wider font-bold mb-0.5">Tanggal Pemeriksaan</p>
+                <p class="text-sm text-white">{{ $tanggal ?? '-' }}</p>
+            </div>
+            <div>
+                <p class="text-[10px] text-gray-500 uppercase tracking-wider font-bold mb-0.5">Lokasi</p>
+                <p class="text-sm text-white uppercase">{{ $lokasi_record ?? '-' }}</p>
+            </div>
+            <div>
+                <p class="text-[10px] text-gray-500 uppercase tracking-wider font-bold mb-0.5">No HPK</p>
+                <p class="text-xs font-mono text-green-300 break-all">{{ $nomor_hpkk ?? '-' }}</p>
+            </div>
         </div>
 
         <form wire:submit.prevent="save" class="relative z-10 space-y-6">
-
-            <div>
-                <label class="block text-gray-400 text-xs font-bold mb-2 uppercase tracking-wider">Id Hpkk Beras</label>
-                <input type="text" wire:model="id_hpkk_beras" readonly
-                    class="w-full bg-gray-800/50 border border-gray-700 text-gray-500 rounded-xl px-4 py-3 cursor-not-allowed font-mono">
-            </div>
 
             <div>
                 <label class="block text-gray-400 text-xs font-bold mb-2 uppercase tracking-wider">Nama Kegiatan</label>
@@ -36,35 +50,30 @@
                         <img src="{{ $photo->temporaryUrl() }}" class="absolute inset-0 w-full h-full object-cover opacity-50 group-hover:opacity-30 transition-opacity">
                         <div class="z-10 flex flex-col items-center justify-center pt-5 pb-6">
                             <p class="text-sm text-green-400 font-bold">Foto Terpilih!</p>
+                            <p class="text-xs text-gray-400 mt-1">Klik untuk ganti</p>
                         </div>
                         @else
                         <div class="flex flex-col items-center justify-center pt-5 pb-6">
                             <svg class="w-10 h-10 mb-3 text-gray-400 group-hover:text-green-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
                             </svg>
-                            <p class="text-sm text-gray-400">Click to upload</p>
+                            <p class="text-sm text-gray-400">Klik untuk upload gambar</p>
                         </div>
                         @endif
 
                         <input id="dropzone-file" type="file" wire:model="photo" class="hidden" accept="image/*" />
                     </label>
                 </div>
-                <div wire:loading wire:target="photo" class="text-green-400 text-xs mt-2 font-bold animate-pulse">Processing...</div>
+                <div wire:loading wire:target="photo" class="text-green-400 text-xs mt-2 font-bold animate-pulse">Memproses gambar...</div>
                 @error('photo') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
             </div>
 
-            <div>
-                <label class="block text-gray-400 text-xs font-bold mb-2 uppercase tracking-wider">Group</label>
-                <input type="text" wire:model="group" readonly
-                    class="w-full bg-gray-800/50 border border-gray-700 text-gray-300 rounded-xl px-4 py-3 font-mono cursor-not-allowed">
-            </div>
-
             <div class="flex gap-4 pt-4 border-t border-gray-800">
-                <button type="submit" class="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white font-bold py-3 rounded-xl shadow-lg shadow-green-500/30 transition-all transform hover:scale-[1.02]">
-                    Upload Beras
+                <button type="submit" class="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white font-bold py-3 rounded-xl shadow-lg shadow-green-500/30 transition-all">
+                    Upload Foto
                 </button>
                 <button type="button" wire:click="cancel" class="px-8 bg-gray-800 text-gray-400 hover:text-white hover:bg-gray-700 font-bold py-3 rounded-xl transition-all">
-                    Cancel
+                    Batal
                 </button>
             </div>
 

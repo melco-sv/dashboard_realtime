@@ -23,7 +23,7 @@
                     <span class="title">FORMULIR PENGAWASAN PEMERIKSAAN KUALITAS<br>BERAS HASIL GILING (HGL)</span>
                 </td>
                 <td style="width: 20%; text-align: center; border-left: 1px solid black;">
-                    <img src="{{ public_path('assets/logo-sucofindo.png') }}" class="logo"><br><b>SUCOFINDO</b>
+                    @if($logo)<img src="{{ $logo }}" class="logo">@endif<br><b>SUCOFINDO</b>
                 </td>
             </tr>
         </table>

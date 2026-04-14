@@ -15,15 +15,13 @@ class ListGabah extends Component
     public function render()
     {
         $data = MasHpkkGabah::query()
+            ->withCount('fotos')
             ->when($this->search, function ($q) {
                 $q->where('nomor_hpkk_gabah', 'like', '%' . $this->search . '%')
                     ->orWhere('mitra', 'like', '%' . $this->search . '%')
                     ->orWhere('kode_sample', 'like', '%' . $this->search . '%');
             })
-            // --- PERBAIKAN DI SINI ---
-            // Ganti 'id_hpkk_gabah' menjadi 'id_po'
             ->orderBy('id_po', 'desc')
-            // -------------------------
             ->paginate(10);
 
         return view('livewire.list-gabah', [
@@ -46,7 +44,6 @@ class ListGabah extends Component
     {
         $data = MasHpkkGabah::find($id);
         if ($data) {
-            // Ubah kolom status_data menjadi 'Approve'
             $data->update(['status_data' => 'Approve']);
             session()->flash('message', 'Status Data berhasil diubah menjadi Approve.');
         }

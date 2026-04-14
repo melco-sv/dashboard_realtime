@@ -22,7 +22,7 @@
                     <span class="title">FORMULIR PENGAWASAN PEMERIKSAAN KUALITAS<br>GABAH KERING PANEN (GKP)</span>
                 </td>
                 <td style="width: 20%; text-align: center; border-left: 1px solid black;">
-                    <img src="{{ public_path('assets/logo-sucofindo.png') }}" class="logo" alt="LOGO">
+                    @if($logo)<img src="{{ $logo }}" class="logo" alt="LOGO">@endif
                     <br><b>SUCOFINDO</b>
                 </td>
             </tr>

@@ -90,6 +90,10 @@
                             class="w-full bg-green-600 hover:bg-green-700 text-white py-1.5 px-2 rounded-lg text-xs font-bold text-center uppercase tracking-wide">
                             Update
                         </a>
+                        <a href="{{ route('view.foto.gabah', $item->id_po) }}" wire:navigate
+                            class="w-full bg-purple-600 hover:bg-purple-700 text-white py-1.5 px-2 rounded-lg text-xs font-bold text-center uppercase tracking-wide">
+                            Lihat Foto ({{ $item->fotos_count }})
+                        </a>
                         <a href="{{ route('upload.gabah', $item->id_po) }}" wire:navigate
                             class="w-full bg-pink-600 hover:bg-pink-700 text-white py-1.5 px-2 rounded-lg text-xs font-bold text-center uppercase tracking-wide">
                             Upload Foto

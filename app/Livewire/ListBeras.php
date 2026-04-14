@@ -15,6 +15,7 @@ class ListBeras extends Component
     public function render()
     {
         $data = MasHpkkBeras::query()
+            ->withCount('fotos')
             ->when($this->search, function ($q) {
                 $q->where('nomor_hpkk_beras', 'like', '%' . $this->search . '%')
                     ->orWhere('id_mo', 'like', '%' . $this->search . '%')
@@ -42,7 +43,6 @@ class ListBeras extends Component
     {
         try {
             $data = MasHpkkBeras::findOrFail($id);
-            // Kita gunakan kolom 'status' untuk menyimpan Approve
             $data->update(['status' => 'Approve']);
             session()->flash('message', 'Status Data berhasil diubah menjadi Approve.');
         } catch (\Exception $e) {

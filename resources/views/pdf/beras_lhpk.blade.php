@@ -97,7 +97,7 @@
                 <span class="title">LAPORAN HASIL PEMERIKSAAN KUALITAS (LHPK) BERAS</span>
             </td>
             <td style="width: 25%; text-align: center;">
-                <img src="{{ public_path('assets/logo-sucofindo.png') }}" class="logo" alt="SUCOFINDO">
+                @if($logo)<img src="{{ $logo }}" class="logo" alt="SUCOFINDO">@endif
                 <br>
                 <b style="font-size: 10px;">SUCOFINDO</b>
             </td>
