@@ -183,6 +183,24 @@
             </div>
             @endif
 
+            @if(Auth::check() && Auth::user()->isVerification())
+            <div>
+                <h3 class="px-4 text-xs font-bold text-blue-400 uppercase tracking-wider mb-2">Verifikasi</h3>
+                <div class="space-y-1">
+                    <a href="{{ route('verifikasi.gabah') }}" wire:navigate
+                        class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all group {{ request()->routeIs('verifikasi.gabah') ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'text-gray-400 hover:text-white hover:bg-gray-800' }}">
+                        <i class="fa-solid fa-wheat-awn text-lg"></i>
+                        <span class="font-medium">Verifikasi GKP</span>
+                    </a>
+                    <a href="{{ route('verifikasi.beras') }}" wire:navigate
+                        class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all group {{ request()->routeIs('verifikasi.beras') ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'text-gray-400 hover:text-white hover:bg-gray-800' }}">
+                        <i class="fa-solid fa-bowl-rice text-lg"></i>
+                        <span class="font-medium">Verifikasi HGL</span>
+                    </a>
+                </div>
+            </div>
+            @endif
+
             @if(Auth::check() && Auth::user()->level == 'Inspektor')
             <div>
                 <h3 class="px-4 text-xs font-bold text-orange-600 uppercase tracking-wider mb-2">Form</h3>
@@ -231,6 +249,8 @@
                         <div x-show="open" x-transition class="pl-4 mt-1 space-y-1">
                             <a href="{{ route('laporan.gkp') }}" wire:navigate class="block px-4 py-2 rounded-lg text-sm font-bold text-gray-400 hover:text-white hover:bg-gray-800 {{ request()->routeIs('laporan.gkp') ? 'text-white bg-gray-800' : '' }}">- Laporan GKP</a>
                             <a href="{{ route('laporan.hgl') }}" wire:navigate class="block px-4 py-2 rounded-lg text-sm font-bold text-gray-400 hover:text-white hover:bg-gray-800 {{ request()->routeIs('laporan.hgl') ? 'text-white bg-gray-800' : '' }}">- Laporan HGL</a>
+                            <a href="{{ route('bast.gabah') }}" wire:navigate class="block px-4 py-2 rounded-lg text-sm font-bold text-gray-400 hover:text-white hover:bg-gray-800 {{ request()->routeIs('bast.gabah') ? 'text-white bg-gray-800' : '' }}">- BAST GKP</a>
+                            <a href="{{ route('bast.beras') }}" wire:navigate class="block px-4 py-2 rounded-lg text-sm font-bold text-gray-400 hover:text-white hover:bg-gray-800 {{ request()->routeIs('bast.beras') ? 'text-white bg-gray-800' : '' }}">- BAST HGL</a>
                         </div>
                     </div>
                 </div>

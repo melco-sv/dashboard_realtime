@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\MasHpkkGabah;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Traits\PdfLogoHelper;
 
 class GabahPdfController extends Controller
 {
+    use PdfLogoHelper;
     public function print($id, $type)
     {
         ini_set('memory_limit', '256M');
@@ -16,7 +18,7 @@ class GabahPdfController extends Controller
 
         $viewData = [
             'd'    => $data,
-            'logo' => $this->getLogoBase64(),
+            'logo' => $this->logoBase64('logo-sucofindo.png'),
         ];
 
         $safeNomor = str_replace('/', '-', $data->nomor_hpkk_gabah);
@@ -42,14 +44,4 @@ class GabahPdfController extends Controller
         return abort(404);
     }
 
-    private function getLogoBase64(): string
-    {
-        $path = public_path('assets/logo-sucofindo.png');
-
-        if (!file_exists($path)) {
-            return '';
-        }
-
-        return 'data:image/png;base64,' . base64_encode(file_get_contents($path));
-    }
 }

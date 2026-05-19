@@ -3,7 +3,11 @@
     "allow": [
       "Bash(rm \"c:/dashboard-saya/app/Http/Controllers/AiReportController.php\")",
       "Bash(rm \"c:/dashboard-saya/resources/views/ai-dashboard.blade.php\")",
-      "Bash(php artisan:*)"
+      "Bash(php artisan:*)",
+      "Bash(xargs grep *)",
+      "Bash(grep \"CREATE TABLE \\\\`\" /c/dashboard-saya/pkgbsuco_bulog2025.sql)",
+      "Bash(sed 's/.*`\\\\\\([^`]*\\\\\\).*/\\\\1/')",
+      "Bash(awk '/^CREATE TABLE `mas_user`/,/^\\) ENGINE/' c:/dashboard-saya/pkgbsuco_bulog2025.sql)"
     ]
   }
 }

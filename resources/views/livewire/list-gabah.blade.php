@@ -99,15 +99,13 @@
                             Upload Foto
                         </a>
                         @if($item->status_data == 'Approve')
-                        <button disabled
-                            class="w-full bg-gray-700 text-gray-500 py-1.5 px-2 rounded-lg text-xs font-bold text-center uppercase cursor-not-allowed">
-                            Approved
-                        </button>
+                        <div class="w-full bg-green-900/40 border border-green-600/40 text-green-400 py-1.5 px-2 rounded-lg text-xs font-bold text-center uppercase">
+                            ✓ Approved
+                        </div>
                         @else
-                        <button wire:click="approve({{ $item->id_po }})" wire:confirm="Approve data ini?"
-                            class="w-full bg-yellow-500 hover:bg-yellow-400 text-black py-1.5 px-2 rounded-lg text-xs font-bold text-center uppercase tracking-wide">
-                            Approve
-                        </button>
+                        <div class="w-full bg-gray-800 border border-gray-600/40 text-gray-500 py-1.5 px-2 rounded-lg text-xs font-bold text-center uppercase">
+                            Pending
+                        </div>
                         @endif
                         <button wire:click="delete({{ $item->id_po }})" wire:confirm="Hapus data gabah ini?"
                             class="w-full bg-red-600 hover:bg-red-700 text-white py-1.5 px-2 rounded-lg text-xs font-bold text-center uppercase tracking-wide">

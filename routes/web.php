@@ -17,7 +17,11 @@ use App\Livewire\ListGabah;
 use App\Livewire\EditGabah;
 use App\Livewire\UploadFotoGabah;
 use App\Livewire\ViewFotoGabah;
+use App\Livewire\BastBeras;
+use App\Livewire\BastGabah;
 use App\Http\Controllers\GabahPdfController;
+use App\Http\Controllers\BastBerasPdfController;
+use App\Http\Controllers\BastGabahPdfController;
 
 // Import Livewire Components (Beras)
 use App\Livewire\InputBeras;
@@ -29,6 +33,10 @@ use App\Http\Controllers\BerasPdfController;
 // Import Livewire Components (Laporan)
 use App\Livewire\LaporanGkp;
 use App\Livewire\LaporanHgl;
+
+// Import Livewire Components (Verifikasi)
+use App\Livewire\VerifikasiGabah;
+use App\Livewire\VerifikasiBeras;
 
 use App\Livewire\EditBeras; // Pastikan nanti component ini dibuat
 
@@ -94,7 +102,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/list-gabah', ListGabah::class)->name('list.gabah');
         Route::get('/edit-gabah/{id}', EditGabah::class)->name('edit.gabah');
         Route::get('/upload-foto-gabah/{id}', UploadFotoGabah::class)->name('upload.gabah');
-        Route::get('/view-foto-gabah/{id}', ViewFotoGabah::class)->name('view.foto.gabah');
         Route::get('/print/gabah/{id}/{type}', [GabahPdfController::class, 'print'])->name('print.gabah');
 
         // Operasional Beras
@@ -102,11 +109,28 @@ Route::middleware('auth')->group(function () {
         Route::get('/list-beras', ListBeras::class)->name('list.beras');
         // Route::get('/edit-beras/{id}', EditBeras::class)->name('edit.beras'); // Uncomment jika sudah ada
         Route::get('/upload-foto-beras/{id}', UploadFotoBeras::class)->name('upload.beras');
-        Route::get('/view-foto-beras/{id}', ViewFotoBeras::class)->name('view.foto.beras');
         Route::get('/print/beras/{id}/{type}', [BerasPdfController::class, 'print'])->name('print.beras');
 
         // Laporan
         Route::get('/laporan-gkp', LaporanGkp::class)->name('laporan.gkp');
         Route::get('/laporan-hgl', LaporanHgl::class)->name('laporan.hgl');
+
+        // BAST
+        Route::get('/bast-beras', BastBeras::class)->name('bast.beras');
+        Route::get('/bast-beras/pdf', [BastBerasPdfController::class, 'print'])->name('bast.beras.pdf');
+        Route::get('/bast-gabah', BastGabah::class)->name('bast.gabah');
+        Route::get('/bast-gabah/pdf', [BastGabahPdfController::class, 'print'])->name('bast.gabah.pdf');
+    });
+
+    // --- VIEW FOTO (Inspektor & Verification) ---
+    Route::middleware(['role:inspektor,verification'])->group(function () {
+        Route::get('/view-foto-gabah/{id}', ViewFotoGabah::class)->name('view.foto.gabah');
+        Route::get('/view-foto-beras/{id}', ViewFotoBeras::class)->name('view.foto.beras');
+    });
+
+    // --- HALAMAN KHUSUS VERIFICATION ---
+    Route::middleware(['role:verification'])->group(function () {
+        Route::get('/verifikasi-gabah', VerifikasiGabah::class)->name('verifikasi.gabah');
+        Route::get('/verifikasi-beras', VerifikasiBeras::class)->name('verifikasi.beras');
     });
 });

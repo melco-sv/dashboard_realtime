@@ -1,19 +1,64 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <style>
-        body { font-family: sans-serif; font-size: 11px; }
-        .header-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-        .header-table td { border: 1px solid black; padding: 10px; }
-        .logo { width: 100px; }
-        .title { font-size: 16px; font-weight: bold; text-align: center; }
-        .info-table { width: 100%; margin-bottom: 10px; }
-        .info-table td { padding: 3px; vertical-align: top; }
-        .content-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        .content-table th, .content-table td { border: 1px solid black; padding: 5px; }
-        .signature-table { width: 100%; margin-top: 50px; text-align: center; }
+        body {
+            font-family: sans-serif;
+            font-size: 11px;
+        }
+
+        .header-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .header-table td {
+            border: 1px solid black;
+            padding: 10px;
+        }
+
+        .logo {
+            width: 100px;
+        }
+
+        .title {
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .info-table {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .info-table td {
+            padding: 3px;
+            vertical-align: top;
+        }
+
+        .content-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .content-table th,
+        .content-table td {
+            border: 1px solid black;
+            padding: 5px;
+        }
+
+        .signature-table {
+            width: 100%;
+            margin-top: 50px;
+            text-align: center;
+        }
     </style>
 </head>
+
 <body>
     <table class="header-table">
         <tr>
@@ -32,14 +77,38 @@
     </div>
 
     <table class="info-table">
-        <tr><td width="200">Nomor Order</td><td>: {{ $d->nomor_order }}</td></tr>
-        <tr><td>Pengirim</td><td>: {{ $d->pengirim }}</td></tr>
-        <tr><td>Tempat Pelaksanaan</td><td>: {{ $d->lokasi }}</td></tr>
-        <tr><td>Tanggal Pelaksanaan</td><td>: {{ \Carbon\Carbon::parse($d->tanggal_pelaksanaan)->isoFormat('D MMMM Y') }}</td></tr>
-        <tr><td>Jenis Alat Angkut</td><td>: {{ $d->jenis_alat_angkut }}</td></tr>
-        <tr><td>Nomor Registrasi Alat Angkut</td><td>: {{ $d->nomor_registrasi_alat_angkut }}</td></tr>
-        <tr><td>Kode Sampel</td><td>: {{ $d->kode_sample }}</td></tr>
-        <tr><td>Nomor Purchase Order</td><td>: {{ $d->no_order_pembelian }}</td></tr>
+        <tr>
+            <td width="200">Nomor Order</td>
+            <td>: {{ $d->nomor_order }}</td>
+        </tr>
+        <tr>
+            <td>Pengirim</td>
+            <td>: {{ $d->pengirim }}</td>
+        </tr>
+        <tr>
+            <td>Tempat Pelaksanaan</td>
+            <td>: {{ $d->lokasi }}</td>
+        </tr>
+        <tr>
+            <td>Tanggal Pelaksanaan</td>
+            <td>: {{ \Carbon\Carbon::parse($d->tanggal_pelaksanaan)->isoFormat('D MMMM Y') }}</td>
+        </tr>
+        <tr>
+            <td>Jenis Alat Angkut</td>
+            <td>: {{ $d->jenis_alat_angkut }}</td>
+        </tr>
+        <tr>
+            <td>Nomor Registrasi Alat Angkut</td>
+            <td>: {{ $d->nomor_registrasi_alat_angkut }}</td>
+        </tr>
+        <tr>
+            <td>Kode Sampel</td>
+            <td>: {{ $d->kode_sample }}</td>
+        </tr>
+        <tr>
+            <td>Nomor Purchase Order</td>
+            <td>: {{ $d->no_order_pembelian }}</td>
+        </tr>
     </table>
 
     <table class="content-table">
@@ -68,7 +137,7 @@
                 </td>
                 <td style="vertical-align: top;">
                     <br>
-                    @if($d->weighbridge) ✦ Weighbridge @else ✦ Non Weighbridge @endif 
+                    @if($d->weighbridge) ✦ Weighbridge @else ✦ Non Weighbridge @endif
                     &nbsp;&nbsp;&nbsp; <b>{{ number_format($d->jumlah_timbangan, 0, ',', '.') }} Kg</b>
                     <br><br>
                     {{ $d->ulangan_1 }} %<br>
@@ -99,4 +168,5 @@
         </tr>
     </table>
 </body>
+
 </html>
