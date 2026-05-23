@@ -5,6 +5,7 @@ namespace App\Livewire;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\MasHpkkGabah;
+use Illuminate\Support\Facades\Auth;
 
 class ListGabah extends Component
 {
@@ -34,6 +35,14 @@ class ListGabah extends Component
     {
         $data = MasHpkkGabah::find($id);
         if ($data) {
+            activity()
+                ->causedBy(Auth::user())
+                ->withProperties([
+                    'no_hpk' => $data->nomor_hpkk_gabah,
+                    'mitra'  => $data->mitra,
+                ])
+                ->log('Delete GKP');
+
             $data->delete();
             session()->flash('message', 'Data berhasil dihapus.');
         }

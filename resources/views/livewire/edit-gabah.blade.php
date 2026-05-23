@@ -92,14 +92,14 @@
 
             <div class="mb-8">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 bg-gray-800/30 p-4 rounded-xl border border-gray-700/50">
-                    <div><label class="block text-gray-400 text-xs font-bold mb-2">Ulangan 1</label><input type="number" step="0.01" wire:model.live="ulangan_1" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3"></div>
-                    <div><label class="block text-gray-400 text-xs font-bold mb-2">Ulangan 2</label><input type="number" step="0.01" wire:model.live="ulangan_2" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3"></div>
-                    <div><label class="block text-gray-400 text-xs font-bold mb-2">Ulangan 3</label><input type="number" step="0.01" wire:model.live="ulangan_3" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3"></div>
+                    <div><label class="block text-gray-400 text-xs font-bold mb-2">Ulangan 1 <span class="text-yellow-500 font-normal">(10–38)</span></label><input type="number" step="0.01" wire:model.blur="ulangan_1" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3"></div>
+                    <div><label class="block text-gray-400 text-xs font-bold mb-2">Ulangan 2 <span class="text-yellow-500 font-normal">(10–38)</span></label><input type="number" step="0.01" wire:model.blur="ulangan_2" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3"></div>
+                    <div><label class="block text-gray-400 text-xs font-bold mb-2">Ulangan 3 <span class="text-yellow-500 font-normal">(10–38)</span></label><input type="number" step="0.01" wire:model.blur="ulangan_3" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3"></div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-                    <div class="relative"><label class="block text-blue-400 text-xs font-bold mb-2">KA Rata-rata (Auto)</label><input type="text" wire:model="kadar_air_rata_rata" readonly class="w-full bg-blue-900/20 border border-blue-500/50 text-blue-400 font-bold rounded-lg px-4 py-3"></div>
-                    <div><label class="block text-gray-400 text-xs font-bold mb-2">Kadar Hampa</label><input type="number" step="0.01" wire:model="kadar_hampa" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3"></div>
-                    <div><label class="block text-gray-400 text-xs font-bold mb-2">Butir Hijau</label><input type="number" step="0.01" wire:model="butir_hijau" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3"></div>
+                    <div class="relative"><label class="block text-blue-400 text-xs font-bold mb-2">KA Rata-rata (Auto)</label><input type="text" wire:model="kadar_air_rata_rata" readonly class="w-full bg-blue-900/20 border border-blue-500/50 text-blue-400 font-bold rounded-lg px-4 py-3 cursor-not-allowed"></div>
+                    <div><label class="block text-gray-400 text-xs font-bold mb-2">Kadar Hampa <span class="text-yellow-500 font-normal">(maks 40%)</span></label><input type="number" step="0.01" wire:model.blur="kadar_hampa" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3"></div>
+                    <div><label class="block text-gray-400 text-xs font-bold mb-2">Butir Hijau <span class="text-yellow-500 font-normal">(maks 30%)</span></label><input type="number" step="0.01" wire:model.blur="butir_hijau" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3"></div>
                 </div>
             </div>
 

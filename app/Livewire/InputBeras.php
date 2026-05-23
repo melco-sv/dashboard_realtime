@@ -327,6 +327,16 @@ class InputBeras extends Component
 
             DB::commit();
 
+            activity()
+                ->causedBy(Auth::user())
+                ->withProperties([
+                    'no_lhpk'          => $finalNomorSurat,
+                    'no_mo'            => $this->id_mo,
+                    'tempat'           => $this->tempat_pemeriksaan,
+                    'petugas'          => $this->petugas,
+                ])
+                ->log('Input HGL');
+
             // SweetAlert Sukses
             $this->dispatch('swal:success', [
                 'title' => 'Berhasil!',

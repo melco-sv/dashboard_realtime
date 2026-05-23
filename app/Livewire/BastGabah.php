@@ -6,6 +6,7 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 
 class BastGabah extends Component
 {
@@ -29,6 +30,15 @@ class BastGabah extends Component
     {
         $this->tgl_mulai = date('Y-m-01');
         $this->tgl_akhir = date('Y-m-d');
+
+        // Load tarif dari cache (invalidated saat Super Admin ubah tarif)
+        $setting = Cache::rememberForever('tarif_bast', fn () =>
+            DB::table('ref_settings')->where('key', 'tarif_bast')->first()
+        );
+        if ($setting) {
+            $this->tarif = $setting->value;
+        }
+
         $this->nomor_surat = $this->generateNomorSurat();
     }
 

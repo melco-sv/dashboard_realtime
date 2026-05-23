@@ -100,23 +100,23 @@
                 <div class="grid grid-cols-2 gap-4">
                     <div class="col-span-2 grid grid-cols-4 gap-2 bg-gray-800/50 p-2 rounded-lg">
                         <div class="col-span-4 text-xs text-blue-300 mb-1">Kadar Air (%)</div>
-                        <input type="number" step="0.01" wire:model="ulangan_1" placeholder="U1" class="bg-gray-800 border border-gray-600 rounded px-2 py-1 text-sm focus:border-blue-500">
-                        <input type="number" step="0.01" wire:model="ulangan_2" placeholder="U2" class="bg-gray-800 border border-gray-600 rounded px-2 py-1 text-sm focus:border-blue-500">
-                        <input type="number" step="0.01" wire:model="ulangan_3" placeholder="U3" class="bg-gray-800 border border-gray-600 rounded px-2 py-1 text-sm focus:border-blue-500">
-                        <input type="number" step="0.01" wire:model="rata_rata" placeholder="Rata" class="bg-gray-900 border border-blue-500/50 rounded px-2 py-1 text-sm font-bold text-blue-400">
+                        <input type="number" step="0.01" wire:model.blur="ulangan_1" placeholder="U1 (10-14)" class="bg-gray-800 border border-gray-600 rounded px-2 py-1 text-sm focus:border-blue-500">
+                        <input type="number" step="0.01" wire:model.blur="ulangan_2" placeholder="U2 (10-14)" class="bg-gray-800 border border-gray-600 rounded px-2 py-1 text-sm focus:border-blue-500">
+                        <input type="number" step="0.01" wire:model.blur="ulangan_3" placeholder="U3 (10-14)" class="bg-gray-800 border border-gray-600 rounded px-2 py-1 text-sm focus:border-blue-500">
+                        <input type="text" wire:model="rata_rata" readonly placeholder="Auto hitung" class="bg-gray-900 border border-blue-500/50 rounded px-2 py-1 text-sm font-bold text-blue-400 cursor-not-allowed">
                     </div>
 
                     <div>
-                        <label class="text-gray-400 text-sm">Derajat Sosoh (%)</label>
-                        <input type="number" step="0.01" wire:model="derajat_sosoh" class="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 mt-1 focus:border-blue-500 outline-none">
+                        <label class="text-gray-400 text-sm">Derajat Sosoh (%) <span class="text-yellow-500 text-xs">95 atau 100</span></label>
+                        <input type="number" step="1" wire:model.blur="derajat_sosoh" class="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 mt-1 focus:border-blue-500 outline-none">
                     </div>
                     <div>
-                        <label class="text-gray-400 text-sm">Butir Patah (%)</label>
-                        <input type="number" step="0.01" wire:model="butir_patah" class="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 mt-1 focus:border-blue-500 outline-none">
+                        <label class="text-gray-400 text-sm">Butir Patah (%) <span class="text-yellow-500 text-xs">max 25%</span></label>
+                        <input type="number" step="0.01" wire:model.blur="butir_patah" class="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 mt-1 focus:border-blue-500 outline-none">
                     </div>
                     <div>
-                        <label class="text-gray-400 text-sm">Menir (%)</label>
-                        <input type="number" step="0.01" wire:model="menir" class="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 mt-1 focus:border-blue-500 outline-none">
+                        <label class="text-gray-400 text-sm">Menir (%) <span class="text-yellow-500 text-xs">max 2%</span></label>
+                        <input type="number" step="0.01" wire:model.blur="menir" class="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 mt-1 focus:border-blue-500 outline-none">
                     </div>
                     <div>
                         <label class="text-gray-400 text-sm">Bahan Kimia</label>

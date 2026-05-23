@@ -136,10 +136,18 @@ class ManageUser extends Component
         // 4. Eksekusi Database
         if ($this->isEditMode) {
             User::where('username', $this->usernameBeingEdited)->update($data);
+            activity()
+                ->causedBy(Auth::user())
+                ->withProperties(['username' => $this->usernameBeingEdited, 'level' => $this->level])
+                ->log('Edit User');
             session()->flash('message', 'User berhasil diperbarui!');
         } else {
             $data['username'] = $this->username;
             User::create($data);
+            activity()
+                ->causedBy(Auth::user())
+                ->withProperties(['username' => $this->username, 'level' => $this->level, 'cabang' => $this->group])
+                ->log('Buat User Baru');
             session()->flash('message', 'User baru berhasil dibuat!');
         }
 
@@ -157,7 +165,14 @@ class ManageUser extends Component
             return;
         }
 
+        $user = User::where('username', $username)->first();
         User::where('username', $username)->delete();
+
+        activity()
+            ->causedBy(Auth::user())
+            ->withProperties(['username' => $username, 'nama' => $user?->nama, 'level' => $user?->level])
+            ->log('Hapus User');
+
         session()->flash('message', 'User berhasil dihapus.');
     }
 

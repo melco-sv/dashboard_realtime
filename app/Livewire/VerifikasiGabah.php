@@ -5,6 +5,7 @@ namespace App\Livewire;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 
 class VerifikasiGabah extends Component
 {
@@ -30,9 +31,24 @@ class VerifikasiGabah extends Component
 
     public function approve(int $id): void
     {
+        $row = DB::table('mas_hpkk_gabah as m')
+            ->leftJoin('ref_cabang as r', 'm.group', '=', 'r.code_cabang')
+            ->where('m.id_po', $id)
+            ->select('m.nomor_hpkk_gabah', 'm.mitra', 'r.name_cabang')
+            ->first();
+
         DB::table('mas_hpkk_gabah')
             ->where('id_po', $id)
             ->update(['status_data' => 'Approve']);
+
+        activity()
+            ->causedBy(Auth::user())
+            ->withProperties([
+                'no_hpk'  => $row?->nomor_hpkk_gabah,
+                'mitra'   => $row?->mitra,
+                'cabang'  => $row?->name_cabang,
+            ])
+            ->log('Approve GKP');
 
         session()->flash('message', 'Data berhasil di-approve.');
     }
@@ -84,16 +100,20 @@ class VerifikasiGabah extends Component
             });
         }
 
-        // Stats untuk cards
-        $statsQuery = clone $query;
-        $allRows    = $statsQuery->get(['m.jumlah_timbangan', 'm.status_data']);
-        $totalKg    = $allRows->sum(fn($r) => (float) str_replace(',', '.', $r->jumlah_timbangan ?? 0));
-        $totalApproved = $allRows->where('status_data', 'Approve')->count();
-        $totalPending  = $allRows->where('status_data', '!=', 'Approve')->count();
+        // Stats via DB aggregate — efisien, tidak load semua row ke PHP
+        $stats = (clone $query)->selectRaw("
+            SUM(CAST(REPLACE(COALESCE(m.jumlah_timbangan, '0'), ',', '.') AS DECIMAL(15,2))) as total_kg,
+            SUM(CASE WHEN m.status_data = 'Approve' THEN 1 ELSE 0 END) as total_approved,
+            SUM(CASE WHEN COALESCE(m.status_data, '') != 'Approve' THEN 1 ELSE 0 END) as total_pending
+        ")->first();
 
-        $cabangs = DB::table('ref_cabang')
-            ->orderBy('name_cabang')
-            ->get(['code_cabang', 'name_cabang']);
+        $totalKg       = (float) ($stats?->total_kg ?? 0);
+        $totalApproved = (int)   ($stats?->total_approved ?? 0);
+        $totalPending  = (int)   ($stats?->total_pending ?? 0);
+
+        $cabangs = Cache::remember('ref_cabang_all', 3600, fn () =>
+            DB::table('ref_cabang')->orderBy('name_cabang')->get(['code_cabang', 'name_cabang'])
+        );
 
         return view('livewire.verifikasi-gabah', [
             'dataList'      => $query->paginate(15),

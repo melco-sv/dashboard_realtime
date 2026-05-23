@@ -5,6 +5,7 @@ namespace App\Livewire;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 
 class VerifikasiBeras extends Component
 {
@@ -30,9 +31,24 @@ class VerifikasiBeras extends Component
 
     public function approve(int $id): void
     {
+        $row = DB::table('mas_hpkk_beras as m')
+            ->leftJoin('ref_cabang as r', 'm.group', '=', 'r.code_cabang')
+            ->where('m.id_hpkk_beras', $id)
+            ->select('m.nomor_hpkk_beras', 'm.id_mo', 'r.name_cabang')
+            ->first();
+
         DB::table('mas_hpkk_beras')
             ->where('id_hpkk_beras', $id)
             ->update(['status' => 'Approve']);
+
+        activity()
+            ->causedBy(Auth::user())
+            ->withProperties([
+                'no_lhpk' => $row?->nomor_hpkk_beras,
+                'no_mo'   => $row?->id_mo,
+                'cabang'  => $row?->name_cabang,
+            ])
+            ->log('Approve HGL');
 
         session()->flash('message', 'Data berhasil di-approve.');
     }
@@ -85,16 +101,20 @@ class VerifikasiBeras extends Component
             });
         }
 
-        // Stats
-        $statsQuery    = clone $query;
-        $allRows       = $statsQuery->get(['m.kuantum_beras', 'm.status']);
-        $totalKg       = $allRows->sum(fn($r) => (float) str_replace(',', '.', $r->kuantum_beras ?? 0));
-        $totalApproved = $allRows->where('status', 'Approve')->count();
-        $totalPending  = $allRows->where('status', '!=', 'Approve')->count();
+        // Stats via DB aggregate — efisien, tidak load semua row ke PHP
+        $stats = (clone $query)->selectRaw("
+            SUM(CAST(REPLACE(COALESCE(m.kuantum_beras, '0'), ',', '.') AS DECIMAL(15,2))) as total_kg,
+            SUM(CASE WHEN m.status = 'Approve' THEN 1 ELSE 0 END) as total_approved,
+            SUM(CASE WHEN COALESCE(m.status, '') != 'Approve' THEN 1 ELSE 0 END) as total_pending
+        ")->first();
 
-        $cabangs = DB::table('ref_cabang')
-            ->orderBy('name_cabang')
-            ->get(['code_cabang', 'name_cabang']);
+        $totalKg       = (float) ($stats?->total_kg ?? 0);
+        $totalApproved = (int)   ($stats?->total_approved ?? 0);
+        $totalPending  = (int)   ($stats?->total_pending ?? 0);
+
+        $cabangs = Cache::remember('ref_cabang_all', 3600, fn () =>
+            DB::table('ref_cabang')->orderBy('name_cabang')->get(['code_cabang', 'name_cabang'])
+        );
 
         return view('livewire.verifikasi-beras', [
             'dataList'      => $query->paginate(15),

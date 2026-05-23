@@ -5,6 +5,7 @@ namespace App\Livewire;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\MasHpkkBeras;
+use Illuminate\Support\Facades\Auth;
 
 class ListBeras extends Component
 {
@@ -32,7 +33,17 @@ class ListBeras extends Component
     public function delete($id)
     {
         try {
-            MasHpkkBeras::findOrFail($id)->delete();
+            $data = MasHpkkBeras::findOrFail($id);
+
+            activity()
+                ->causedBy(Auth::user())
+                ->withProperties([
+                    'no_lhpk' => $data->nomor_hpkk_beras,
+                    'no_mo'   => $data->id_mo,
+                ])
+                ->log('Delete HGL');
+
+            $data->delete();
             session()->flash('message', 'Data Beras berhasil dihapus.');
         } catch (\Exception $e) {
             session()->flash('error', 'Gagal menghapus data.');

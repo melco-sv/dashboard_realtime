@@ -236,9 +236,6 @@ class InputGabah extends Component
         try {
             $finalNomorSurat = $this->generateNomorSurat(false);
 
-            $val_weighbridge = ($this->metode_timbang === 'Weightbridge') ? 'Weightbridge' : null;
-            $val_non_weighbridge = ($this->metode_timbang !== 'Weightbridge') ? $this->metode_timbang : null;
-
             MasHpkkGabah::create([
                 'nomor_hpkk_gabah' => $finalNomorSurat,
                 'no_order_pembelian' => $this->no_order_pembelian,
@@ -249,8 +246,6 @@ class InputGabah extends Component
                 'jenis_alat_angkut' => $this->jenis_alat_angkut,
                 'nomor_registrasi_alat_angkut' => $this->nomor_registrasi_alat_angkut,
                 'hama_penyakit' => $this->hama_penyakit,
-                'weighbridge' => $val_weighbridge,
-                'non_weighbridge' => $val_non_weighbridge,
                 'kode_sample' => $this->kode_sample,
                 'jumlah_timbangan' => $this->parseNumber($this->jumlah_timbangan),
                 'ulangan_1' => $this->parseNumber($this->ulangan_1),
@@ -268,6 +263,16 @@ class InputGabah extends Component
             ]);
 
             DB::commit();
+
+            activity()
+                ->causedBy(Auth::user())
+                ->withProperties([
+                    'no_hpk'  => $finalNomorSurat,
+                    'mitra'   => $this->mitra,
+                    'petugas' => $this->petugas,
+                    'lokasi'  => $this->lokasi,
+                ])
+                ->log('Input GKP');
 
             // SweetAlert Sukses
             $this->dispatch('swal:success', [

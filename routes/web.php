@@ -37,6 +37,8 @@ use App\Livewire\LaporanHgl;
 // Import Livewire Components (Verifikasi)
 use App\Livewire\VerifikasiGabah;
 use App\Livewire\VerifikasiBeras;
+use App\Livewire\TarifSetting;
+use App\Livewire\ActivityLog;
 
 use App\Livewire\EditBeras; // Pastikan nanti component ini dibuat
 
@@ -91,6 +93,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/settings', UpdateProfile::class)->name('settings');
 
     Route::get('/manage-users', \App\Livewire\ManageUser::class)->name('manage.users');
+    Route::get('/tarif-setting', TarifSetting::class)->name('tarif.setting')->middleware('role:super admin');
+    Route::get('/activity-log', ActivityLog::class)->name('activity.log')->middleware('role:super admin');
 
     // --- HALAMAN KHUSUS INSPEKTOR ---
     // (Input, Edit, List, Upload, Laporan)
