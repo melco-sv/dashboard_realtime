@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use Livewire\WithPagination;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
 
@@ -100,8 +101,11 @@ class VerifikasiGabah extends Component
             });
         }
 
-        // Stats via DB aggregate — efisien, tidak load semua row ke PHP
-        $stats = (clone $query)->selectRaw("
+        // Stats — clone the query (keeps WHERE/JOIN), reset SELECT+ORDER, then aggregate
+        $statsQuery = clone $query;
+        $statsQuery->columns = null;
+        $statsQuery->orders  = null;
+        $stats = $statsQuery->selectRaw("
             SUM(CAST(REPLACE(COALESCE(m.jumlah_timbangan, '0'), ',', '.') AS DECIMAL(15,2))) as total_kg,
             SUM(CASE WHEN m.status_data = 'Approve' THEN 1 ELSE 0 END) as total_approved,
             SUM(CASE WHEN COALESCE(m.status_data, '') != 'Approve' THEN 1 ELSE 0 END) as total_pending

@@ -205,6 +205,11 @@
                         <i class="fa-solid fa-bowl-rice text-lg"></i>
                         <span class="font-medium">Verifikasi HGL</span>
                     </a>
+                    <a href="{{ route('status.bayar.bast') }}" wire:navigate
+                        class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all group {{ request()->routeIs('status.bayar.bast') ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'text-gray-400 hover:text-white hover:bg-gray-800' }}">
+                        <i class="fa-solid fa-money-check-dollar text-lg"></i>
+                        <span class="font-medium">Status Bayar BAST</span>
+                    </a>
                 </div>
             </div>
             @endif

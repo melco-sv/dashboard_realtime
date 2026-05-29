@@ -18,9 +18,7 @@ class CabangScope implements Scope
 
             // Jika User punya 'group' (artinya dia user cabang/inspektor)
             // Dan Groupnya tidak kosong
-            if (!empty($user->group)) {
-                // Filter data berdasarkan kolom 'group' di tabel data (gabah/beras)
-                // Kolom 'group' di mas_hpkk_gabah harus sama dengan 'group' di mas_user
+            if (!empty($user->group) && strtolower($user->level) !== 'verification') {
                 $builder->where('group', $user->group);
             }
             

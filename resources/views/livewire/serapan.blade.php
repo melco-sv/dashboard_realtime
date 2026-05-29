@@ -331,7 +331,7 @@
             <div class="flex items-center justify-between mb-4">
                 <div>
                     <h4 class="text-sm font-bold text-white uppercase tracking-widest">Ranking Performa Cabang</h4>
-                    <p class="text-[10px] text-gray-500 mt-1">Urutan terbaik → terburuk berdasarkan Rata-rata Kadar Air Gabah</p>
+                    <p class="text-[10px] text-gray-500 mt-1">Urutan terbaik → terburuk berdasarkan Total Pendapatan</p>
                 </div>
                 <span class="text-[10px] text-indigo-400 bg-indigo-500/10 px-3 py-1 rounded-full font-bold border border-indigo-500/30">
                     {{ count($rankingCabang) }} Cabang
@@ -344,39 +344,24 @@
                         <tr class="bg-gray-800/80 text-gray-400 text-[10px] uppercase tracking-widest">
                             <th class="px-4 py-3 text-left font-bold">#</th>
                             <th class="px-4 py-3 text-left font-bold">Cabang</th>
-                            <th class="px-4 py-3 text-center font-bold">Pem. Gabah</th>
-                            <th class="px-4 py-3 text-center font-bold">Pem. Beras</th>
-                            <th class="px-4 py-3 text-center font-bold">Avg KA Gabah</th>
-                            <th class="px-4 py-3 text-center font-bold">Avg Hampa</th>
-                            <th class="px-4 py-3 text-center font-bold">Avg Rendemen</th>
-                            <th class="px-4 py-3 text-center font-bold">Status</th>
+                            <th class="px-4 py-3 text-center font-bold">Gabah (Kg)</th>
+                            <th class="px-4 py-3 text-center font-bold">Beras (Kg)</th>
+                            <th class="px-4 py-3 text-center font-bold">Total Pendapatan</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-700/40">
                         @foreach($rankingCabang as $i => $row)
                         @php
-                            $rank      = $i + 1;
-                            $rankCls   = $rank === 1 ? 'text-yellow-400' : ($rank === 2 ? 'text-gray-300' : ($rank === 3 ? 'text-amber-600' : 'text-gray-600'));
-                            $isGood    = $row['avg_ka'] <= 14 && ($row['avg_rendemen'] === null || $row['avg_rendemen'] >= 63);
+                            $rank    = $i + 1;
+                            $rankCls = $rank === 1 ? 'text-yellow-400' : ($rank === 2 ? 'text-gray-300' : ($rank === 3 ? 'text-amber-600' : 'text-gray-600'));
                         @endphp
                         <tr class="bg-gray-900/50 hover:bg-gray-800/50 transition-colors">
                             <td class="px-4 py-3 font-extrabold {{ $rankCls }}">#{{ $rank }}</td>
                             <td class="px-4 py-3 font-bold text-white">{{ $row['name'] }}</td>
-                            <td class="px-4 py-3 text-center font-mono text-blue-300">{{ number_format($row['jumlah_gabah']) }}</td>
-                            <td class="px-4 py-3 text-center font-mono text-green-300">{{ number_format($row['jumlah_beras']) }}</td>
-                            <td class="px-4 py-3 text-center font-mono font-bold {{ $row['avg_ka'] <= 14 ? 'text-green-400' : 'text-red-400' }}">
-                                {{ number_format($row['avg_ka'], 2) }}%
-                            </td>
-                            <td class="px-4 py-3 text-center font-mono {{ $row['avg_hampa'] <= 3 ? 'text-green-400' : 'text-yellow-400' }}">
-                                {{ number_format($row['avg_hampa'], 2) }}%
-                            </td>
-                            <td class="px-4 py-3 text-center font-mono {{ ($row['avg_rendemen'] ?? 0) >= 63 ? 'text-green-400' : 'text-orange-400' }}">
-                                {{ $row['avg_rendemen'] !== null ? number_format($row['avg_rendemen'], 2) . '%' : '—' }}
-                            </td>
-                            <td class="px-4 py-3 text-center">
-                                <span class="text-[10px] px-2 py-0.5 rounded-full font-bold {{ $isGood ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400' }}">
-                                    {{ $isGood ? 'BAIK' : 'PERHATIAN' }}
-                                </span>
+                            <td class="px-4 py-3 text-center font-mono text-blue-300">{{ number_format($row['gabah_kg'], 2, ',', '.') }}</td>
+                            <td class="px-4 py-3 text-center font-mono text-green-300">{{ number_format($row['beras_kg'], 2, ',', '.') }}</td>
+                            <td class="px-4 py-3 text-center font-mono font-bold text-indigo-300">
+                                Rp {{ number_format($row['pendapatan'], 0, ',', '.') }}
                             </td>
                         </tr>
                         @endforeach

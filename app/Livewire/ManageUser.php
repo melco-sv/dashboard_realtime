@@ -14,7 +14,7 @@ class ManageUser extends Component
     use WithPagination;
 
     // === PROPERTI FORM ===
-    public $username, $nama, $email, $phone, $position, $group, $level, $status;
+    public $username, $nama, $email, $position, $group, $level, $status;
     public $password, $password_confirmation;
 
     // === STATE MANAGEMENT ===
@@ -80,7 +80,6 @@ class ManageUser extends Component
         $this->username = $user->username;
         $this->nama = $user->nama;
         $this->email = $user->email;
-        $this->phone = $user->phone;
         $this->position = $user->position;
         $this->group = $user->group;
         $this->level = $user->level;
@@ -120,7 +119,6 @@ class ManageUser extends Component
         $data = [
             'nama' => $this->nama,
             'email' => $this->email,
-            'phone' => $this->phone,
             'position' => $this->position,
             'group' => $this->group,
             'level' => $this->level,
@@ -183,7 +181,6 @@ class ManageUser extends Component
             'username',
             'nama',
             'email',
-            'phone',
             'position',
             'group',
             'level',

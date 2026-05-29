@@ -39,6 +39,7 @@ use App\Livewire\VerifikasiGabah;
 use App\Livewire\VerifikasiBeras;
 use App\Livewire\TarifSetting;
 use App\Livewire\ActivityLog;
+use App\Livewire\StatusBayarBast;
 
 use App\Livewire\EditBeras; // Pastikan nanti component ini dibuat
 
@@ -136,5 +137,6 @@ Route::middleware('auth')->group(function () {
     Route::middleware(['role:verification'])->group(function () {
         Route::get('/verifikasi-gabah', VerifikasiGabah::class)->name('verifikasi.gabah');
         Route::get('/verifikasi-beras', VerifikasiBeras::class)->name('verifikasi.beras');
+        Route::get('/status-bayar-bast', StatusBayarBast::class)->name('status.bayar.bast');
     });
 });

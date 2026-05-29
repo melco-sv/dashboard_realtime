@@ -33,11 +33,10 @@ class Serapan extends Component
             ->orderBy('name_cabang', 'asc');
 
         if ($user) {
-            if ($user->level == 'Verification') {
-                $query->where('parent_company', $user->nama);
-            } elseif ($user->level == 'Inspektor' && !empty($user->group)) {
+            if ($user->level == 'Inspektor' && !empty($user->group)) {
                 $query->where('code_cabang', $user->group);
             }
+            // Verification & Super Admin: tidak ada filter → tampil semua cabang
         }
 
         try {
@@ -71,7 +70,8 @@ class Serapan extends Component
         $this->momStats         = $this->getMomStats($cg, $cb);
         $this->hasilSampingStats = $this->getHasilSampingStats($cb);
 
-        if (Auth::check() && strtolower(trim(Auth::user()->level)) === 'super admin') {
+        $lvl = strtolower(trim(Auth::user()->level ?? ''));
+        if (Auth::check() && ($lvl === 'super admin' || $lvl === 'verification')) {
             $this->calculateAdvancedStats($cg, $cb);
             $this->rankingCabang = $this->getRankingCabang();
         }
@@ -256,19 +256,17 @@ class Serapan extends Component
                     'mas_hpkk_gabah.group as code',
                     'ref_cabang.name_cabang',
                     DB::raw('COUNT(*) as jumlah_gabah'),
-                    DB::raw("AVG(CAST(REPLACE(kadar_air_rata_rata, ',', '.') AS DECIMAL(10,2))) as avg_ka"),
-                    DB::raw("AVG(CAST(REPLACE(kadar_hampa, ',', '.') AS DECIMAL(10,2))) as avg_hampa"),
+                    DB::raw("SUM(CAST(REPLACE(jumlah_timbangan, ',', '.') AS DECIMAL(15,2))) as total_kg_gabah"),
                 )
                 ->when($this->periode, fn($q) => $q->where('tanggal_pelaksanaan', 'like', $this->periode . '%'))
                 ->groupBy('mas_hpkk_gabah.group', 'ref_cabang.name_cabang')
-                ->orderBy('avg_ka', 'asc')
                 ->get();
 
             $beras = MasHpkkBeras::withoutGlobalScopes()
                 ->select(
                     'group as code',
                     DB::raw('COUNT(*) as jumlah_beras'),
-                    DB::raw("AVG(CAST(REPLACE(rendemen_pengolahan, ',', '.') AS DECIMAL(10,2))) as avg_rendemen"),
+                    DB::raw("SUM(CAST(REPLACE(kuantum_beras, ',', '.') AS DECIMAL(15,2))) as total_kg_beras"),
                 )
                 ->when($this->periode, fn($q) => $q->where('tanggal_pemeriksaan', 'like', $this->periode . '%'))
                 ->groupBy('group')
@@ -276,16 +274,22 @@ class Serapan extends Component
                 ->keyBy('code');
 
             return $gabah->map(function ($row) use ($beras) {
-                $b = $beras->get($row->code);
+                $b         = $beras->get($row->code);
+                $gabahKg   = (float) ($row->total_kg_gabah ?? 0);
+                $berasKg   = $b ? (float) ($b->total_kg_beras ?? 0) : 0;
+                $pendapatan = ($gabahKg * 36) + ($berasKg * 46);
                 return [
                     'name'         => $row->name_cabang,
-                    'jumlah_gabah' => (int)   $row->jumlah_gabah,
+                    'jumlah_gabah' => (int) $row->jumlah_gabah,
                     'jumlah_beras' => $b ? (int) $b->jumlah_beras : 0,
-                    'avg_ka'       => round((float) $row->avg_ka, 2),
-                    'avg_hampa'    => round((float) $row->avg_hampa, 2),
-                    'avg_rendemen' => $b ? round((float) $b->avg_rendemen, 2) : null,
+                    'gabah_kg'     => $gabahKg,
+                    'beras_kg'     => $berasKg,
+                    'pendapatan'   => $pendapatan,
                 ];
-            })->toArray();
+            })
+            ->sortByDesc('pendapatan')
+            ->values()
+            ->toArray();
         } catch (\Exception $e) {
             return [];
         }

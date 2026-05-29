@@ -8,7 +8,14 @@
       "Bash(grep \"CREATE TABLE \\\\`\" /c/dashboard-saya/pkgbsuco_bulog2025.sql)",
       "Bash(sed 's/.*`\\\\\\([^`]*\\\\\\).*/\\\\1/')",
       "Bash(awk '/^CREATE TABLE `mas_user`/,/^\\) ENGINE/' c:/dashboard-saya/pkgbsuco_bulog2025.sql)",
-      "Bash(composer require *)"
+      "Bash(composer require *)",
+      "Bash(Get-ChildItem -Path \"c:\\\\dashboard-saya\" -Force)",
+      "Bash(Select-Object Name, Mode)",
+      "Bash(Format-Table -AutoSize)",
+      "Bash(Get-ChildItem -Path \"c:\\\\dashboard-saya\" -Recurse -Force)",
+      "Bash(Select-Object -First 100)",
+      "Bash(grep -A 40 \"CREATE TABLE \\\\`mas_hpkk_gabah\\\\`\" /c/dashboard-saya/pkgbsuco_bulog2025.sql)",
+      "Bash(grep -A 25 \"CREATE TABLE \\\\`mas_user\\\\`\" /c/dashboard-saya/pkgbsuco_bulog2025.sql)"
     ]
   }
 }

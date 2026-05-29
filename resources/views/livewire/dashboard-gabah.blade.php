@@ -21,6 +21,18 @@
                     <span class="text-gray-500">Jumlah Sampel</span>
                     <span class="text-white font-mono bg-gray-700 px-2 py-1 rounded">{{ $totalGabahAnalisa }}</span>
                 </div>
+                <div class="mt-3 pt-3 border-t border-gray-700/50 space-y-2">
+                    <div class="flex justify-between items-center text-sm">
+                        <span class="text-gray-500">Total Pendapatan</span>
+                        <span class="text-blue-400 font-mono text-xs font-bold">{{ $pendapatanGabahDisplay }}</span>
+                    </div>
+                    @if ($showFinancial)
+                    <div class="flex justify-between items-center text-sm">
+                        <span class="text-gray-500">Total Diterima</span>
+                        <span class="text-green-400 font-mono text-xs font-bold">{{ $totalDidipatGabahDisplay }}</span>
+                    </div>
+                    @endif
+                </div>
             </div>
 
             <div class="lg:col-span-2 bg-gray-800/50 rounded-2xl p-4 border border-gray-700 backdrop-blur-sm" wire:ignore>
@@ -50,6 +62,18 @@
                 <div class="mt-6 pt-4 border-t border-gray-700 flex justify-between items-center text-sm">
                     <span class="text-gray-500">Jumlah Sampel</span>
                     <span class="text-white font-mono bg-gray-700 px-2 py-1 rounded">{{ $totalBerasAnalisa }}</span>
+                </div>
+                <div class="mt-3 pt-3 border-t border-gray-700/50 space-y-2">
+                    <div class="flex justify-between items-center text-sm">
+                        <span class="text-gray-500">Total Pendapatan</span>
+                        <span class="text-green-400 font-mono text-xs font-bold">{{ $pendapatanBerasDisplay }}</span>
+                    </div>
+                    @if ($showFinancial)
+                    <div class="flex justify-between items-center text-sm">
+                        <span class="text-gray-500">Total Diterima</span>
+                        <span class="text-emerald-400 font-mono text-xs font-bold">{{ $totalDidipatBerasDisplay }}</span>
+                    </div>
+                    @endif
                 </div>
             </div>
 
