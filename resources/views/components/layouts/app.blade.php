@@ -275,10 +275,8 @@
 
     <div x-show="sidebarOpen" @click="sidebarOpen = false" x-transition.opacity class="fixed inset-0 bg-black/80 z-40 backdrop-blur-sm cursor-pointer"></div>
 
-    <main class="p-4 md:p-8 min-h-screen transition-all duration-300">
-        <div class="max-w-7xl mx-auto">
-            {{ $slot }}
-        </div>
+    <main class="p-4 md:p-6 xl:p-8 min-h-screen transition-all duration-300">
+        {{ $slot }}
     </main>
 
     @livewireScripts

@@ -111,7 +111,7 @@
                     <div><label class="block text-gray-400 text-xs font-bold mb-2">Petugas</label><input type="text" wire:model="petugas" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3"></div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-                    <div><label class="block text-gray-400 text-xs font-bold mb-2">Group</label><input type="text" wire:model="group" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3"></div>
+                    <div><label class="block text-gray-400 text-xs font-bold mb-2">Kode Cabang</label><input type="text" wire:model="code_cabang" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3"></div>
                     <div><label class="block text-gray-400 text-xs font-bold mb-2">Catatan</label><textarea wire:model="catatan" rows="1" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3"></textarea></div>
                 </div>
             </div>

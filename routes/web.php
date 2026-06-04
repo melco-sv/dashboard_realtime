@@ -67,6 +67,16 @@ Route::middleware('guest')->group(function () {
 // ==========================================
 Route::middleware('auth')->group(function () {
 
+    // Download file PDF BAST yang sudah digenerate oleh queue job
+    Route::get('/bast/download/{token}', function (string $token) {
+        $path = storage_path("app/bast-exports/{$token}.pdf");
+        abort_if(!file_exists($path), 404, 'File tidak ditemukan atau sudah kadaluarsa.');
+        return response()->file($path, [
+            'Content-Type'        => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="BAST-' . date('m-Y') . '.pdf"',
+        ]);
+    })->name('bast.download');
+
     // Logout Route
     Route::get('/logout', function () {
         Auth::logout();

@@ -65,7 +65,7 @@
                                 <div class="text-[10px] mt-1">{{ $user->position ?? '-' }}</div>
                             </td>
                             <td class="px-6 py-4">
-                                {{ optional($user->cabang)->name_cabang ?? $user->group }}
+                                {{ optional($user->cabang)->name_cabang ?? $user->code_cabang }}
                             </td>
                             <td class="px-6 py-4">
                                 @if($user->status == 'Active')
@@ -139,14 +139,14 @@
                     </div>
 
                     <div>
-                        <label class="block text-gray-400 text-xs font-bold mb-2">Cabang (Group) <span class="text-red-500">*</span></label>
-                        <select wire:model="group" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-2.5 focus:border-orange-500 focus:outline-none">
+                        <label class="block text-gray-400 text-xs font-bold mb-2">Cabang <span class="text-red-500">*</span></label>
+                        <select wire:model="code_cabang" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-2.5 focus:border-orange-500 focus:outline-none">
                             <option value="">Pilih Cabang...</option>
                             @foreach($listCabang as $cabang)
                             <option value="{{ $cabang->code_cabang }}">{{ $cabang->name_cabang }}</option>
                             @endforeach
                         </select>
-                        @error('group') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                        @error('code_cabang') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                     </div>
 
                     <div>

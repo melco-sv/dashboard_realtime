@@ -56,7 +56,7 @@ class MasHpkkBeras extends Model
      */
     public function cabang()
     {
-        return $this->belongsTo(RefCabang::class, 'group', 'code_cabang');
+        return $this->belongsTo(RefCabang::class, 'code_cabang', 'code_cabang');
     }
 
     public function fotos()

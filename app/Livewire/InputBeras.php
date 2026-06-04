@@ -42,7 +42,7 @@ class InputBeras extends Component
     public $mengetahui;
     public $petugas;
     public $catatan;
-    public $group;
+    public $code_cabang;
     public $status = 'Active';
 
     public function mount()
@@ -51,7 +51,7 @@ class InputBeras extends Component
         $this->tanggal_doc = date('Y-m-d');
 
         if (Auth::check()) {
-            $this->group = Auth::user()->group;
+            $this->code_cabang = Auth::user()->code_cabang;
         }
 
         $this->generateNomorSurat(true);
@@ -173,10 +173,10 @@ class InputBeras extends Component
     {
         $bulan = date('m');
         $tahun = date('Y');
-        $groupCode = $this->group ?? '0000';
+        $groupCode = $this->code_cabang ?? '0000';
 
         $query = MasHpkkBeras::whereYear('tanggal_pemeriksaan', $tahun)
-            ->where('group', $this->group);
+            ->where('code_cabang', $this->code_cabang);
 
         $count = $query->count();
         $nextNo = $count + 1;
@@ -213,7 +213,7 @@ class InputBeras extends Component
                 'tanggal_pemeriksaan' => 'required|date',
                 'kode_sample' => 'required',
                 'dasar_pemeriksaan' => 'required',
-                'group' => 'required',
+                'code_cabang' => 'required',
                 'kondisi_kemasan' => 'required',
                 'hama' => 'required',
                 'dedak_katul_sekam' => 'required',
@@ -319,7 +319,7 @@ class InputBeras extends Component
                 'mengetahui' => $this->mengetahui,
                 'petugas' => $this->petugas,
                 'catatan' => $this->catatan,
-                'group' => $this->group,
+                'code_cabang' => $this->code_cabang,
                 'status' => $this->status,
             ];
 

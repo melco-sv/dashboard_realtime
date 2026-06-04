@@ -22,7 +22,7 @@ class ListGabah extends Component
                     ->orWhere('mitra', 'like', '%' . $this->search . '%')
                     ->orWhere('kode_sample', 'like', '%' . $this->search . '%');
             })
-            ->orderBy('id_po', 'desc')
+            ->orderBy('id_hpkk_gabah', 'desc')
             ->paginate(10);
 
         return view('livewire.list-gabah', [

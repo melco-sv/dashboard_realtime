@@ -240,9 +240,9 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4 relative z-10">
 
                 <div>
-                    <label class="block text-gray-400 text-xs font-bold mb-2">Group / Cabang (Auto)</label>
+                    <label class="block text-gray-400 text-xs font-bold mb-2">Kode Cabang (Auto)</label>
                     <div class="flex gap-2">
-                        <input type="text" wire:model="group" readonly class="w-full bg-[#11131f] border border-gray-700 text-gray-500 font-bold rounded-lg px-4 py-3 cursor-not-allowed">
+                        <input type="text" wire:model="code_cabang" readonly class="w-full bg-[#11131f] border border-gray-700 text-gray-500 font-bold rounded-lg px-4 py-3 cursor-not-allowed">
 
                         <div class="bg-[#11131f] border border-gray-700 rounded-lg px-4 py-3 text-gray-400 font-bold flex items-center justify-center min-w-[120px]">
                             {{ optional(Auth::user()->cabang)->name_cabang ?? '-' }}

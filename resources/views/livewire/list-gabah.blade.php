@@ -74,27 +74,27 @@
                     </div>
 
                     <div class="flex flex-wrap lg:flex-col gap-1.5 w-full">
-                        <a href="{{ route('print.gabah', ['id' => $item->id_po, 'type' => 'hpk']) }}" target="_blank"
+                        <a href="{{ route('print.gabah', ['id' => $item->id_hpkk_gabah, 'type' => 'hpk']) }}" target="_blank"
                             class="w-full bg-blue-600 hover:bg-blue-700 text-white py-1.5 px-2 rounded-lg text-xs font-bold text-center uppercase tracking-wide">
                             Print HPK
                         </a>
-                        <a href="{{ route('print.gabah', ['id' => $item->id_po, 'type' => 'lhpk']) }}" target="_blank"
+                        <a href="{{ route('print.gabah', ['id' => $item->id_hpkk_gabah, 'type' => 'lhpk']) }}" target="_blank"
                             class="w-full bg-blue-500 hover:bg-blue-600 text-white py-1.5 px-2 rounded-lg text-xs font-bold text-center uppercase tracking-wide">
                             Print LHPK
                         </a>
-                        <a href="{{ route('print.gabah', ['id' => $item->id_po, 'type' => 'witnessing']) }}" target="_blank"
+                        <a href="{{ route('print.gabah', ['id' => $item->id_hpkk_gabah, 'type' => 'witnessing']) }}" target="_blank"
                             class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-1.5 px-2 rounded-lg text-xs font-bold text-center uppercase tracking-wide">
                             Print Witnessing
                         </a>
-                        <a href="{{ route('edit.gabah', $item->id_po) }}" wire:navigate
+                        <a href="{{ route('edit.gabah', $item->id_hpkk_gabah) }}" wire:navigate
                             class="w-full bg-green-600 hover:bg-green-700 text-white py-1.5 px-2 rounded-lg text-xs font-bold text-center uppercase tracking-wide">
                             Update
                         </a>
-                        <a href="{{ route('view.foto.gabah', $item->id_po) }}" wire:navigate
+                        <a href="{{ route('view.foto.gabah', $item->id_hpkk_gabah) }}" wire:navigate
                             class="w-full bg-purple-600 hover:bg-purple-700 text-white py-1.5 px-2 rounded-lg text-xs font-bold text-center uppercase tracking-wide">
                             Lihat Foto ({{ $item->fotos_count }})
                         </a>
-                        <a href="{{ route('upload.gabah', $item->id_po) }}" wire:navigate
+                        <a href="{{ route('upload.gabah', $item->id_hpkk_gabah) }}" wire:navigate
                             class="w-full bg-pink-600 hover:bg-pink-700 text-white py-1.5 px-2 rounded-lg text-xs font-bold text-center uppercase tracking-wide">
                             Upload Foto
                         </a>
@@ -107,7 +107,7 @@
                             Pending
                         </div>
                         @endif
-                        <button wire:click="delete({{ $item->id_po }})" wire:confirm="Hapus data gabah ini?"
+                        <button wire:click="delete({{ $item->id_hpkk_gabah }})" wire:confirm="Hapus data gabah ini?"
                             class="w-full bg-red-600 hover:bg-red-700 text-white py-1.5 px-2 rounded-lg text-xs font-bold text-center uppercase tracking-wide">
                             Delete
                         </button>

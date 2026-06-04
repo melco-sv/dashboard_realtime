@@ -14,7 +14,7 @@ class ManageUser extends Component
     use WithPagination;
 
     // === PROPERTI FORM ===
-    public $username, $nama, $email, $position, $group, $level, $status;
+    public $username, $nama, $email, $position, $code_cabang, $level, $status;
     public $password, $password_confirmation;
 
     // === STATE MANAGEMENT ===
@@ -81,7 +81,7 @@ class ManageUser extends Component
         $this->nama = $user->nama;
         $this->email = $user->email;
         $this->position = $user->position;
-        $this->group = $user->group;
+        $this->code_cabang = $user->code_cabang;
         $this->level = $user->level;
         $this->status = $user->status;
 
@@ -97,7 +97,7 @@ class ManageUser extends Component
             'nama' => 'required',
             'email' => 'nullable|email',
             'level' => 'required',
-            'group' => 'required', // Cabang
+            'code_cabang' => 'required',
             'status' => 'required',
         ];
 
@@ -120,7 +120,7 @@ class ManageUser extends Component
             'nama' => $this->nama,
             'email' => $this->email,
             'position' => $this->position,
-            'group' => $this->group,
+            'code_cabang' => $this->code_cabang,
             'level' => $this->level,
             'status' => $this->status,
         ];
@@ -144,7 +144,7 @@ class ManageUser extends Component
             User::create($data);
             activity()
                 ->causedBy(Auth::user())
-                ->withProperties(['username' => $this->username, 'level' => $this->level, 'cabang' => $this->group])
+                ->withProperties(['username' => $this->username, 'level' => $this->level, 'cabang' => $this->code_cabang])
                 ->log('Buat User Baru');
             session()->flash('message', 'User baru berhasil dibuat!');
         }
@@ -182,7 +182,7 @@ class ManageUser extends Component
             'nama',
             'email',
             'position',
-            'group',
+            'code_cabang',
             'level',
             'status',
             'password',

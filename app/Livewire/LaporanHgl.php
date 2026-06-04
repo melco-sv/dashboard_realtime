@@ -31,7 +31,7 @@ class LaporanHgl extends Component
 
         // Security: Jika User adalah Inspektor, kunci filter cabang ke grupnya sendiri
         if (Auth::check() && Auth::user()->level == 'Inspektor') {
-            $this->filter_cabang = Auth::user()->group;
+            $this->filter_cabang = Auth::user()->code_cabang;
         }
 
         $this->hitungTotal();
@@ -48,7 +48,7 @@ class LaporanHgl extends Component
     private function getBaseQuery()
     {
         $query = DB::table('mas_hpkk_beras as m')
-            ->leftJoin('ref_cabang as r', 'm.group', '=', 'r.code_cabang')
+            ->leftJoin('ref_cabang as r', 'm.code_cabang', '=', 'r.code_cabang')
             ->whereBetween('m.tanggal_pemeriksaan', [
                 $this->tgl_mulai . ' 00:00:00',
                 $this->tgl_akhir . ' 23:59:59'
@@ -56,9 +56,9 @@ class LaporanHgl extends Component
 
         // A. Filter Cabang (Security & Admin Choice)
         if (Auth::check() && Auth::user()->level == 'Inspektor') {
-            $query->where('m.group', Auth::user()->group);
+            $query->where('m.code_cabang', Auth::user()->code_cabang);
         } elseif (!empty($this->filter_cabang)) {
-            $query->where('m.group', $this->filter_cabang);
+            $query->where('m.code_cabang', $this->filter_cabang);
         }
 
         // B. Filter Tempat Pemeriksaan (Lokasi)
@@ -107,9 +107,9 @@ class LaporanHgl extends Component
             ->whereBetween('tanggal_pemeriksaan', [$this->tgl_mulai, $this->tgl_akhir]);
 
         if (Auth::check() && Auth::user()->level == 'Inspektor') {
-            $queryTempat->where('group', Auth::user()->group);
+            $queryTempat->where('code_cabang', Auth::user()->code_cabang);
         } elseif (!empty($this->filter_cabang)) {
-            $queryTempat->where('group', $this->filter_cabang);
+            $queryTempat->where('code_cabang', $this->filter_cabang);
         }
 
         $list_tempat = $queryTempat->select('tempat_pemeriksaan')
@@ -129,7 +129,7 @@ class LaporanHgl extends Component
     {
         // Tentukan Group ID
         $groupId = (Auth::check() && Auth::user()->level == 'Inspektor')
-            ? Auth::user()->group
+            ? Auth::user()->code_cabang
             : $this->filter_cabang;
 
         // Pastikan Class RekapHglExport Anda menerima parameter filter di constructor

@@ -18,6 +18,6 @@ class RefUpload extends Model
         'id_hpkk_beras',
         'nama',
         'file',
-        'group',
+        'code_cabang',
     ];
 }

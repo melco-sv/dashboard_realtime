@@ -22,14 +22,14 @@ class UploadFotoBeras extends Component
     // Form Inputs
     public $nama;
     public $photo;
-    public $group;
+    public $code_cabang;
 
     public function mount($id)
     {
         $data = MasHpkkBeras::findOrFail($id);
 
         $this->id_hpkk_beras = $data->id_hpkk_beras;
-        $this->group         = $data->group;
+        $this->code_cabang   = $data->code_cabang;
 
         // Load konteks
         $this->nomor_hpkk    = $data->nomor_hpkk_beras;
@@ -45,7 +45,7 @@ class UploadFotoBeras extends Component
         $this->validate([
             'nama'  => 'required|string|max:255',
             'photo' => 'required|image|max:10240',
-            'group' => 'required',
+            'code_cabang' => 'required',
         ]);
 
         try {
@@ -55,7 +55,7 @@ class UploadFotoBeras extends Component
                 'id_hpkk_beras' => $this->id_hpkk_beras,
                 'nama'          => $this->nama,
                 'file'          => $path,
-                'group'         => $this->group,
+                'code_cabang'   => $this->code_cabang,
             ]);
 
             session()->flash('message', 'Foto Beras berhasil diupload!');

@@ -65,10 +65,10 @@
                 </div>
 
                 <div class="space-y-1">
-                    <label class="text-xs font-bold text-gray-400 uppercase tracking-wider">Group</label>
+                    <label class="text-xs font-bold text-gray-400 uppercase tracking-wider">Kode Cabang</label>
                     <div class="w-full bg-[#11131f] text-gray-500 border border-gray-700 rounded-lg px-4 py-2.5 flex items-center gap-2 cursor-not-allowed">
                         <i class="fa-solid fa-building text-xs"></i>
-                        {{ $group ?: '-' }}
+                        {{ $code_cabang ?: '-' }}
                     </div>
                 </div>
 

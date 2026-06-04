@@ -6,28 +6,13 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: Arial, Helvetica, sans-serif; font-size: 11px; color: #000; }
 
-@page          { size: A4 portrait; }
-@page landscape { size: A4 landscape; }
-
-/* padding 25mm atas + 30mm bawah = 55mm; cover table = 297-55 = 242mm */
-.page            { page-break-after: always; padding: 25mm 30mm 30mm 30mm; }
-.page:last-child { page-break-after: avoid; }
-.page-landscape  { page: landscape; padding: 15mm 18mm; }
-
-/* tabel cover — footer dipaksa ke bawah via height 242mm */
-.cover-table   { width: 100%; height: 242mm; border-collapse: collapse; }
-.cover-content { vertical-align: top; padding: 0; }
-.cover-footer  { height: 24mm; vertical-align: top; padding-top: 8px;
-                 border-top: 2px solid #000; font-size: 7px; color: #000; line-height: 1.7; }
+/* cover table height = A4(297) - margin-top(25) - margin-bottom(30) = 242mm */
 
 /* COVER elements */
-.logo-row   { display: table; width: 100%; margin-bottom: 10px; }
-.logo-left  { display: table-cell; width: 50%; text-align: left;  vertical-align: middle; }
-.logo-right { display: table-cell; width: 50%; text-align: right; vertical-align: middle; }
 .logo       { max-width: 130px; max-height: 65px; }
 
 .title-block { text-align: center; font-size: 12px; font-weight: bold;
-               line-height: 1.7; margin-bottom: 22px; text-transform: uppercase; }
+               line-height: 1.7; margin-bottom: 22px; text-transform: uppercase; width: 100%; }
 .doc-date    { font-size: 11px; line-height: 1.8; margin-bottom: 14px; }
 .body-text   { font-size: 11px; line-height: 1.6; margin-bottom: 14px; }
 
@@ -40,7 +25,7 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 11px; color: #000; 
 .sign-date  { font-size: 11px; margin-bottom: 6px; }
 .sign-table    { width: 100%; border-collapse: collapse; margin-top: 4px; font-size: 11px; }
 .sign-table td { width: 50%; padding: 4px 8px; vertical-align: top; text-align: center; }
-.sign-space    { height: 70px; }
+.sign-space    { height: 25mm; display: block; }
 
 /* HAL 2 & 3 */
 .rekap-title { text-align: center; font-size: 10px; font-weight: bold;
@@ -56,135 +41,109 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 11px; color: #000; 
 .keterangan { font-size: 8.5px; font-style: italic; margin-bottom: 12px; }
 .sign2-table    { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 10px; }
 .sign2-table td { width: 50%; padding: 4px 8px; vertical-align: top; text-align: center; }
-.sign2-space    { height: 60px; }
+.sign2-space    { height: 20mm; display: block; }
 </style>
 </head>
 <body>
 
 {{-- ===================== HALAMAN 1 — COVER ===================== --}}
-<div class="page">
-<table class="cover-table">
-    <tr>
-    <td class="cover-content">
-        <div class="logo-row">
-            <div class="logo-left">
+<div style="position:relative; height:242mm; overflow:hidden;">
+
+    <table style="width:100%;border-collapse:collapse;margin-bottom:10px;">
+        <tr>
+            <td style="width:50%;text-align:left;vertical-align:middle;">
                 @if($logo_idsurvey)
                 <img src="{{ $logo_idsurvey }}" class="logo" alt="IDSurvey">
                 @endif
-            </div>
-            <div class="logo-right">
+            </td>
+            <td style="width:50%;text-align:right;vertical-align:middle;">
                 @if($logo_sucofindo)
                 <img src="{{ $logo_sucofindo }}" class="logo" alt="SUCOFINDO">
                 @endif
-            </div>
-        </div>
+            </td>
+        </tr>
+    </table>
 
-        <div class="title-block">
-            BERITA ACARA SERAH TERIMA<br>
-            DOKUMEN REKAPITULASI DATA PELAKSANAAN PEMERIKSAAN KUALITAS DAN<br>
-            KUANTITAS GABAH KERING PANEN (GKP)
-        </div>
+    <div class="title-block">
+        BERITA ACARA SERAH TERIMA<br>
+        DOKUMEN REKAPITULASI DATA PELAKSANAAN PEMERIKSAAN KUALITAS DAN<br>
+        KUANTITAS GABAH KERING PANEN (GKP)
+    </div>
 
-        <div class="doc-date">
-            Tanggal : {{ $tgl_cetak }}<br>
-            No. {{ $nomor_surat }}
-        </div>
+    <div class="doc-date">
+        Tanggal : {{ $tgl_cetak }}<br>
+        No. {{ $nomor_surat }}
+    </div>
 
-        <div class="body-text">
-            Telah dilaksanakan kegiatan pengawasan pemeriksaan kualitas dan pengawasan kuantitas
-            Gabah Kering Panen (GKP) di :
-        </div>
+    <div class="body-text">
+        Telah dilaksanakan kegiatan pengawasan pemeriksaan kualitas dan pengawasan kuantitas
+        Gabah Kering Panen (GKP) di :
+    </div>
 
-        <table class="info-table">
-            <tr>
-                <td class="col-letter">a.</td>
-                <td class="col-label">Kantor Wilayah Bulog</td>
-                <td class="col-colon">:</td>
-                <td>{{ $kanwil ?: '-' }}</td>
-            </tr>
-            <tr>
-                <td class="col-letter">b.</td>
-                <td class="col-label">Kantor Cabang Bulog</td>
-                <td class="col-colon">:</td>
-                <td>{{ $cabang->name_cabang ?? '-' }}</td>
-            </tr>
-            <tr>
-                <td class="col-letter">c.</td>
-                <td class="col-label">Rekapitulasi Tanggal</td>
-                <td class="col-colon">:</td>
-                <td>{{ \Carbon\Carbon::parse($tgl_mulai)->isoFormat('D MMMM Y') }} &ndash; {{ \Carbon\Carbon::parse($tgl_akhir)->isoFormat('D MMMM Y') }}</td>
-            </tr>
-            <tr>
-                <td class="col-letter">d.</td>
-                <td class="col-label">Total Penerimaan GKP (Kg)</td>
-                <td class="col-colon">:</td>
-                <td>{{ number_format($total_kg, 3, ',', '.') }}</td>
-            </tr>
-            <tr>
-                <td class="col-letter">e.</td>
-                <td class="col-label">Total Penerimaan GKP (Ton)</td>
-                <td class="col-colon">:</td>
-                <td>{{ number_format($total_kg / 1000, 3, ',', '.') }}</td>
-            </tr>
-        </table>
+    <table class="info-table">
+        <tr>
+            <td class="col-letter">a.</td>
+            <td class="col-label">Kantor Wilayah Bulog</td>
+            <td class="col-colon">:</td>
+            <td>{{ $kanwil ?: '-' }}</td>
+        </tr>
+        <tr>
+            <td class="col-letter">b.</td>
+            <td class="col-label">Kantor Cabang Bulog</td>
+            <td class="col-colon">:</td>
+            <td>{{ $cabang->name_cabang ?? '-' }}</td>
+        </tr>
+        <tr>
+            <td class="col-letter">c.</td>
+            <td class="col-label">Rekapitulasi Tanggal</td>
+            <td class="col-colon">:</td>
+            <td>{{ \Carbon\Carbon::parse($tgl_mulai)->isoFormat('D MMMM Y') }} &ndash; {{ \Carbon\Carbon::parse($tgl_akhir)->isoFormat('D MMMM Y') }}</td>
+        </tr>
+        <tr>
+            <td class="col-letter">d.</td>
+            <td class="col-label">Total Penerimaan GKP (Kg)</td>
+            <td class="col-colon">:</td>
+            <td>{{ number_format($total_kg, 3, ',', '.') }}</td>
+        </tr>
+        <tr>
+            <td class="col-letter">e.</td>
+            <td class="col-label">Total Penerimaan GKP (Ton)</td>
+            <td class="col-colon">:</td>
+            <td>{{ number_format($total_kg / 1000, 3, ',', '.') }}</td>
+        </tr>
+    </table>
 
-        <div class="body-text">
-            Demikian berita acara ini kami sampaikan. Kami ucapkan terima kasih.
-        </div>
+    <div class="body-text">
+        Demikian berita acara ini kami sampaikan. Kami ucapkan terima kasih.
+    </div>
 
-        <div class="sign-date">{{ $cabang->name_cabang ?? '' }}, {{ $tgl_cetak }}</div>
+    <div class="sign-date">{{ $cabang->name_cabang ?? '' }}, {{ $tgl_cetak }}</div>
 
-        <table class="sign-table">
-            <tr>
-                <td>
-                    Disusun Oleh,<br>
-                    <strong>PT SUCOFINDO</strong>
-                    <div class="sign-space"></div>
-                    <strong>{{ $nama_kepala_unit ?: '.................................................' }}</strong><br>
-                    Kepala Unit Pelayanan {{ $cabang->name_cabang ?? '' }}
-                </td>
-                <td>
-                    Diketahui Oleh,<br>
-                    <strong>PERUM BULOG</strong>
-                    <div class="sign-space"></div>
-                    <strong>{{ $nama_pimpinan ?: '.................................................' }}</strong><br>
-                    Pimpinan Cabang {{ $cabang->name_cabang ?? '' }}
-                </td>
-            </tr>
-        </table>
-    </td>
-    </tr>
+    <table class="sign-table">
+        <tr>
+            <td>
+                Disusun Oleh,<br>
+                <strong>PT SUCOFINDO</strong>
+                <table style="width:100%;border-collapse:collapse;"><tr><td style="height:22mm;padding:0;"></td></tr></table>
+                <strong>{{ $nama_kepala_unit ?: '.................................................' }}</strong><br>
+                Kepala Unit Pelayanan {{ $cabang->name_cabang ?? '' }}
+            </td>
+            <td>
+                Diketahui Oleh,<br>
+                <strong>PERUM BULOG</strong>
+                <table style="width:100%;border-collapse:collapse;"><tr><td style="height:22mm;padding:0;"></td></tr></table>
+                <strong>{{ $nama_pimpinan ?: '.................................................' }}</strong><br>
+                Pimpinan Cabang {{ $cabang->name_cabang ?? '' }}
+            </td>
+        </tr>
+    </table>
 
-    {{-- FOOTER — selalu di bawah, 3cm dari tepi kertas --}}
-    <tr>
-    <td class="cover-footer">
-        <table style="width:100%; border-collapse:collapse;">
-            <tr>
-                <td style="width:35%; vertical-align:top;">
-                    <strong>PT SUCOFINDO</strong><br>
-                    <strong>{{ strtoupper($cabang->name_cabang ?? '') }} BRANCH</strong><br>
-                    Jl. Jend. Gatot Subroto Km. 5,5<br>
-                    No. 105, Medan, Sumatera Utara 20122
-                </td>
-                <td style="width:38%; vertical-align:top;">
-                    &#9742; (+62-61) 8451880 (hunting)<br>
-                    &#9990; (+62-61) 8452568<br>
-                    &#9993; medal@sucofindo.co.id<br>
-                    &#9728; www.sucofindo.co.id<br>
-                    @SUCOFINDOOFFICIAL &nbsp; y &nbsp; f &nbsp; &#9634; SUCOFINDO
-                </td>
-                <td style="width:27%; text-align:right; vertical-align:middle; font-weight:bold; font-size:8px;">
-                    www.sucofindo.co.id
-                </td>
-            </tr>
-        </table>
-    </td>
-    </tr>
-</table>
+
 </div>
 
 {{-- ===================== HALAMAN 2 — REKAP TARIF ===================== --}}
-<div class="page page-landscape">
+<pagebreak sheet-size="A4-L" margin-top="15" margin-bottom="15" margin-left="18" margin-right="18" />
+<div>
     <div class="rekap-title">
         REKAP PELAKSANAAN PEMERIKSAAN KUALITAS DAN KUANTITAS GABAH KERING PANEN (GKP)<br>
         OLEH PT SUCOFINDO<br>
@@ -247,14 +206,14 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 11px; color: #000; 
             <td>
                 Disusun Oleh,<br>
                 <strong>PT SUCOFINDO</strong>
-                <div class="sign2-space"></div>
+                <table style="width:100%;border-collapse:collapse;"><tr><td style="height:18mm;padding:0;"></td></tr></table>
                 <strong>{{ $nama_kepala_unit ?: '.................................................' }}</strong><br>
                 Kepala Unit Pelayanan {{ $cabang->name_cabang ?? '' }}
             </td>
             <td>
                 {{ $cabang->name_cabang ?? '' }}, {{ $tgl_cetak }}<br>
                 Kantor Cabang Perum (Bulog) {{ $cabang->name_cabang ?? '' }}
-                <div class="sign2-space"></div>
+                <table style="width:100%;border-collapse:collapse;"><tr><td style="height:18mm;padding:0;"></td></tr></table>
                 <strong>{{ $nama_pimpinan ?: '.................................................' }}</strong><br>
                 Pimpinan Kanca
             </td>
@@ -263,7 +222,8 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 11px; color: #000; 
 </div>
 
 {{-- ===================== HALAMAN 3 — REKAP ANALISIS ===================== --}}
-<div class="page page-landscape">
+<pagebreak sheet-size="A4-L" margin-top="15" margin-bottom="15" margin-left="18" margin-right="18" />
+<div>
     <div class="rekap-title">
         REKAP PELAKSANAAN PEMERIKSAAN KUALITAS DAN KUANTITAS GABAH KERING PANEN (GKP)<br>
         OLEH PT SUCOFINDO<br>
@@ -319,14 +279,14 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 11px; color: #000; 
             <td>
                 Disusun Oleh,<br>
                 <strong>PT SUCOFINDO</strong>
-                <div class="sign2-space"></div>
+                <table style="width:100%;border-collapse:collapse;"><tr><td style="height:18mm;padding:0;"></td></tr></table>
                 <strong>{{ $nama_kepala_unit ?: '.................................................' }}</strong><br>
                 Kepala Unit Pelayanan {{ $cabang->name_cabang ?? '' }}
             </td>
             <td>
                 {{ $cabang->name_cabang ?? '' }}, {{ $tgl_cetak }}<br>
                 Kantor Cabang Perum (Bulog) {{ $cabang->name_cabang ?? '' }}
-                <div class="sign2-space"></div>
+                <table style="width:100%;border-collapse:collapse;"><tr><td style="height:18mm;padding:0;"></td></tr></table>
                 <strong>{{ $nama_pimpinan ?: '.................................................' }}</strong><br>
                 Pimpinan Kanca
             </td>

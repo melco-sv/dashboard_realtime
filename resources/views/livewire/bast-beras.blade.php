@@ -1,4 +1,4 @@
-<div x-data x-on:open-pdf.window="window.open($event.detail.url, '_blank')" class="min-h-screen bg-[#0b0c15] p-6 text-white font-['Space_Grotesk']">
+<div x-data x-on:open-pdf.window="let a=document.createElement('a');a.href=$event.detail.url;a.target='_blank';a.rel='noopener';document.body.appendChild(a);a.click();document.body.removeChild(a);" class="min-h-screen bg-[#0b0c15] p-6 text-white font-['Space_Grotesk']">
 
     {{-- HEADER --}}
     <div class="mb-6">
@@ -11,6 +11,22 @@
         {{ session('message') }}
     </div>
     @endif
+
+    @if($pdfToken)
+    <div wire:poll.2s="checkPdfReady" class="mb-4 bg-blue-500/10 border border-blue-500 text-blue-300 px-4 py-3 rounded-lg text-sm font-bold flex items-center gap-3">
+        <svg class="w-4 h-4 animate-spin flex-shrink-0" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+        </svg>
+        Sedang menyiapkan PDF, harap tunggu sebentar...
+    </div>
+    @endif
+
+    @error('pdf')
+    <div class="mb-4 bg-red-500/10 border border-red-500 text-red-400 px-4 py-3 rounded-lg text-sm font-bold">
+        {{ $message }}
+    </div>
+    @enderror
 
     {{-- FILTER --}}
     <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 mb-6">

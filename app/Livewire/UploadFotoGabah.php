@@ -22,14 +22,14 @@ class UploadFotoGabah extends Component
     // Form Inputs
     public $nama;
     public $photo;
-    public $group;
+    public $code_cabang;
 
     public function mount($id)
     {
         $data = MasHpkkGabah::findOrFail($id);
 
-        $this->id_hpkk_gabah = $data->id_po; // FIX: PK adalah id_po, bukan id_hpkk_gabah
-        $this->group = $data->group;
+        $this->id_hpkk_gabah = $data->id_hpkk_gabah;
+        $this->code_cabang = $data->code_cabang;
 
         // Load konteks untuk ditampilkan di form
         $this->nomor_hpkk    = $data->nomor_hpkk_gabah;
@@ -45,7 +45,7 @@ class UploadFotoGabah extends Component
         $this->validate([
             'nama'  => 'required|string|max:255',
             'photo' => 'required|image|max:10240',
-            'group' => 'required',
+            'code_cabang' => 'required',
         ]);
 
         try {
@@ -55,7 +55,7 @@ class UploadFotoGabah extends Component
                 'id_hpkk_gabah' => $this->id_hpkk_gabah,
                 'nama'          => $this->nama,
                 'file'          => $path,
-                'group'         => $this->group,
+                'code_cabang'   => $this->code_cabang,
             ]);
 
             session()->flash('message', 'Foto berhasil diupload!');

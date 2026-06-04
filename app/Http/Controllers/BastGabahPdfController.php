@@ -13,8 +13,8 @@ class BastGabahPdfController extends Controller
     use PdfLogoHelper;
     public function print(Request $request)
     {
-        ini_set('memory_limit', '256M');
-        ini_set('max_execution_time', 60);
+        ini_set('memory_limit', '512M');
+        ini_set('max_execution_time', 300);
 
         $tglMulai       = $request->get('tgl_mulai', date('Y-m-01'));
         $tglAkhir       = $request->get('tgl_akhir', date('Y-m-d'));
@@ -24,7 +24,7 @@ class BastGabahPdfController extends Controller
         $nomorSurat     = $request->get('nomor_surat', '');
 
         $query = DB::table('mas_hpkk_gabah as m')
-            ->leftJoin('ref_cabang as r', 'm.group', '=', 'r.code_cabang')
+            ->leftJoin('ref_cabang as r', 'm.code_cabang', '=', 'r.code_cabang')
             ->whereBetween('m.tanggal_pelaksanaan', [
                 $tglMulai . ' 00:00:00',
                 $tglAkhir . ' 23:59:59',
@@ -38,13 +38,13 @@ class BastGabahPdfController extends Controller
             ->orderBy('m.tanggal_pelaksanaan', 'asc');
 
         if (Auth::check() && Auth::user()->level == 'Inspektor') {
-            $query->where('m.group', Auth::user()->group);
+            $query->where('m.code_cabang', Auth::user()->code_cabang);
         }
 
         $data = $query->get();
 
         $cabang = DB::table('ref_cabang')
-            ->where('code_cabang', Auth::user()->group ?? '')
+            ->where('code_cabang', Auth::user()->code_cabang ?? '')
             ->first();
 
         $totalKg = $data->sum(function ($row) {

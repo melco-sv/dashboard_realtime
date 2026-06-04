@@ -11,7 +11,7 @@ class MasHpkkGabah extends Model
     use HasFactory;
 
     protected $table = 'mas_hpkk_gabah';
-    protected $primaryKey = 'id_po'; // Pastikan ini sesuai dengan PK di database
+    protected $primaryKey = 'id_hpkk_gabah';
 
     // KUNCI PENTING: guarded kosong [] mengizinkan 'Mass Assignment'
     // Ini wajib agar MasHpkkGabah::create($data) di Livewire bisa berjalan
@@ -39,12 +39,12 @@ class MasHpkkGabah extends Model
     // === RELATIONSHIP ===
     public function cabang()
     {
-        return $this->belongsTo(RefCabang::class, 'group', 'code_cabang');
+        return $this->belongsTo(RefCabang::class, 'code_cabang', 'code_cabang');
     }
 
     public function fotos()
     {
-        return $this->hasMany(\App\Models\RefUpload::class, 'id_hpkk_gabah', 'id_po');
+        return $this->hasMany(\App\Models\RefUpload::class, 'id_hpkk_gabah', 'id_hpkk_gabah');
     }
 
     // === GLOBAL SCOPE ===

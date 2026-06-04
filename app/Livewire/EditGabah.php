@@ -36,7 +36,7 @@ class EditGabah extends Component
     public $mengetahui;
     public $petugas;
     public $catatan;
-    public $group;
+    public $code_cabang;
 
     // === MOUNT (Ambil Data Lama) ===
     public function mount($id)
@@ -74,7 +74,7 @@ class EditGabah extends Component
         $this->mengetahui = $data->mengetahui;
         $this->petugas = $data->petugas;
         $this->catatan = $data->catatan;
-        $this->group = $data->group;
+        $this->code_cabang = $data->code_cabang;
     }
 
     public function updated($propertyName): void
@@ -158,7 +158,7 @@ class EditGabah extends Component
                 'mengetahui'                   => $this->mengetahui,
                 'petugas'                      => $this->petugas,
                 'catatan'                      => $this->catatan,
-                'group'                        => $this->group,
+                'code_cabang'                  => $this->code_cabang,
             ]);
 
             // Rekam field apa yang berubah beserta nilai lama vs baru

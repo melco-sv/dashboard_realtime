@@ -16,14 +16,9 @@ class CabangScope implements Scope
         if (Auth::check()) {
             $user = Auth::user();
 
-            // Jika User punya 'group' (artinya dia user cabang/inspektor)
-            // Dan Groupnya tidak kosong
-            if (!empty($user->group) && strtolower($user->level) !== 'verification') {
-                $builder->where('group', $user->group);
+            if (!empty($user->code_cabang) && strtolower($user->level) !== 'verification') {
+                $builder->where('code_cabang', $user->code_cabang);
             }
-            
-            // Jika User TIDAK punya group (misal Super Admin Pusat), 
-            // maka dia bisa melihat semua data (tidak ada filter 'where')
         }
     }
 }

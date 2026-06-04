@@ -33,8 +33,8 @@ class Serapan extends Component
             ->orderBy('name_cabang', 'asc');
 
         if ($user) {
-            if ($user->level == 'Inspektor' && !empty($user->group)) {
-                $query->where('code_cabang', $user->group);
+            if ($user->level == 'Inspektor' && !empty($user->code_cabang)) {
+                $query->where('code_cabang', $user->code_cabang);
             }
             // Verification & Super Admin: tidak ada filter → tampil semua cabang
         }
@@ -48,8 +48,8 @@ class Serapan extends Component
 
     public function render()
     {
-        $cg = 'group';
-        $cb = 'group';
+        $cg = 'code_cabang';
+        $cb = 'code_cabang';
 
         $this->gabahStats = [
             'ka'    => $this->getStats(MasHpkkGabah::class, 'kadar_air_rata_rata', 'tanggal_pelaksanaan', $cg),
@@ -251,25 +251,25 @@ class Serapan extends Component
     {
         try {
             $gabah = MasHpkkGabah::withoutGlobalScopes()
-                ->join('ref_cabang', 'mas_hpkk_gabah.group', '=', 'ref_cabang.code_cabang')
+                ->join('ref_cabang', 'mas_hpkk_gabah.code_cabang', '=', 'ref_cabang.code_cabang')
                 ->select(
-                    'mas_hpkk_gabah.group as code',
+                    'mas_hpkk_gabah.code_cabang as code',
                     'ref_cabang.name_cabang',
                     DB::raw('COUNT(*) as jumlah_gabah'),
                     DB::raw("SUM(CAST(REPLACE(jumlah_timbangan, ',', '.') AS DECIMAL(15,2))) as total_kg_gabah"),
                 )
                 ->when($this->periode, fn($q) => $q->where('tanggal_pelaksanaan', 'like', $this->periode . '%'))
-                ->groupBy('mas_hpkk_gabah.group', 'ref_cabang.name_cabang')
+                ->groupBy('mas_hpkk_gabah.code_cabang', 'ref_cabang.name_cabang')
                 ->get();
 
             $beras = MasHpkkBeras::withoutGlobalScopes()
                 ->select(
-                    'group as code',
+                    'code_cabang as code',
                     DB::raw('COUNT(*) as jumlah_beras'),
                     DB::raw("SUM(CAST(REPLACE(kuantum_beras, ',', '.') AS DECIMAL(15,2))) as total_kg_beras"),
                 )
                 ->when($this->periode, fn($q) => $q->where('tanggal_pemeriksaan', 'like', $this->periode . '%'))
-                ->groupBy('group')
+                ->groupBy('code_cabang')
                 ->get()
                 ->keyBy('code');
 

@@ -33,7 +33,7 @@ class LaporanGkp extends Component
 
         // Security: Jika User adalah Inspektor, kunci filter cabang ke grupnya sendiri
         if (Auth::check() && Auth::user()->level == 'Inspektor') {
-            $this->filter_cabang = Auth::user()->group;
+            $this->filter_cabang = Auth::user()->code_cabang;
         }
 
         $this->hitungTotal();
@@ -50,7 +50,7 @@ class LaporanGkp extends Component
     private function getBaseQuery()
     {
         $query = DB::table('mas_hpkk_gabah as m')
-            ->leftJoin('ref_cabang as r', 'm.group', '=', 'r.code_cabang')
+            ->leftJoin('ref_cabang as r', 'm.code_cabang', '=', 'r.code_cabang')
             ->whereBetween('m.tanggal_pelaksanaan', [
                 $this->tgl_mulai . ' 00:00:00',
                 $this->tgl_akhir . ' 23:59:59'
@@ -58,9 +58,9 @@ class LaporanGkp extends Component
 
         // A. Filter Cabang (Security & Admin Choice)
         if (Auth::check() && Auth::user()->level == 'Inspektor') {
-            $query->where('m.group', Auth::user()->group);
+            $query->where('m.code_cabang', Auth::user()->code_cabang);
         } elseif (!empty($this->filter_cabang)) {
-            $query->where('m.group', $this->filter_cabang);
+            $query->where('m.code_cabang', $this->filter_cabang);
         }
 
         // B. Filter Tempat Pelaksanaan (Lokasi)
@@ -115,9 +115,9 @@ class LaporanGkp extends Component
             ->whereBetween('tanggal_pelaksanaan', [$this->tgl_mulai, $this->tgl_akhir]);
 
         if (Auth::check() && Auth::user()->level == 'Inspektor') {
-            $dropdownQuery->where('group', Auth::user()->group);
+            $dropdownQuery->where('code_cabang', Auth::user()->code_cabang);
         } elseif (!empty($this->filter_cabang)) {
-            $dropdownQuery->where('group', $this->filter_cabang);
+            $dropdownQuery->where('code_cabang', $this->filter_cabang);
         }
 
         // 2. List Tempat (Lokasi)
@@ -150,7 +150,7 @@ class LaporanGkp extends Component
     {
         // Tentukan Group ID
         $groupId = (Auth::check() && Auth::user()->level == 'Inspektor')
-            ? Auth::user()->group
+            ? Auth::user()->code_cabang
             : $this->filter_cabang;
 
         // Pastikan Class Export Anda menerima parameter filter tambahan di __construct
@@ -166,7 +166,7 @@ class LaporanGkp extends Component
     public function downloadExcelAnalisa()
     {
         $groupId = (Auth::check() && Auth::user()->level == 'Inspektor')
-            ? Auth::user()->group
+            ? Auth::user()->code_cabang
             : $this->filter_cabang;
 
         return Excel::download(new RekapAnalisaExport(

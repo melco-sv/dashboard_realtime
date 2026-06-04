@@ -5,9 +5,11 @@ namespace App\Livewire;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\RefBastStatus;
+use App\Jobs\GenerateBastPdf;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 
 class BastGabah extends Component
 {
@@ -26,6 +28,9 @@ class BastGabah extends Component
     // Stats
     public $total_record = 0;
     public $total_kg = 0;
+
+    // PDF queue
+    public $pdfToken = null;
 
     public function mount()
     {
@@ -85,7 +90,7 @@ class BastGabah extends Component
         $roman = $romanMonths[$bulan];
         $tahun = date('Y', strtotime($this->tgl_akhir));
 
-        $group = Auth::check() ? (Auth::user()->group ?? '') : '';
+        $group = Auth::check() ? (Auth::user()->code_cabang ?? '') : '';
         if (isset(self::$cabangAbbr[$group])) {
             $abbr = self::$cabangAbbr[$group];
         } else {
@@ -100,7 +105,7 @@ class BastGabah extends Component
     {
         $bulan = date('n', strtotime($this->tgl_akhir));
         $tahun = date('Y', strtotime($this->tgl_akhir));
-        $group = Auth::check() ? (Auth::user()->group ?? '') : '';
+        $group = Auth::check() ? (Auth::user()->code_cabang ?? '') : '';
 
         // Jika periode ini sudah pernah dicetak, gunakan nomor yang sama
         $existing = DB::table('ref_bast_status')
@@ -130,14 +135,14 @@ class BastGabah extends Component
     private function getBaseQuery()
     {
         $query = DB::table('mas_hpkk_gabah as m')
-            ->leftJoin('ref_cabang as r', 'm.group', '=', 'r.code_cabang')
+            ->leftJoin('ref_cabang as r', 'm.code_cabang', '=', 'r.code_cabang')
             ->whereBetween('m.tanggal_pelaksanaan', [
                 $this->tgl_mulai . ' 00:00:00',
                 $this->tgl_akhir . ' 23:59:59',
             ]);
 
         if (Auth::check() && Auth::user()->level == 'Inspektor') {
-            $query->where('m.group', Auth::user()->group);
+            $query->where('m.code_cabang', Auth::user()->code_cabang);
         }
 
         return $query;
@@ -164,7 +169,7 @@ class BastGabah extends Component
 
     public function cetakPdf()
     {
-        $group = Auth::user()->group;
+        $group = Auth::user()->code_cabang;
 
         DB::transaction(function () use ($group) {
             $existing = RefBastStatus::where('code_cabang', $group)
@@ -205,16 +210,36 @@ class BastGabah extends Component
             }
         });
 
-        $url = route('bast.gabah.pdf', [
+        $token = Str::uuid()->toString();
+        $this->pdfToken = $token;
+        $this->showModal = false;
+
+        GenerateBastPdf::dispatch('gabah', $token, [
             'tgl_mulai'        => $this->tgl_mulai,
             'tgl_akhir'        => $this->tgl_akhir,
+            'nomor_surat'      => $this->nomor_surat,
             'nama_kepala_unit' => $this->nama_kepala_unit,
             'nama_pimpinan'    => $this->nama_pimpinan_cabang,
             'tarif'            => $this->tarif,
-            'nomor_surat'      => $this->nomor_surat,
+            'user_group'       => Auth::user()->code_cabang ?? null,
+            'user_level'       => Auth::user()->level ?? null,
         ]);
+    }
 
-        $this->dispatch('open-pdf', url: $url);
+    public function checkPdfReady(): void
+    {
+        if (!$this->pdfToken) return;
+
+        if (Cache::has("bast_pdf_{$this->pdfToken}_failed")) {
+            $this->addError('pdf', 'Gagal membuat PDF. Silakan coba lagi.');
+            $this->pdfToken = null;
+            return;
+        }
+
+        if (file_exists(storage_path("app/bast-exports/{$this->pdfToken}.pdf"))) {
+            $this->dispatch('open-pdf', url: route('bast.download', $this->pdfToken));
+            $this->pdfToken = null;
+        }
     }
 
     public function render()

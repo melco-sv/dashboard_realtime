@@ -12,7 +12,7 @@
                 </p>
             </div>
             <div class="flex gap-3">
-                <a href="{{ route('upload.gabah', $gabah->id_po) }}" wire:navigate
+                <a href="{{ route('upload.gabah', $gabah->id_hpkk_gabah) }}" wire:navigate
                     class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-bold">
                     + Upload Foto Baru
                 </a>

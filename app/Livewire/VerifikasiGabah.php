@@ -33,13 +33,13 @@ class VerifikasiGabah extends Component
     public function approve(int $id): void
     {
         $row = DB::table('mas_hpkk_gabah as m')
-            ->leftJoin('ref_cabang as r', 'm.group', '=', 'r.code_cabang')
-            ->where('m.id_po', $id)
+            ->leftJoin('ref_cabang as r', 'm.code_cabang', '=', 'r.code_cabang')
+            ->where('m.id_hpkk_gabah', $id)
             ->select('m.nomor_hpkk_gabah', 'm.mitra', 'r.name_cabang')
             ->first();
 
         DB::table('mas_hpkk_gabah')
-            ->where('id_po', $id)
+            ->where('id_hpkk_gabah', $id)
             ->update(['status_data' => 'Approve']);
 
         activity()
@@ -57,19 +57,19 @@ class VerifikasiGabah extends Component
     public function render()
     {
         $query = DB::table('mas_hpkk_gabah as m')
-            ->leftJoin('ref_cabang as r', 'm.group', '=', 'r.code_cabang')
+            ->leftJoin('ref_cabang as r', 'm.code_cabang', '=', 'r.code_cabang')
             ->select(
-                'm.id_po', 'm.nomor_hpkk_gabah', 'm.mitra', 'm.pengirim',
+                'm.id_hpkk_gabah', 'm.nomor_hpkk_gabah', 'm.mitra', 'm.pengirim',
                 'm.tanggal_pelaksanaan', 'm.jumlah_timbangan',
                 'm.status_data', 'm.lokasi', 'm.no_order_pembelian',
                 'm.kadar_air_rata_rata', 'm.kadar_hampa', 'm.butir_hijau',
                 'r.name_cabang'
             )
             ->selectSub(
-                DB::table('ref_upload')->selectRaw('COUNT(*)')->whereColumn('id_hpkk_gabah', 'm.id_po'),
+                DB::table('ref_upload')->selectRaw('COUNT(*)')->whereColumn('id_hpkk_gabah', 'm.id_hpkk_gabah'),
                 'fotos_count'
             )
-            ->orderBy('m.id_po', 'desc');
+            ->orderBy('m.id_hpkk_gabah', 'desc');
 
         if ($this->tgl_mulai && $this->tgl_akhir) {
             $query->whereBetween('m.tanggal_pelaksanaan', [
@@ -79,7 +79,7 @@ class VerifikasiGabah extends Component
         }
 
         if ($this->cabang_filter) {
-            $query->where('m.group', $this->cabang_filter);
+            $query->where('m.code_cabang', $this->cabang_filter);
         }
 
         if ($this->status_filter === 'Approve') {

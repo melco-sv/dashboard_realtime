@@ -177,8 +177,8 @@
                     <input type="text" wire:model="mengetahui" class="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 mt-1 focus:border-pink-500 outline-none">
                 </div>
                 <div>
-                    <label class="text-gray-400 text-sm">Group</label>
-                    <input type="text" wire:model="group" class="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 mt-1 focus:border-pink-500 outline-none">
+                    <label class="text-gray-400 text-sm">Kode Cabang</label>
+                    <input type="text" wire:model="code_cabang" class="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 mt-1 focus:border-pink-500 outline-none">
                 </div>
                 <div>
                     <label class="text-gray-400 text-sm">Status Dokumen</label>

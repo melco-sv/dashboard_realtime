@@ -38,7 +38,7 @@ class InputGabah extends Component
     public $mengetahui;
     public $petugas;
     public $catatan;
-    public $group;
+    public $code_cabang;
 
     // === MOUNT ===
     public function mount()
@@ -47,7 +47,7 @@ class InputGabah extends Component
         $this->tanggal_doc = date('Y-m-d');
 
         if (Auth::check()) {
-            $this->group = Auth::user()->group;
+            $this->code_cabang = Auth::user()->code_cabang;
         }
 
         $this->generateNomorSurat(true);
@@ -138,10 +138,10 @@ class InputGabah extends Component
     {
         $bulan = date('m');
         $tahun = date('Y');
-        $groupCode = $this->group ?? '0000';
+        $groupCode = $this->code_cabang ?? '0000';
 
         $query = MasHpkkGabah::whereYear('tanggal_pelaksanaan', $tahun)
-            ->where('group', $this->group);
+            ->where('code_cabang', $this->code_cabang);
 
         $count = $query->count();
         $nextNo = $count + 1;
@@ -181,7 +181,7 @@ class InputGabah extends Component
                 'jenis_alat_angkut'            => 'required',
                 'nomor_registrasi_alat_angkut' => 'required',
                 'hama_penyakit'                => 'required',
-                'group'                        => 'required',
+                'code_cabang'                  => 'required',
                 'jumlah_timbangan'             => 'required|numeric',
                 'metode_timbang'               => 'required',
                 'kode_sample'                  => 'required',
@@ -259,7 +259,7 @@ class InputGabah extends Component
                 'mengetahui' => $this->mengetahui,
                 'petugas' => $this->petugas,
                 'catatan' => $this->catatan,
-                'group' => $this->group,
+                'code_cabang' => $this->code_cabang,
             ]);
 
             DB::commit();

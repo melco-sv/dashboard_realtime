@@ -140,14 +140,14 @@
                         @endif
                     </td>
                     <td class="px-2 py-2 text-center">
-                        <a href="{{ route('view.foto.gabah', $row->id_po) }}" wire:navigate
+                        <a href="{{ route('view.foto.gabah', $row->id_hpkk_gabah) }}" wire:navigate
                             class="inline-flex items-center gap-0.5 bg-purple-700 hover:bg-purple-600 text-white px-2 py-0.5 rounded font-bold transition-colors">
                             📷 {{ $row->fotos_count }}
                         </a>
                     </td>
                     <td class="px-2 py-2 text-center">
                         @if($row->status_data !== 'Approve')
-                        <button wire:click="approve({{ $row->id_po }})"
+                        <button wire:click="approve({{ $row->id_hpkk_gabah }})"
                             wire:confirm="Approve No. HPK {{ $row->nomor_hpkk_gabah }}?"
                             class="bg-blue-600 hover:bg-blue-500 text-white px-2.5 py-0.5 rounded font-bold transition-colors whitespace-nowrap">
                             Approve

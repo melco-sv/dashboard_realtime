@@ -51,7 +51,7 @@ class EditBeras extends Component
     public $catatan;
     public $petugas;
     public $mengetahui;
-    public $group;
+    public $code_cabang;
     public $status;
     public $tanggal_doc; // Timestamp biasanya otomatis, tapi bisa diedit jika perlu
 
@@ -171,7 +171,7 @@ class EditBeras extends Component
                 'catatan'                         => $this->catatan,
                 'petugas'                         => $this->petugas,
                 'mengetahui'                      => $this->mengetahui,
-                'group'                           => $this->group,
+                'code_cabang'                     => $this->code_cabang,
                 'status'                          => $this->status,
             ]);
 

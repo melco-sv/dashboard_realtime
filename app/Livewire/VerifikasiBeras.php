@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use Livewire\WithPagination;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
 
@@ -32,7 +33,7 @@ class VerifikasiBeras extends Component
     public function approve(int $id): void
     {
         $row = DB::table('mas_hpkk_beras as m')
-            ->leftJoin('ref_cabang as r', 'm.group', '=', 'r.code_cabang')
+            ->leftJoin('ref_cabang as r', 'm.code_cabang', '=', 'r.code_cabang')
             ->where('m.id_hpkk_beras', $id)
             ->select('m.nomor_hpkk_beras', 'm.id_mo', 'r.name_cabang')
             ->first();
@@ -56,7 +57,7 @@ class VerifikasiBeras extends Component
     public function render()
     {
         $query = DB::table('mas_hpkk_beras as m')
-            ->leftJoin('ref_cabang as r', 'm.group', '=', 'r.code_cabang')
+            ->leftJoin('ref_cabang as r', 'm.code_cabang', '=', 'r.code_cabang')
             ->select(
                 'm.id_hpkk_beras', 'm.nomor_hpkk_beras', 'm.id_mo',
                 'm.tempat_pemeriksaan', 'm.tanggal_pemeriksaan',
@@ -79,7 +80,7 @@ class VerifikasiBeras extends Component
         }
 
         if ($this->cabang_filter) {
-            $query->where('m.group', $this->cabang_filter);
+            $query->where('m.code_cabang', $this->cabang_filter);
         }
 
         if ($this->status_filter === 'Approve') {

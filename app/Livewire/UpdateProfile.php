@@ -17,7 +17,7 @@ class UpdateProfile extends Component
 
     // Read Only Property
     public $level;
-    public $group;
+    public $code_cabang;
     public $status;
 
     // Property Password Baru
@@ -36,9 +36,9 @@ class UpdateProfile extends Component
         $this->position = $user->position;
 
         // Data Read Only
-        $this->level    = $user->level;
-        $this->group    = $user->group;
-        $this->status   = $user->status;
+        $this->level        = $user->level;
+        $this->code_cabang  = $user->code_cabang;
+        $this->status       = $user->status;
     }
 
     public function update()
