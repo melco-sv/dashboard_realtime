@@ -46,8 +46,17 @@
                         #{{ $berasList->firstItem() + $index }}
                         @if(isset($item->status) && $item->status == 'Approve')
                             <span class="ml-1 text-green-400">✓ Approved</span>
+                        @elseif(isset($item->status) && $item->status == 'Reject')
+                            <span class="ml-1 text-red-400">✗ Ditolak</span>
                         @endif
                     </div>
+
+                    @if(isset($item->status) && $item->status == 'Reject')
+                    <div class="w-full bg-red-900/30 border border-red-600/50 rounded-lg p-2 mb-1">
+                        <p class="text-[10px] font-bold text-red-400 uppercase tracking-wider mb-0.5">✗ Ditolak Admin Pusat</p>
+                        <p class="text-[11px] text-red-200 leading-snug break-words">{{ $item->catatan ?: 'Tanpa catatan.' }}</p>
+                    </div>
+                    @endif
 
                     <div class="flex flex-wrap lg:flex-col gap-1.5 w-full">
                         <a href="{{ route('print.beras', ['id' => $item->id_hpkk_beras, 'type' => 'hpk']) }}" target="_blank"
@@ -74,6 +83,23 @@
                             class="w-full bg-pink-600 hover:bg-pink-700 text-white py-1.5 px-2 rounded-lg text-xs font-bold text-center uppercase tracking-wide">
                             Upload Foto
                         </a>
+                        @if(isset($item->status) && $item->status == 'Approve')
+                        <div class="w-full bg-green-900/40 border border-green-600/40 text-green-400 py-1.5 px-2 rounded-lg text-xs font-bold text-center uppercase">
+                            ✓ Approved
+                        </div>
+                        @elseif(isset($item->status) && $item->status == 'Reject')
+                        <div class="w-full bg-red-900/40 border border-red-600/50 text-red-400 py-1.5 px-2 rounded-lg text-xs font-bold text-center uppercase">
+                            ✗ Ditolak
+                        </div>
+                        <a href="{{ route('edit.beras', $item->id_hpkk_beras) }}" wire:navigate
+                            class="w-full bg-amber-600 hover:bg-amber-500 text-white py-1.5 px-2 rounded-lg text-xs font-bold text-center uppercase tracking-wide">
+                            Perbaiki
+                        </a>
+                        @else
+                        <div class="w-full bg-gray-800 border border-gray-600/40 text-gray-500 py-1.5 px-2 rounded-lg text-xs font-bold text-center uppercase">
+                            Pending
+                        </div>
+                        @endif
                         <button wire:click="delete({{ $item->id_hpkk_beras }})" wire:confirm="Hapus data beras ini?"
                             class="w-full bg-red-600 hover:bg-red-700 text-white py-1.5 px-2 rounded-lg text-xs font-bold text-center uppercase tracking-wide">
                             Delete

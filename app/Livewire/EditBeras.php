@@ -168,11 +168,13 @@ class EditBeras extends Component
                 'hasil_samping_butir_patah'       => $this->hasil_samping_butir_patah,
                 'hasil_samping_dedak_katul'       => $this->hasil_samping_dedak_katul,
                 'hasil_samping_butir_kuning_rusak' => $this->hasil_samping_butir_kuning_rusak,
-                'catatan'                         => $this->catatan,
                 'petugas'                         => $this->petugas,
                 'mengetahui'                      => $this->mengetahui,
                 'code_cabang'                     => $this->code_cabang,
-                'status'                          => $this->status,
+                // Reset status & catatan saat cabang menyimpan perbaikan,
+                // agar dokumen kembali ke antrian Verifikasi (pending) admin pusat.
+                'status'                          => null,
+                'catatan'                         => null,
             ]);
 
             // Rekam field apa yang berubah beserta nilai lama vs baru

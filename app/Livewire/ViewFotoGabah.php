@@ -6,6 +6,7 @@ use Livewire\Component;
 use App\Models\MasHpkkGabah;
 use App\Models\RefUpload;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class ViewFotoGabah extends Component
 {
@@ -29,6 +30,56 @@ class ViewFotoGabah extends Component
         // Refresh daftar foto
         $this->fotos = RefUpload::where('id_hpkk_gabah', $this->gabah->id_po)->get();
         session()->flash('message', 'Foto berhasil dihapus.');
+    }
+
+    public function approve()
+    {
+        abort_unless(Auth::check() && Auth::user()->isVerification(), 403);
+
+        $this->gabah->update(['status_data' => 'Approve']);
+
+        activity()
+            ->causedBy(Auth::user())
+            ->withProperties([
+                'no_hpk'  => $this->gabah->nomor_hpkk_gabah,
+                'mitra'   => $this->gabah->mitra,
+                'cabang'  => optional($this->gabah->cabang)->name_cabang,
+            ])
+            ->log('Approve GKP');
+
+        session()->flash('message', 'Data berhasil di-approve.');
+
+        return redirect()->route('verifikasi.gabah');
+    }
+
+    public function reject($catatan)
+    {
+        abort_unless(Auth::check() && Auth::user()->isVerification(), 403);
+
+        $catatan = trim((string) $catatan);
+        if ($catatan === '') {
+            session()->flash('error', 'Catatan penolakan wajib diisi.');
+            return;
+        }
+
+        $this->gabah->update([
+            'status_data' => 'Reject',
+            'catatan'     => $catatan,
+        ]);
+
+        activity()
+            ->causedBy(Auth::user())
+            ->withProperties([
+                'no_hpk'  => $this->gabah->nomor_hpkk_gabah,
+                'mitra'   => $this->gabah->mitra,
+                'cabang'  => optional($this->gabah->cabang)->name_cabang,
+                'catatan' => $catatan,
+            ])
+            ->log('Reject GKP');
+
+        session()->flash('message', 'Data berhasil ditolak.');
+
+        return redirect()->route('verifikasi.gabah');
     }
 
     public function render()

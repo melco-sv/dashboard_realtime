@@ -62,6 +62,7 @@
         </div>
 
         <div class="flex items-center gap-3">
+            <livewire:approval-notif />
             <div class="text-right hidden sm:block">
                 <p class="text-sm font-bold text-gray-200">
                     {{ optional(Auth::user()->cabang)->name_cabang ?? Auth::user()->name }}
@@ -140,33 +141,6 @@
                         </svg>
                         <span class="font-medium">Serapan</span>
                     </a>
-
-                    <div x-data="{ open: false }" class="relative">
-                        <button @click="open = !open" class="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl transition-all duration-300 text-gray-400 hover:bg-gray-800 hover:text-white group">
-                            <div class="flex items-center gap-3">
-                                <div class="p-2 rounded-lg bg-gray-800 group-hover:bg-gray-700">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                                    </svg>
-                                </div>
-                                <span class="font-bold tracking-wide">Compare Data</span>
-                            </div>
-                            <svg xmlns="http://www.w3.org/2000/svg" :class="{'rotate-180': open}" class="h-4 w-4 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                            </svg>
-                        </button>
-
-                        <div x-show="open" x-transition class="pl-4 mt-1 space-y-1">
-                            <a href="{{ route('compare.po.gkp') }}" wire:navigate class="block px-4 py-2 rounded-lg text-sm font-bold text-gray-400 hover:text-white hover:bg-gray-800">
-                                - Compare PO GKP
-                            </a>
-
-                            <a href="{{ route('compare.mo.hgl') }}" wire:navigate class="block px-4 py-2 rounded-lg text-sm font-bold text-gray-400 hover:text-white hover:bg-gray-800">
-                                - Compare MO HGL
-                            </a>
-
-                        </div>
-                    </div>
 
                 </div>
             </div>

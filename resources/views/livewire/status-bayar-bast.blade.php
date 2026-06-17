@@ -42,6 +42,19 @@
                     <option value="DIBAYAR">Dibayar</option>
                 </select>
             </div>
+            <div>
+                <label class="block text-gray-400 text-[10px] font-bold mb-1 uppercase tracking-wider">Bulan <span class="text-gray-600 normal-case">(opsional)</span></label>
+                <div class="flex items-center gap-1.5">
+                    <input type="month" wire:model.live="filter_bulan"
+                        class="bg-gray-800 border border-gray-700 text-white rounded-lg px-2 py-1.5 text-xs focus:border-blue-500 focus:outline-none">
+                    @if ($filter_bulan)
+                    <button wire:click="$set('filter_bulan', '')" title="Tampilkan semua bulan"
+                        class="text-gray-500 hover:text-white text-xs px-1.5 py-1 rounded hover:bg-gray-800 transition-colors">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                    @endif
+                </div>
+            </div>
             <span class="text-xs text-gray-500 self-end pb-1.5">{{ $data->total() }} record</span>
         </div>
     </div>

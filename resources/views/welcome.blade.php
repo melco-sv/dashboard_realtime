@@ -115,11 +115,6 @@
                             <a href="#" class="block px-4 py-2 text-sm text-gray-500 hover:text-white hover:bg-gray-800 rounded-lg">Laporan Bulanan</a>
                         </div>
                     </div>
-
-                    <a href="#" class="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-gray-800 rounded-xl transition-all group">
-                        <svg class="w-5 h-5 group-hover:text-purple-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" /></svg>
-                        <span class="font-medium">Compare Data</span>
-                    </a>
                 </div>
             </div>
 

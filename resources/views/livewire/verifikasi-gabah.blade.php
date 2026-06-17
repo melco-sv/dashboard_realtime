@@ -12,8 +12,14 @@
     </div>
     @endif
 
+    @if (session()->has('error'))
+    <div class="mb-3 bg-red-500/10 border border-red-500 text-red-400 px-3 py-2 rounded-lg text-sm font-bold">
+        {{ session('error') }}
+    </div>
+    @endif
+
     {{-- STATS CARDS --}}
-    <div class="grid grid-cols-3 gap-3 mb-4">
+    <div class="grid grid-cols-4 gap-3 mb-4">
         <div class="bg-gray-900 border border-gray-800 rounded-xl p-3">
             <p class="text-[10px] text-gray-500 uppercase tracking-wider font-bold mb-1">Total Kuantum (Kg)</p>
             <p class="text-lg font-bold text-yellow-400">{{ number_format($totalKg, 0, ',', '.') }}</p>
@@ -27,6 +33,11 @@
         <div class="bg-gray-900 border border-gray-800 rounded-xl p-3">
             <p class="text-[10px] text-gray-500 uppercase tracking-wider font-bold mb-1">Belum Approved</p>
             <p class="text-lg font-bold text-yellow-400">{{ number_format($totalPending) }}</p>
+            <p class="text-[10px] text-gray-600">dokumen</p>
+        </div>
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-3">
+            <p class="text-[10px] text-gray-500 uppercase tracking-wider font-bold mb-1">Ditolak</p>
+            <p class="text-lg font-bold text-red-400">{{ number_format($totalRejected) }}</p>
             <p class="text-[10px] text-gray-600">dokumen</p>
         </div>
     </div>
@@ -66,6 +77,7 @@
                     <option value="">Semua</option>
                     <option value="pending">Belum Approved</option>
                     <option value="Approve">Sudah Approved</option>
+                    <option value="Reject">Ditolak</option>
                 </select>
             </div>
 
@@ -95,8 +107,7 @@
                     <th class="px-2 py-2.5 text-center font-bold text-purple-400">Hampa (%)</th>
                     <th class="px-2 py-2.5 text-center font-bold text-green-400 border-r border-gray-700">Hijau (%)</th>
                     <th class="px-2 py-2.5 text-center font-bold">Status</th>
-                    <th class="px-2 py-2.5 text-center font-bold">Foto</th>
-                    <th class="px-2 py-2.5 text-center font-bold">Aksi</th>
+                    <th class="px-2 py-2.5 text-center font-bold">Detail</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-800/60">
@@ -135,31 +146,26 @@
                     <td class="px-2 py-2 text-center">
                         @if($row->status_data === 'Approve')
                         <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-green-500/20 text-green-400 border border-green-500/30 whitespace-nowrap">✓ Approved</span>
+                        @elseif($row->status_data === 'Reject')
+                        <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-red-500/20 text-red-400 border border-red-500/30 whitespace-nowrap" title="{{ $row->catatan }}">✗ Ditolak</span>
+                        @if($row->catatan)
+                        <div class="text-[10px] text-red-300/80 mt-1 max-w-[160px] mx-auto leading-snug" title="{{ $row->catatan }}">{{ \Illuminate\Support\Str::limit($row->catatan, 60) }}</div>
+                        @endif
                         @else
                         <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-yellow-500/20 text-yellow-400 border border-yellow-500/30">Pending</span>
                         @endif
                     </td>
                     <td class="px-2 py-2 text-center">
                         <a href="{{ route('view.foto.gabah', $row->id_hpkk_gabah) }}" wire:navigate
-                            class="inline-flex items-center gap-0.5 bg-purple-700 hover:bg-purple-600 text-white px-2 py-0.5 rounded font-bold transition-colors">
-                            📷 {{ $row->fotos_count }}
+                            class="inline-flex items-center gap-1.5 bg-blue-600 hover:bg-blue-500 text-white px-3 py-1 rounded font-bold transition-colors whitespace-nowrap">
+                            <i class="fa-solid fa-eye"></i> Detail
+                            <span class="bg-blue-900/50 px-1.5 rounded text-[10px]">📷 {{ $row->fotos_count }}</span>
                         </a>
-                    </td>
-                    <td class="px-2 py-2 text-center">
-                        @if($row->status_data !== 'Approve')
-                        <button wire:click="approve({{ $row->id_hpkk_gabah }})"
-                            wire:confirm="Approve No. HPK {{ $row->nomor_hpkk_gabah }}?"
-                            class="bg-blue-600 hover:bg-blue-500 text-white px-2.5 py-0.5 rounded font-bold transition-colors whitespace-nowrap">
-                            Approve
-                        </button>
-                        @else
-                        <span class="text-gray-600">—</span>
-                        @endif
                     </td>
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="12" class="px-4 py-10 text-center text-gray-500">Tidak ada data ditemukan.</td>
+                    <td colspan="11" class="px-4 py-10 text-center text-gray-500">Tidak ada data ditemukan.</td>
                 </tr>
                 @endforelse
             </tbody>

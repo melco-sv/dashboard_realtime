@@ -16,8 +16,9 @@ class StatusBayarBast extends Component
     public $filter_cabang = '';
     public $filter_jenis = '';
     public $filter_status = '';
+    public $filter_bulan = ''; // format YYYY-MM; kosong = tampilkan semua data
 
-    protected $queryString = ['filter_cabang', 'filter_jenis', 'filter_status'];
+    protected $queryString = ['filter_cabang', 'filter_jenis', 'filter_status', 'filter_bulan'];
 
     public function mount()
     {
@@ -30,6 +31,7 @@ class StatusBayarBast extends Component
     public function updatingFilterCabang() { $this->resetPage(); }
     public function updatingFilterJenis()  { $this->resetPage(); }
     public function updatingFilterStatus() { $this->resetPage(); }
+    public function updatingFilterBulan()  { $this->resetPage(); }
 
     public function toggleStatus($id)
     {
@@ -52,6 +54,11 @@ class StatusBayarBast extends Component
             ->when($this->filter_cabang, fn($q) => $q->where('code_cabang', $this->filter_cabang))
             ->when($this->filter_jenis,  fn($q) => $q->where('jenis', $this->filter_jenis))
             ->when($this->filter_status, fn($q) => $q->where('status', $this->filter_status))
+            ->when($this->filter_bulan, function ($q) {
+                // Filter opsional berdasarkan bulan periode (tgl_mulai). Kosong = semua data tampil.
+                [$year, $month] = explode('-', $this->filter_bulan);
+                $q->whereYear('tgl_mulai', $year)->whereMonth('tgl_mulai', $month);
+            })
             ->orderByDesc('tgl_mulai')
             ->paginate(15);
 

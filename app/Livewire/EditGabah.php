@@ -157,7 +157,10 @@ class EditGabah extends Component
                 'lokasi'                       => $this->lokasi,
                 'mengetahui'                   => $this->mengetahui,
                 'petugas'                      => $this->petugas,
-                'catatan'                      => $this->catatan,
+                // Reset status & catatan saat cabang menyimpan perbaikan,
+                // agar dokumen kembali ke antrian Verifikasi (pending) admin pusat.
+                'status_data'                  => null,
+                'catatan'                      => null,
                 'code_cabang'                  => $this->code_cabang,
             ]);
 
