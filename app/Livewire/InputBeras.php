@@ -3,13 +3,17 @@
 namespace App\Livewire;
 
 use Livewire\Component;
+use Livewire\WithFileUploads;
 use App\Models\MasHpkkBeras;
+use App\Models\RefUpload;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 class InputBeras extends Component
 {
+    use WithFileUploads;
+
     // === PROPERTI FORM ===
     public $nomor_hpkk_beras;
     public $id_mo;
@@ -45,6 +49,12 @@ class InputBeras extends Component
     public $code_cabang;
     public $status = 'Active';
 
+    // === FOTO DOKUMENTASI (upload langsung di form) ===
+    public $fotos = [];      // [key => UploadedFile]
+    public $fotoNama = [];   // [key => string]
+    public $fotoRows = [];   // urutan key baris foto
+    public $fotoSeq = 0;     // counter key unik
+
     public function mount()
     {
         $this->tanggal_pemeriksaan = date('Y-m-d');
@@ -55,11 +65,31 @@ class InputBeras extends Component
         }
 
         $this->generateNomorSurat(true);
+
+        $this->addFotoRow();
+    }
+
+    // === FOTO: tambah / hapus baris ===
+    public function addFotoRow()
+    {
+        $this->fotoRows[] = $this->fotoSeq;
+        $this->fotoSeq++;
+    }
+
+    public function removeFotoRow($key)
+    {
+        $this->fotoRows = array_values(array_filter($this->fotoRows, fn ($k) => $k !== $key));
+        unset($this->fotos[$key], $this->fotoNama[$key]);
     }
 
     // === REAL-TIME VALIDATION (SWEETALERT & AUTO RESET) ===
     public function updated($propertyName)
     {
+        // Lewati properti foto (fotos.*, fotoNama.*) — bukan input numerik.
+        if (str_starts_with($propertyName, 'foto')) {
+            return;
+        }
+
         $val = $this->parseNumber($this->{$propertyName});
 
         // 1. CEK ULANGAN 1, 2, 3 (Range 10.01 - 14)
@@ -236,6 +266,7 @@ class InputBeras extends Component
                 'mengetahui' => 'required',
                 'petugas' => 'required',
                 'catatan' => 'nullable',
+                'fotos.*' => 'nullable|image|max:10240',
             ]);
         } catch (ValidationException $e) {
             // SweetAlert Error Form Belum Lengkap
@@ -323,7 +354,20 @@ class InputBeras extends Component
                 'status' => $this->status,
             ];
 
-            MasHpkkBeras::create($data);
+            $record = MasHpkkBeras::create($data);
+
+            // Simpan foto dokumentasi yang diupload langsung di form
+            foreach ($this->fotoRows as $key) {
+                if (!empty($this->fotos[$key])) {
+                    $path = $this->fotos[$key]->store('photos', 'public');
+                    RefUpload::create([
+                        'id_hpkk_beras' => $record->id_hpkk_beras,
+                        'nama'          => (isset($this->fotoNama[$key]) && trim($this->fotoNama[$key]) !== '') ? $this->fotoNama[$key] : 'Dokumentasi',
+                        'file'          => $path,
+                        'code_cabang'   => $this->code_cabang,
+                    ]);
+                }
+            }
 
             DB::commit();
 
@@ -374,6 +418,9 @@ class InputBeras extends Component
                 'mengetahui',
                 'petugas'
             ]);
+
+            $this->reset(['fotos', 'fotoNama', 'fotoRows', 'fotoSeq']);
+            $this->addFotoRow();
 
             $this->generateNomorSurat(true);
         } catch (\Exception $e) {

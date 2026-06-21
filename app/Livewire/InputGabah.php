@@ -3,13 +3,17 @@
 namespace App\Livewire;
 
 use Livewire\Component;
+use Livewire\WithFileUploads;
 use App\Models\MasHpkkGabah;
+use App\Models\RefUpload;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 class InputGabah extends Component
 {
+    use WithFileUploads;
+
     // === PROPERTI FORM ===
     public $nomor_hpkk_gabah;
     public $no_order_pembelian;
@@ -40,6 +44,12 @@ class InputGabah extends Component
     public $catatan;
     public $code_cabang;
 
+    // === FOTO DOKUMENTASI (upload langsung di form) ===
+    public $fotos = [];      // [key => UploadedFile]
+    public $fotoNama = [];   // [key => string]
+    public $fotoRows = [];   // urutan key baris foto
+    public $fotoSeq = 0;     // counter key unik
+
     // === MOUNT ===
     public function mount()
     {
@@ -51,11 +61,31 @@ class InputGabah extends Component
         }
 
         $this->generateNomorSurat(true);
+
+        $this->addFotoRow();
+    }
+
+    // === FOTO: tambah / hapus baris ===
+    public function addFotoRow()
+    {
+        $this->fotoRows[] = $this->fotoSeq;
+        $this->fotoSeq++;
+    }
+
+    public function removeFotoRow($key)
+    {
+        $this->fotoRows = array_values(array_filter($this->fotoRows, fn ($k) => $k !== $key));
+        unset($this->fotos[$key], $this->fotoNama[$key]);
     }
 
     // === REAL-TIME VALIDATION & AUTO RESET (SWEETALERT) ===
     public function updated($propertyName)
     {
+        // Lewati properti foto (fotos.*, fotoNama.*) — bukan input numerik.
+        if (str_starts_with($propertyName, 'foto')) {
+            return;
+        }
+
         $val = $this->parseNumber($this->{$propertyName});
 
         // 1. CEK ULANGAN 1, 2, 3 (Range 10 - 38)
@@ -196,6 +226,7 @@ class InputGabah extends Component
                 'mengetahui'                   => 'required',
                 'petugas'                      => 'required',
                 'catatan'                      => 'nullable',
+                'fotos.*'                      => 'nullable|image|max:10240',
             ]);
         } catch (ValidationException $e) {
             // SweetAlert Error jika form belum lengkap
@@ -236,7 +267,7 @@ class InputGabah extends Component
         try {
             $finalNomorSurat = $this->generateNomorSurat(false);
 
-            MasHpkkGabah::create([
+            $record = MasHpkkGabah::create([
                 'nomor_hpkk_gabah' => $finalNomorSurat,
                 'no_order_pembelian' => $this->no_order_pembelian,
                 'nomor_order' => $this->nomor_order,
@@ -261,6 +292,19 @@ class InputGabah extends Component
                 'catatan' => $this->catatan,
                 'code_cabang' => $this->code_cabang,
             ]);
+
+            // Simpan foto dokumentasi yang diupload langsung di form
+            foreach ($this->fotoRows as $key) {
+                if (!empty($this->fotos[$key])) {
+                    $path = $this->fotos[$key]->store('photos', 'public');
+                    RefUpload::create([
+                        'id_hpkk_gabah' => $record->id_hpkk_gabah,
+                        'nama'          => (isset($this->fotoNama[$key]) && trim($this->fotoNama[$key]) !== '') ? $this->fotoNama[$key] : 'Dokumentasi',
+                        'file'          => $path,
+                        'code_cabang'   => $this->code_cabang,
+                    ]);
+                }
+            }
 
             DB::commit();
 
@@ -302,6 +346,9 @@ class InputGabah extends Component
                 'petugas',
                 'hama_penyakit'
             ]);
+
+            $this->reset(['fotos', 'fotoNama', 'fotoRows', 'fotoSeq']);
+            $this->addFotoRow();
 
             $this->generateNomorSurat(true);
         } catch (\Exception $e) {

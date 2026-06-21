@@ -16,7 +16,7 @@ class ViewFotoGabah extends Component
     public function mount($id)
     {
         $this->gabah = MasHpkkGabah::findOrFail($id);
-        $this->fotos = RefUpload::where('id_hpkk_gabah', $this->gabah->id_po)->get();
+        $this->fotos = RefUpload::where('id_hpkk_gabah', $this->gabah->id_hpkk_gabah)->get();
     }
 
     public function deleteFoto($idUpload)
@@ -28,7 +28,7 @@ class ViewFotoGabah extends Component
         }
 
         // Refresh daftar foto
-        $this->fotos = RefUpload::where('id_hpkk_gabah', $this->gabah->id_po)->get();
+        $this->fotos = RefUpload::where('id_hpkk_gabah', $this->gabah->id_hpkk_gabah)->get();
         session()->flash('message', 'Foto berhasil dihapus.');
     }
 

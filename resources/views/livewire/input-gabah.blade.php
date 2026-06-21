@@ -215,6 +215,56 @@
             </div>
         </div>
 
+        {{-- DOKUMENTASI FOTO (upload langsung di form) --}}
+        <div class="bg-[#1a1d2d] border border-gray-700/50 rounded-2xl p-6 shadow-xl mb-6 relative overflow-hidden">
+            <div class="flex items-center justify-between mb-2">
+                <h2 class="text-lg font-bold text-cyan-400 flex items-center gap-2">
+                    <span class="w-2 h-8 bg-cyan-500 rounded-full"></span>
+                    Dokumentasi Foto
+                </h2>
+                <button type="button" wire:click="addFotoRow"
+                    class="bg-cyan-600/20 hover:bg-cyan-600 text-cyan-300 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-colors">
+                    + Tambah Foto
+                </button>
+            </div>
+            <p class="text-xs text-gray-500 mb-4">Upload foto dokumen HPK</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                @foreach ($fotoRows as $key)
+                <div wire:key="foto-row-{{ $key }}" class="bg-[#11131f] border border-gray-800 rounded-xl p-4 flex items-start gap-3">
+                    <label for="foto-{{ $key }}"
+                        class="flex-shrink-0 w-28 h-28 border-2 border-dashed border-gray-700 rounded-lg cursor-pointer bg-gray-800 hover:border-cyan-500 transition-colors flex items-center justify-center overflow-hidden relative">
+                        @if (isset($fotos[$key]) && $fotos[$key])
+                        <img src="{{ $fotos[$key]->temporaryUrl() }}" class="absolute inset-0 w-full h-full object-cover">
+                        @else
+                        <div class="text-center text-gray-500 text-[11px] px-2 leading-tight">
+                            <svg class="w-7 h-7 mx-auto mb-1 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                            </svg>
+                            Pilih Foto
+                        </div>
+                        @endif
+                        <input id="foto-{{ $key }}" type="file" wire:model="fotos.{{ $key }}" accept="image/*" class="hidden">
+                    </label>
+
+                    <div class="flex-1 min-w-0">
+                        <label class="block text-gray-400 text-xs font-bold mb-1">Nama Kegiatan</label>
+                        <input type="text" wire:model.defer="fotoNama.{{ $key }}" placeholder="Contoh: Sampling / Karung"
+                            class="w-full bg-gray-800 border border-gray-700 text-white text-sm rounded-lg px-3 py-2 focus:border-cyan-500 focus:outline-none">
+                        <div wire:loading wire:target="fotos.{{ $key }}" class="text-cyan-400 text-[11px] mt-1 font-bold animate-pulse">Memproses gambar...</div>
+                        @error('fotos.' . $key) <span class="text-red-500 text-[11px] mt-1 block">{{ $message }}</span> @enderror
+                        @if (count($fotoRows) > 1)
+                        <button type="button" wire:click="removeFotoRow({{ $key }})"
+                            class="text-red-400 hover:text-red-300 text-[11px] font-bold mt-2 inline-flex items-center gap-1">
+                            <i class="fa-solid fa-trash"></i> Hapus
+                        </button>
+                        @endif
+                    </div>
+                </div>
+                @endforeach
+            </div>
+        </div>
+
         <div class="flex justify-end gap-4 mt-8 pt-6 border-t border-gray-800">
             <button type="button" wire:click="cancel" class="px-6 py-3 rounded-xl bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-white font-bold transition-all">
                 Cancel

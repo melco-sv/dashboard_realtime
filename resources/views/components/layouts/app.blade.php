@@ -221,6 +221,26 @@
                         </div>
                     </div>
 
+                    {{-- BAST (sebelum Laporan) --}}
+                    <div x-data="{ open: false }" class="relative">
+                        <button @click="open = !open" class="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl transition-all duration-300 text-gray-400 hover:bg-gray-800 hover:text-white group">
+                            <div class="flex items-center gap-3">
+                                <div class="p-2 rounded-lg bg-gray-800 group-hover:bg-gray-700"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg></div>
+                                <span class="font-bold tracking-wide">BAST</span>
+                            </div>
+                            <svg xmlns="http://www.w3.org/2000/svg" :class="{'rotate-180': open}" class="h-4 w-4 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                        <div x-show="open" x-transition class="pl-4 mt-1 space-y-1">
+                            <a href="{{ route('bast.gabah') }}" wire:navigate class="block px-4 py-2 rounded-lg text-sm font-bold text-gray-400 hover:text-white hover:bg-gray-800 {{ request()->routeIs('bast.gabah') ? 'text-white bg-gray-800' : '' }}">- BAST GKP</a>
+                            <a href="{{ route('bast.beras') }}" wire:navigate class="block px-4 py-2 rounded-lg text-sm font-bold text-gray-400 hover:text-white hover:bg-gray-800 {{ request()->routeIs('bast.beras') ? 'text-white bg-gray-800' : '' }}">- BAST HGL</a>
+                        </div>
+                    </div>
+
+                    {{-- Laporan --}}
                     <div x-data="{ open: false }" class="relative">
                         <button @click="open = !open" class="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl transition-all duration-300 text-gray-400 hover:bg-gray-800 hover:text-white group">
                             <div class="flex items-center gap-3">
@@ -236,8 +256,6 @@
                         <div x-show="open" x-transition class="pl-4 mt-1 space-y-1">
                             <a href="{{ route('laporan.gkp') }}" wire:navigate class="block px-4 py-2 rounded-lg text-sm font-bold text-gray-400 hover:text-white hover:bg-gray-800 {{ request()->routeIs('laporan.gkp') ? 'text-white bg-gray-800' : '' }}">- Laporan GKP</a>
                             <a href="{{ route('laporan.hgl') }}" wire:navigate class="block px-4 py-2 rounded-lg text-sm font-bold text-gray-400 hover:text-white hover:bg-gray-800 {{ request()->routeIs('laporan.hgl') ? 'text-white bg-gray-800' : '' }}">- Laporan HGL</a>
-                            <a href="{{ route('bast.gabah') }}" wire:navigate class="block px-4 py-2 rounded-lg text-sm font-bold text-gray-400 hover:text-white hover:bg-gray-800 {{ request()->routeIs('bast.gabah') ? 'text-white bg-gray-800' : '' }}">- BAST GKP</a>
-                            <a href="{{ route('bast.beras') }}" wire:navigate class="block px-4 py-2 rounded-lg text-sm font-bold text-gray-400 hover:text-white hover:bg-gray-800 {{ request()->routeIs('bast.beras') ? 'text-white bg-gray-800' : '' }}">- BAST HGL</a>
                         </div>
                     </div>
                 </div>

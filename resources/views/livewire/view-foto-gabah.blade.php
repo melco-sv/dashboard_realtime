@@ -15,7 +15,7 @@
 <div class="min-h-screen bg-[#0b0c15] p-4 md:p-6 text-white font-['Space_Grotesk'] {{ $isVerif ? 'pb-28' : '' }}">
 
     {{-- HEADER --}}
-    <div class="max-w-6xl mx-auto mb-5">
+    <div class="mb-5">
         <div class="flex flex-wrap justify-between items-start gap-3">
             <div>
                 <div class="flex items-center gap-2 flex-wrap">
@@ -66,11 +66,11 @@
         @endif
     </div>
 
-    {{-- SPLIT: FOTO (kiri) + DATA (kanan) --}}
-    <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-4 items-start">
+    {{-- SPLIT: FOTO (kiri) + DATA (kanan) — full width --}}
+    <div class="grid grid-cols-1 xl:grid-cols-12 gap-4 items-start">
 
         {{-- KIRI: FOTO BESAR --}}
-        <div class="lg:col-span-2">
+        <div class="xl:col-span-5">
             <div class="flex items-center justify-between mb-2">
                 <h2 class="text-sm font-bold text-gray-300 uppercase tracking-wider">Foto Dokumentasi</h2>
                 <span class="text-xs text-gray-500">{{ $fotos->count() }} foto</span>
@@ -90,7 +90,7 @@
                     <a href="{{ Storage::url($foto->file) }}" target="_blank" class="block bg-black">
                         <img src="{{ Storage::url($foto->file) }}"
                              alt="{{ $foto->nama }}"
-                             class="w-full max-h-[75vh] object-contain mx-auto"
+                             class="w-full max-h-[80vh] object-contain mx-auto"
                              onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'flex items-center justify-center py-20 text-gray-600 text-sm\'>Foto tidak ditemukan</div>'">
                     </a>
                     <div class="p-3 flex items-center justify-between gap-2">
@@ -112,107 +112,109 @@
             @endif
         </div>
 
-        {{-- KANAN: DATA INPUT (detail) --}}
-        <div class="lg:col-span-1 space-y-4">
+        {{-- KANAN: DATA INPUT (detail) — cards bersampingan (masonry 2 kolom) --}}
+        <div class="xl:col-span-7">
+            <div class="columns-1 md:columns-2 gap-4">
 
-            {{-- KADAR AIR — Ulangan 1-3 + Rata-rata --}}
-            <div class="bg-gray-900 border border-gray-800 rounded-xl p-4">
-                <h2 class="text-sm font-bold text-gray-300 uppercase tracking-wider mb-3">Kadar Air (%)</h2>
-                <div class="grid grid-cols-4 gap-2 text-center">
-                    <div class="bg-gray-800/60 rounded-lg p-2">
-                        <p class="text-[10px] text-gray-500 uppercase font-bold">Ulangan 1</p>
-                        <p class="text-base font-bold text-gray-100">{{ $num($gabah->ulangan_1) }}</p>
-                    </div>
-                    <div class="bg-gray-800/60 rounded-lg p-2">
-                        <p class="text-[10px] text-gray-500 uppercase font-bold">Ulangan 2</p>
-                        <p class="text-base font-bold text-gray-100">{{ $num($gabah->ulangan_2) }}</p>
-                    </div>
-                    <div class="bg-gray-800/60 rounded-lg p-2">
-                        <p class="text-[10px] text-gray-500 uppercase font-bold">Ulangan 3</p>
-                        <p class="text-base font-bold text-gray-100">{{ $num($gabah->ulangan_3) }}</p>
-                    </div>
-                    <div class="rounded-lg p-2 border {{ $ka > 14 ? 'bg-red-500/10 border-red-500/40' : 'bg-blue-500/10 border-blue-500/30' }}">
-                        <p class="text-[10px] text-gray-400 uppercase font-bold">Rata²</p>
-                        <p class="text-base font-bold {{ $ka > 14 ? 'text-red-400' : 'text-blue-300' }}">{{ $ka > 0 ? number_format($ka, 2) : '-' }}@if($ka > 14)<span class="text-[9px]"> ⚠</span>@endif</p>
+                {{-- KADAR AIR — Ulangan 1-3 + Rata-rata --}}
+                <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 mb-4 break-inside-avoid">
+                    <h2 class="text-sm font-bold text-gray-300 uppercase tracking-wider mb-3">Kadar Air (%)</h2>
+                    <div class="grid grid-cols-4 gap-2 text-center">
+                        <div class="bg-gray-800/60 rounded-lg p-2">
+                            <p class="text-[10px] text-gray-500 uppercase font-bold">Ulangan 1</p>
+                            <p class="text-base font-bold text-gray-100">{{ $num($gabah->ulangan_1) }}</p>
+                        </div>
+                        <div class="bg-gray-800/60 rounded-lg p-2">
+                            <p class="text-[10px] text-gray-500 uppercase font-bold">Ulangan 2</p>
+                            <p class="text-base font-bold text-gray-100">{{ $num($gabah->ulangan_2) }}</p>
+                        </div>
+                        <div class="bg-gray-800/60 rounded-lg p-2">
+                            <p class="text-[10px] text-gray-500 uppercase font-bold">Ulangan 3</p>
+                            <p class="text-base font-bold text-gray-100">{{ $num($gabah->ulangan_3) }}</p>
+                        </div>
+                        <div class="rounded-lg p-2 border {{ $ka > 14 ? 'bg-red-500/10 border-red-500/40' : 'bg-blue-500/10 border-blue-500/30' }}">
+                            <p class="text-[10px] text-gray-400 uppercase font-bold">Rata²</p>
+                            <p class="text-base font-bold {{ $ka > 14 ? 'text-red-400' : 'text-blue-300' }}">{{ $ka > 0 ? number_format($ka, 2) : '-' }}@if($ka > 14)<span class="text-[9px]"> ⚠</span>@endif</p>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            {{-- MUTU LAIN --}}
-            <div class="bg-gray-900 border border-gray-800 rounded-xl p-4">
-                <h2 class="text-sm font-bold text-gray-300 uppercase tracking-wider mb-3">Mutu Lain</h2>
-                <div class="grid grid-cols-2 gap-2 text-center">
-                    <div class="bg-gray-800/60 rounded-lg p-2">
-                        <p class="text-[10px] text-gray-500 uppercase font-bold">Kadar Hampa (%)</p>
-                        <p class="text-base font-bold {{ $hampa > 3 ? 'text-red-400' : 'text-purple-300' }}">{{ $hampa > 0 ? number_format($hampa, 2) : '-' }}@if($hampa > 3) ⚠@endif</p>
+                {{-- MUTU LAIN --}}
+                <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 mb-4 break-inside-avoid">
+                    <h2 class="text-sm font-bold text-gray-300 uppercase tracking-wider mb-3">Mutu Lain</h2>
+                    <div class="grid grid-cols-2 gap-2 text-center">
+                        <div class="bg-gray-800/60 rounded-lg p-2">
+                            <p class="text-[10px] text-gray-500 uppercase font-bold">Kadar Hampa (%)</p>
+                            <p class="text-base font-bold {{ $hampa > 3 ? 'text-red-400' : 'text-purple-300' }}">{{ $hampa > 0 ? number_format($hampa, 2) : '-' }}@if($hampa > 3) ⚠@endif</p>
+                        </div>
+                        <div class="bg-gray-800/60 rounded-lg p-2">
+                            <p class="text-[10px] text-gray-500 uppercase font-bold">Butir Hijau (%)</p>
+                            <p class="text-base font-bold {{ $hijau > 5 ? 'text-red-400' : 'text-green-300' }}">{{ $hijau > 0 ? number_format($hijau, 2) : '-' }}@if($hijau > 5) ⚠@endif</p>
+                        </div>
                     </div>
-                    <div class="bg-gray-800/60 rounded-lg p-2">
-                        <p class="text-[10px] text-gray-500 uppercase font-bold">Butir Hijau (%)</p>
-                        <p class="text-base font-bold {{ $hijau > 5 ? 'text-red-400' : 'text-green-300' }}">{{ $hijau > 0 ? number_format($hijau, 2) : '-' }}@if($hijau > 5) ⚠@endif</p>
+                    <p class="text-[10px] text-gray-600 mt-2">⚠ KA &gt;14% · Hampa &gt;3% · Hijau &gt;5%</p>
+                </div>
+
+                {{-- KUANTUM & TIMBANGAN --}}
+                <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 mb-4 break-inside-avoid">
+                    <h2 class="text-sm font-bold text-gray-300 uppercase tracking-wider mb-3">Kuantum & Timbangan</h2>
+                    <div class="grid grid-cols-3 gap-2 text-center">
+                        <div class="bg-gray-800/60 rounded-lg p-2">
+                            <p class="text-[10px] text-gray-500 uppercase font-bold">Timbangan (Kg)</p>
+                            <p class="text-sm font-bold text-yellow-300">{{ $kg > 0 ? number_format($kg, 0, ',', '.') : '-' }}</p>
+                        </div>
+                        <div class="bg-gray-800/60 rounded-lg p-2">
+                            <p class="text-[10px] text-gray-500 uppercase font-bold">Rencana Kuantum</p>
+                            <p class="text-sm font-bold text-gray-100">{{ $num($gabah->rencana_kuantum, 0) }}</p>
+                        </div>
+                        <div class="bg-gray-800/60 rounded-lg p-2">
+                            <p class="text-[10px] text-gray-500 uppercase font-bold">Hasil Kuantum</p>
+                            <p class="text-sm font-bold text-gray-100">{{ $num($gabah->hasil_kuantum, 0) }}</p>
+                        </div>
                     </div>
                 </div>
-                <p class="text-[10px] text-gray-600 mt-2">⚠ KA &gt;14% · Hampa &gt;3% · Hijau &gt;5%</p>
-            </div>
 
-            {{-- KUANTUM & TIMBANGAN --}}
-            <div class="bg-gray-900 border border-gray-800 rounded-xl p-4">
-                <h2 class="text-sm font-bold text-gray-300 uppercase tracking-wider mb-3">Kuantum & Timbangan</h2>
-                <div class="grid grid-cols-3 gap-2 text-center">
-                    <div class="bg-gray-800/60 rounded-lg p-2">
-                        <p class="text-[10px] text-gray-500 uppercase font-bold">Timbangan (Kg)</p>
-                        <p class="text-sm font-bold text-yellow-300">{{ $kg > 0 ? number_format($kg, 0, ',', '.') : '-' }}</p>
+                {{-- PEMERIKSAAN --}}
+                <div class="bg-gray-900 border border-gray-800 rounded-xl divide-y divide-gray-800/60 mb-4 break-inside-avoid">
+                    <div class="px-4 py-2.5"><h2 class="text-sm font-bold text-gray-300 uppercase tracking-wider">Pemeriksaan</h2></div>
+                    @foreach ([
+                        'Kode Sample'        => $gabah->kode_sample,
+                        'Jenis Pemeriksaan'  => $gabah->jenis_pemeriksaan,
+                        'Dasar Pemeriksaan'  => $gabah->dasar_pemeriksaan,
+                        'Hama / Penyakit'    => $gabah->hama_penyakit,
+                        'Jenis Alat Angkut'  => $gabah->jenis_alat_angkut,
+                        'No. Reg. Alat'      => $gabah->nomor_registrasi_alat_angkut,
+                    ] as $label => $value)
+                    <div class="px-4 py-2">
+                        <p class="text-[10px] text-gray-500 uppercase tracking-wider font-bold">{{ $label }}</p>
+                        <p class="text-sm text-white break-words">{{ $value ?: '-' }}</p>
                     </div>
-                    <div class="bg-gray-800/60 rounded-lg p-2">
-                        <p class="text-[10px] text-gray-500 uppercase font-bold">Rencana Kuantum</p>
-                        <p class="text-sm font-bold text-gray-100">{{ $num($gabah->rencana_kuantum, 0) }}</p>
-                    </div>
-                    <div class="bg-gray-800/60 rounded-lg p-2">
-                        <p class="text-[10px] text-gray-500 uppercase font-bold">Hasil Kuantum</p>
-                        <p class="text-sm font-bold text-gray-100">{{ $num($gabah->hasil_kuantum, 0) }}</p>
-                    </div>
+                    @endforeach
                 </div>
-            </div>
 
-            {{-- PEMERIKSAAN --}}
-            <div class="bg-gray-900 border border-gray-800 rounded-xl divide-y divide-gray-800/60">
-                <div class="px-4 py-2.5"><h2 class="text-sm font-bold text-gray-300 uppercase tracking-wider">Pemeriksaan</h2></div>
-                @foreach ([
-                    'Kode Sample'        => $gabah->kode_sample,
-                    'Jenis Pemeriksaan'  => $gabah->jenis_pemeriksaan,
-                    'Dasar Pemeriksaan'  => $gabah->dasar_pemeriksaan,
-                    'Hama / Penyakit'    => $gabah->hama_penyakit,
-                    'Jenis Alat Angkut'  => $gabah->jenis_alat_angkut,
-                    'No. Reg. Alat'      => $gabah->nomor_registrasi_alat_angkut,
-                ] as $label => $value)
-                <div class="px-4 py-2">
-                    <p class="text-[10px] text-gray-500 uppercase tracking-wider font-bold">{{ $label }}</p>
-                    <p class="text-sm text-white break-words">{{ $value ?: '-' }}</p>
+                {{-- IDENTITAS DOKUMEN --}}
+                <div class="bg-gray-900 border border-gray-800 rounded-xl divide-y divide-gray-800/60 mb-4 break-inside-avoid">
+                    <div class="px-4 py-2.5"><h2 class="text-sm font-bold text-gray-300 uppercase tracking-wider">Identitas Dokumen</h2></div>
+                    @foreach ([
+                        'No. HPK'             => $gabah->nomor_hpkk_gabah,
+                        'No. Order'           => $gabah->no_order_pembelian ?: $gabah->nomor_order,
+                        'Mitra'               => $gabah->mitra,
+                        'Pengirim'            => $gabah->pengirim,
+                        'Cabang'              => optional($gabah->cabang)->name_cabang ?? $gabah->code_cabang,
+                        'Tempat Pelaksanaan'  => $gabah->tempat_pelaksanaan,
+                        'Lokasi'              => $gabah->lokasi,
+                        'Tanggal Pelaksanaan' => $gabah->tanggal_pelaksanaan ? $gabah->tanggal_pelaksanaan->format('d M Y') : null,
+                        'Tanggal Dokumen'     => $gabah->tanggal_doc ? $gabah->tanggal_doc->format('d M Y') : null,
+                        'Petugas'             => $gabah->petugas,
+                        'Mengetahui'          => $gabah->mengetahui,
+                        'Kesimpulan'          => $gabah->kesimpulan,
+                    ] as $label => $value)
+                    <div class="px-4 py-2">
+                        <p class="text-[10px] text-gray-500 uppercase tracking-wider font-bold">{{ $label }}</p>
+                        <p class="text-sm text-white break-words">{{ $value ?: '-' }}</p>
+                    </div>
+                    @endforeach
                 </div>
-                @endforeach
-            </div>
-
-            {{-- IDENTITAS DOKUMEN --}}
-            <div class="bg-gray-900 border border-gray-800 rounded-xl divide-y divide-gray-800/60">
-                <div class="px-4 py-2.5"><h2 class="text-sm font-bold text-gray-300 uppercase tracking-wider">Identitas Dokumen</h2></div>
-                @foreach ([
-                    'No. HPK'             => $gabah->nomor_hpkk_gabah,
-                    'No. Order'           => $gabah->no_order_pembelian ?: $gabah->nomor_order,
-                    'Mitra'               => $gabah->mitra,
-                    'Pengirim'            => $gabah->pengirim,
-                    'Cabang'              => optional($gabah->cabang)->name_cabang ?? $gabah->code_cabang,
-                    'Tempat Pelaksanaan'  => $gabah->tempat_pelaksanaan,
-                    'Lokasi'              => $gabah->lokasi,
-                    'Tanggal Pelaksanaan' => $gabah->tanggal_pelaksanaan ? $gabah->tanggal_pelaksanaan->format('d M Y') : null,
-                    'Tanggal Dokumen'     => $gabah->tanggal_doc ? $gabah->tanggal_doc->format('d M Y') : null,
-                    'Petugas'             => $gabah->petugas,
-                    'Mengetahui'          => $gabah->mengetahui,
-                    'Kesimpulan'          => $gabah->kesimpulan,
-                ] as $label => $value)
-                <div class="px-4 py-2">
-                    <p class="text-[10px] text-gray-500 uppercase tracking-wider font-bold">{{ $label }}</p>
-                    <p class="text-sm text-white break-words">{{ $value ?: '-' }}</p>
-                </div>
-                @endforeach
             </div>
         </div>
     </div>
@@ -221,7 +223,7 @@
     @if($isVerif)
     <div x-data="{ showReject: false, note: @js($gabah->catatan) }">
         <div class="fixed bottom-0 left-0 right-0 z-40 bg-[#11131f] border-t border-gray-800 px-4 py-3 shadow-2xl">
-            <div class="max-w-6xl mx-auto flex items-center justify-between gap-3">
+            <div class="flex items-center justify-between gap-3">
                 <div class="text-sm min-w-0">
                     <span class="text-gray-500">No. HPK</span>
                     <span class="font-mono text-yellow-300">{{ $gabah->nomor_hpkk_gabah }}</span>
