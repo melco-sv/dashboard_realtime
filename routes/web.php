@@ -40,6 +40,7 @@ use App\Livewire\VerifikasiBeras;
 use App\Livewire\TarifSetting;
 use App\Livewire\ActivityLog;
 use App\Livewire\StatusBayarBast;
+use App\Livewire\LaporanPendapatan;
 
 use App\Livewire\EditBeras; // Pastikan nanti component ini dibuat
 
@@ -100,6 +101,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/manage-users', \App\Livewire\ManageUser::class)->name('manage.users');
     Route::get('/tarif-setting', TarifSetting::class)->name('tarif.setting')->middleware('role:super admin');
     Route::get('/activity-log', ActivityLog::class)->name('activity.log')->middleware('role:super admin');
+    Route::get('/laporan-pendapatan', LaporanPendapatan::class)->name('laporan.pendapatan')->middleware('role:super admin');
 
     // --- HALAMAN KHUSUS INSPEKTOR ---
     // (Input, Edit, List, Upload, Laporan)

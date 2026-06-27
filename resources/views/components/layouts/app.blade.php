@@ -161,6 +161,10 @@
                         <i class="fa-solid fa-clock-rotate-left text-lg"></i>
                         <span class="font-medium">Activity Log</span>
                     </a>
+                    <a href="{{ route('laporan.pendapatan') }}" wire:navigate class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all group {{ request()->routeIs('laporan.pendapatan') ? 'bg-red-600 text-white shadow-lg shadow-red-500/20' : 'text-gray-400 hover:text-white hover:bg-gray-800' }}">
+                        <i class="fa-solid fa-file-excel text-lg"></i>
+                        <span class="font-medium">Rekap Nasional</span>
+                    </a>
                 </div>
             </div>
             @endif
