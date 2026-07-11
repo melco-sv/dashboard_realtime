@@ -38,7 +38,7 @@ class ActivityLog extends Component
                 'a.id', 'a.log_name', 'a.description', 'a.subject_type',
                 'a.subject_id', 'a.properties', 'a.created_at',
                 'u.nama as causer_nama', 'u.level as causer_level',
-                'u.group as causer_group'
+                'u.code_cabang as causer_group'
             )
             ->orderBy('a.created_at', 'desc');
 

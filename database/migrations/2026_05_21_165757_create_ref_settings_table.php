@@ -20,11 +20,27 @@ return new class extends Migration
 
         // Seed tarif default
         DB::table('ref_settings')->insert([
-            'key'         => 'tarif_bast',
-            'value'       => '46.40',
-            'description' => 'Tarif pemeriksaan BAST (Rp/Kg)',
-            'created_at'  => now(),
-            'updated_at'  => now(),
+            [
+                'key'         => 'tarif_bast',
+                'value'       => '46.40',
+                'description' => 'Tarif pemeriksaan BAST (Rp/Kg)',
+                'created_at'  => now(),
+                'updated_at'  => now(),
+            ],
+            [
+                'key'         => 'tarif_bast_gabah',
+                'value'       => '36',
+                'description' => 'Tarif pemeriksaan BAST Gabah (Rp/Kg)',
+                'created_at'  => now(),
+                'updated_at'  => now(),
+            ],
+            [
+                'key'         => 'tarif_bast_beras',
+                'value'       => '46',
+                'description' => 'Tarif pemeriksaan BAST Beras (Rp/Kg)',
+                'created_at'  => now(),
+                'updated_at'  => now(),
+            ],
         ]);
     }
 

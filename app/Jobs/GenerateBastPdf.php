@@ -28,6 +28,7 @@ class GenerateBastPdf implements ShouldQueue
     public function handle(): void
     {
         ini_set('memory_limit', '256M');
+        ini_set('pcre.backtrack_limit', '5000000');
 
         $dir = storage_path('app/bast-exports');
         if (!is_dir($dir)) {

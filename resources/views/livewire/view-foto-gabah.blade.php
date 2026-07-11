@@ -145,14 +145,14 @@
                     <div class="grid grid-cols-2 gap-2 text-center">
                         <div class="bg-gray-800/60 rounded-lg p-2">
                             <p class="text-[10px] text-gray-500 uppercase font-bold">Kadar Hampa (%)</p>
-                            <p class="text-base font-bold {{ $hampa > 3 ? 'text-red-400' : 'text-purple-300' }}">{{ $hampa > 0 ? number_format($hampa, 2) : '-' }}@if($hampa > 3) ⚠@endif</p>
+                            <p class="text-base font-bold {{ $hampa > 40 ? 'text-red-400' : 'text-purple-300' }}">{{ $hampa > 0 ? number_format($hampa, 2) : '-' }}@if($hampa > 40) ⚠@endif</p>
                         </div>
                         <div class="bg-gray-800/60 rounded-lg p-2">
                             <p class="text-[10px] text-gray-500 uppercase font-bold">Butir Hijau (%)</p>
-                            <p class="text-base font-bold {{ $hijau > 5 ? 'text-red-400' : 'text-green-300' }}">{{ $hijau > 0 ? number_format($hijau, 2) : '-' }}@if($hijau > 5) ⚠@endif</p>
+                            <p class="text-base font-bold {{ $hijau > 30 ? 'text-red-400' : 'text-green-300' }}">{{ $hijau > 0 ? number_format($hijau, 2) : '-' }}@if($hijau > 30) ⚠@endif</p>
                         </div>
                     </div>
-                    <p class="text-[10px] text-gray-600 mt-2">⚠ KA &gt;14% · Hampa &gt;3% · Hijau &gt;5%</p>
+                    <p class="text-[10px] text-gray-600 mt-2">⚠ KA &gt;14% · Hampa &gt;40% · Hijau &gt;30%</p>
                 </div>
 
                 {{-- KUANTUM & TIMBANGAN --}}
