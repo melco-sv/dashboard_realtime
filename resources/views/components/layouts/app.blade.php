@@ -241,6 +241,7 @@
                         <div x-show="open" x-transition class="pl-4 mt-1 space-y-1">
                             <a href="{{ route('bast.gabah') }}" wire:navigate class="block px-4 py-2 rounded-lg text-sm font-bold text-gray-400 hover:text-white hover:bg-gray-800 {{ request()->routeIs('bast.gabah') ? 'text-white bg-gray-800' : '' }}">- BAST GKP</a>
                             <a href="{{ route('bast.beras') }}" wire:navigate class="block px-4 py-2 rounded-lg text-sm font-bold text-gray-400 hover:text-white hover:bg-gray-800 {{ request()->routeIs('bast.beras') ? 'text-white bg-gray-800' : '' }}">- BAST HGL</a>
+                            <a href="{{ route('bast.pejabat.setting') }}" wire:navigate class="block px-4 py-2 rounded-lg text-sm font-bold text-gray-400 hover:text-white hover:bg-gray-800 {{ request()->routeIs('bast.pejabat.setting') ? 'text-white bg-gray-800' : '' }}">- Pengaturan Pejabat</a>
                         </div>
                     </div>
 

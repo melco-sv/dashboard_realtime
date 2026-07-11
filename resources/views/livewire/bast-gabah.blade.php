@@ -76,12 +76,13 @@
     <div class="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden mb-6">
         <div class="flex items-center justify-between px-5 py-3 border-b border-gray-800">
             <h2 class="text-sm font-bold text-gray-300 uppercase tracking-wider">Preview Data BAST</h2>
-            <button wire:click="openModal"
-                class="bg-yellow-600 hover:bg-yellow-500 text-white px-4 py-2 rounded-lg text-sm font-bold transition-colors flex items-center gap-2">
+            <button wire:click="cetakPdf" wire:loading.attr="disabled" wire:target="cetakPdf"
+                class="bg-yellow-600 hover:bg-yellow-500 disabled:opacity-60 text-white px-4 py-2 rounded-lg text-sm font-bold transition-colors flex items-center gap-2">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"/>
                 </svg>
-                Cetak BAST PDF
+                <span wire:loading.remove wire:target="cetakPdf">Cetak BAST PDF</span>
+                <span wire:loading wire:target="cetakPdf">Menyiapkan...</span>
             </button>
         </div>
 
@@ -147,64 +148,5 @@
         </div>
     </div>
 
-    {{-- MODAL --}}
-    @if ($showModal)
-    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
-        <div class="bg-gray-900 border border-gray-700 rounded-2xl p-6 w-full max-w-lg shadow-2xl">
-            <div class="flex items-center justify-between mb-5">
-                <h3 class="text-lg font-bold text-white">Lengkapi Data BAST</h3>
-                <button wire:click="closeModal" class="text-gray-500 hover:text-white transition-colors">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                    </svg>
-                </button>
-            </div>
-
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-gray-400 text-xs font-bold mb-1 uppercase tracking-wider">Nomor Surat</label>
-                    <input type="text" wire:model="nomor_surat"
-                        class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-3 py-2 text-sm focus:border-yellow-500 focus:outline-none font-mono">
-                </div>
-                <div>
-                    <label class="block text-gray-400 text-xs font-bold mb-1 uppercase tracking-wider">Nama Kepala Unit Pelayanan (SUCOFINDO)</label>
-                    <input type="text" wire:model="nama_kepala_unit" placeholder="Nama lengkap..."
-                        class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-3 py-2 text-sm focus:border-yellow-500 focus:outline-none">
-                </div>
-                <div>
-                    <label class="block text-gray-400 text-xs font-bold mb-1 uppercase tracking-wider">Nama Pimpinan Cabang Bulog</label>
-                    <input type="text" wire:model="nama_pimpinan_cabang" placeholder="Nama lengkap..."
-                        class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-3 py-2 text-sm focus:border-yellow-500 focus:outline-none">
-                </div>
-                <div>
-                    <label class="block text-gray-400 text-xs font-bold mb-1 uppercase tracking-wider">
-                        Tarif Pemeriksaan (Rp/Kg)
-                        @if(!Auth::user()->isSuperAdmin())
-                        <span class="text-gray-600 font-normal normal-case ml-1">— hanya Super Admin yang dapat mengubah</span>
-                        @endif
-                    </label>
-                    @if(Auth::user()->isSuperAdmin())
-                    <input type="number" step="0.01" wire:model="tarif" placeholder="46.40"
-                        class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-3 py-2 text-sm focus:border-yellow-500 focus:outline-none">
-                    @else
-                    <div class="w-full bg-gray-800/50 border border-gray-700/50 text-gray-400 rounded-lg px-3 py-2 text-sm font-mono cursor-not-allowed">
-                        {{ $tarif }}
-                    </div>
-                    @endif
-                </div>
-            </div>
-
-            <div class="flex gap-3 mt-6">
-                <button wire:click="cetakPdf"
-                    class="flex-1 bg-yellow-600 hover:bg-yellow-500 text-white font-bold py-2.5 rounded-xl text-sm text-center transition-colors">
-                    Cetak PDF
-                </button>
-                <button wire:click="closeModal"
-                    class="px-6 bg-gray-800 hover:bg-gray-700 text-gray-400 hover:text-white font-bold py-2.5 rounded-xl text-sm transition-colors">
-                    Batal
-                </button>
-            </div>
-        </div>
-    </div>
-    @endif
+    {{-- Modal "Lengkapi Data BAST" tidak dipakai lagi — nomor surat otomatis, tarif & nama pejabat diambil dari Pengaturan (BAST → Pengaturan Pejabat). Cetak langsung dari tombol di atas. --}}
 </div>

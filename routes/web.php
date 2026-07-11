@@ -19,9 +19,8 @@ use App\Livewire\UploadFotoGabah;
 use App\Livewire\ViewFotoGabah;
 use App\Livewire\BastBeras;
 use App\Livewire\BastGabah;
+use App\Livewire\BastPejabatSetting;
 use App\Http\Controllers\GabahPdfController;
-use App\Http\Controllers\BastBerasPdfController;
-use App\Http\Controllers\BastGabahPdfController;
 
 // Import Livewire Components (Beras)
 use App\Livewire\InputBeras;
@@ -127,10 +126,14 @@ Route::middleware('auth')->group(function () {
         Route::get('/laporan-hgl', LaporanHgl::class)->name('laporan.hgl');
 
         // BAST
+        // Catatan: route sinkron lama /bast-beras/pdf & /bast-gabah/pdf (DomPDF)
+        // sudah digantikan sepenuhnya oleh queue job GenerateBastPdf + bast.download.
+        // Tidak ada satu pun view/JS yang mereferensikannya — route dihapus.
         Route::get('/bast-beras', BastBeras::class)->name('bast.beras');
-        Route::get('/bast-beras/pdf', [BastBerasPdfController::class, 'print'])->name('bast.beras.pdf');
         Route::get('/bast-gabah', BastGabah::class)->name('bast.gabah');
-        Route::get('/bast-gabah/pdf', [BastGabahPdfController::class, 'print'])->name('bast.gabah.pdf');
+
+        // Pengaturan nama pejabat penanda tangan BAST (tersimpan per cabang)
+        Route::get('/bast-pejabat-setting', BastPejabatSetting::class)->name('bast.pejabat.setting');
     });
 
     // --- VIEW FOTO (Inspektor & Verification) ---
