@@ -4,6 +4,7 @@ namespace App\Livewire\Auth;
 
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter; // Import RateLimiter
 use Illuminate\Support\Str; // Import Str
 use App\Models\User;
@@ -37,8 +38,11 @@ class Login extends Component
         // 3. Cari User
         $user = User::where('username', $this->username)->first();
 
-        // 4. Cek Password (MD5) & User Exists
-        if ($user && $user->password === md5($this->password)) {
+        // 4. Cek Password & User Exists
+        // Dual-check: bcrypt (format baru) dicek dulu, lalu fallback MD5 (format lama).
+        // Jika cocok via MD5, hash langsung ditulis ulang sebagai bcrypt — migrasi
+        // bertahap tanpa perlu reset password user lama.
+        if ($user && $this->passwordMatches($user)) {
             
             // Cek Status Active
             if ($user->status !== 'Active') {
@@ -71,6 +75,33 @@ class Login extends Component
 
         // Kirim error ke input username
         $this->addError('username', 'Username atau Password salah.');
+    }
+
+    /**
+     * Verifikasi password dengan dukungan dua format hash:
+     * - bcrypt ($2y$...) — format baru.
+     * - MD5 (32 hex) — format lama; bila cocok, langsung di-upgrade ke bcrypt
+     *   dan kolom legacy password_md5 dikosongkan (rehash progresif).
+     */
+    private function passwordMatches(User $user): bool
+    {
+        $stored = (string) $user->password;
+
+        // Format baru: bcrypt
+        if (str_starts_with($stored, '$2')) {
+            return Hash::check($this->password, $stored);
+        }
+
+        // Format lama: MD5 → cocok berarti login sah, upgrade hash saat itu juga
+        if (hash_equals($stored, md5($this->password))) {
+            User::where('id_user', $user->id_user)->update([
+                'password'     => Hash::make($this->password),
+                'password_md5' => '',
+            ]);
+            return true;
+        }
+
+        return false;
     }
 
     public function render()

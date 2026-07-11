@@ -7,6 +7,7 @@ use Livewire\WithPagination;
 use App\Models\User;
 use App\Models\RefCabang;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 
 class ManageUser extends Component
@@ -125,10 +126,11 @@ class ManageUser extends Component
             'status' => $this->status,
         ];
 
-        // 3. Handle Password (MD5 sesuai sistem lama)
+        // 3. Handle Password — bcrypt (login mendukung dua format selama transisi;
+        //    kolom legacy password_md5 dikosongkan agar hash lemah tidak tersisa)
         if (!empty($this->password)) {
-            $data['password'] = md5($this->password);
-            $data['password_md5'] = md5($this->password); // Simpan di kedua kolom agar aman
+            $data['password'] = Hash::make($this->password);
+            $data['password_md5'] = '';
         }
 
         // 4. Eksekusi Database

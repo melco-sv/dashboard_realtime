@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 
 class UpdateProfile extends Component
@@ -57,18 +58,22 @@ class UpdateProfile extends Component
         $user = User::find(Auth::id());
 
         // 3. Siapkan data yang akan diupdate
+        // CATATAN: kolom 'phone' TIDAK ada di tabel mas_user — menyertakannya
+        // membuat seluruh proses simpan gagal dengan SQL error "Unknown column
+        // 'phone'" (termasuk ganti password). Jika nomor telepon perlu disimpan,
+        // tambahkan kolomnya lewat migration terlebih dahulu.
         $dataToUpdate = [
             'nama' => $this->nama,
             'email' => $this->email,
-            'phone' => $this->phone,
             'position' => $this->position,
         ];
 
         // 4. Cek apakah user mengisi password baru
         if (!empty($this->new_password)) {
-            // Enkripsi MD5 sesuai standar database Anda
-            $dataToUpdate['password'] = md5($this->new_password);
-            $dataToUpdate['password_md5'] = md5($this->new_password);
+            // Hash bcrypt (login mendukung dua format selama transisi;
+            // kolom legacy password_md5 dikosongkan agar hash lemah tidak tersisa)
+            $dataToUpdate['password'] = Hash::make($this->new_password);
+            $dataToUpdate['password_md5'] = '';
         }
 
         // 5. Simpan ke Database
