@@ -1,5 +1,16 @@
 <div wire:poll.30s class="space-y-8">
 
+    {{-- FILTER TAHUN (menata grafik tren + kartu total) --}}
+    <div class="flex items-center justify-end gap-2">
+        <label class="text-xs text-gray-400 uppercase tracking-wider font-bold">Tahun</label>
+        <select wire:model.live="selectedYear"
+            class="bg-gray-800 border border-gray-700 text-white rounded-lg px-3 py-2 text-sm font-bold focus:border-blue-500 focus:outline-none">
+            @foreach($availableYears as $y)
+            <option value="{{ $y }}">{{ $y }}</option>
+            @endforeach
+        </select>
+    </div>
+
     {{-- ═══════════════════════════════════════════════════════
          HERO KPI CARDS — Verification + SuperAdmin only
     ════════════════════════════════════════════════════════ --}}
@@ -100,7 +111,7 @@
             </div>
 
             <div class="lg:col-span-2 bg-gray-800/50 rounded-2xl p-4 border border-gray-700 backdrop-blur-sm" wire:ignore>
-                <h4 class="text-xs text-gray-400 uppercase mb-4 ml-2">Tren Pemasukan (Bulanan)</h4>
+                <h4 class="text-xs text-gray-400 uppercase mb-4 ml-2">Tren Pemasukan (Bulanan) — {{ $selectedYear }}</h4>
                 <div id="chart-gabah"></div>
             </div>
         </div>
@@ -145,7 +156,7 @@
             </div>
 
             <div class="lg:col-span-2 bg-gray-800/50 rounded-2xl p-4 border border-gray-700 backdrop-blur-sm" wire:ignore>
-                <h4 class="text-xs text-gray-400 uppercase mb-4 ml-2">Tren Produksi (Bulanan)</h4>
+                <h4 class="text-xs text-gray-400 uppercase mb-4 ml-2">Tren Produksi (Bulanan) — {{ $selectedYear }}</h4>
                 <div id="chart-beras"></div>
             </div>
         </div>
