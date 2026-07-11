@@ -24,7 +24,9 @@ class StatusBayarBast extends Component
     {
         $user = Auth::user();
         if (!Auth::check() || !($user->isVerification() || $user->isSuperAdmin())) {
-            return redirect()->route('dashboard');
+            // Nama route yang benar adalah 'dashboard.gabah' — route 'dashboard'
+            // tidak terdaftar sehingga baris lama melempar RouteNotFoundException.
+            return redirect()->route('dashboard.gabah');
         }
     }
 

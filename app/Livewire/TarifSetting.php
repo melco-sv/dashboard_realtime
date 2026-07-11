@@ -36,14 +36,24 @@ class TarifSetting extends Component
 
         $now = now();
 
+        // created_at hanya diisi saat INSERT (record baru); pada UPDATE tidak
+        // ditimpa lagi agar tanggal pembuatan asli tetap tersimpan.
         DB::table('ref_settings')->updateOrInsert(
             ['key' => 'tarif_bast_gabah'],
-            ['value' => number_format((float) $this->tarif_bast_gabah, 2, '.', ''), 'description' => 'Tarif BAST GKP/Gabah (Rp/Kg)', 'updated_at' => $now, 'created_at' => $now]
+            fn (bool $exists) => [
+                'value'       => number_format((float) $this->tarif_bast_gabah, 2, '.', ''),
+                'description' => 'Tarif BAST GKP/Gabah (Rp/Kg)',
+                'updated_at'  => $now,
+            ] + ($exists ? [] : ['created_at' => $now])
         );
 
         DB::table('ref_settings')->updateOrInsert(
             ['key' => 'tarif_bast_beras'],
-            ['value' => number_format((float) $this->tarif_bast_beras, 2, '.', ''), 'description' => 'Tarif BAST HGL/Beras (Rp/Kg)', 'updated_at' => $now, 'created_at' => $now]
+            fn (bool $exists) => [
+                'value'       => number_format((float) $this->tarif_bast_beras, 2, '.', ''),
+                'description' => 'Tarif BAST HGL/Beras (Rp/Kg)',
+                'updated_at'  => $now,
+            ] + ($exists ? [] : ['created_at' => $now])
         );
 
         Cache::forget('tarif_bast_gabah');
