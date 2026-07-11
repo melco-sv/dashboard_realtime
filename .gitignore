@@ -24,3 +24,4 @@ Homestead.yaml
 Thumbs.db
 # Abaikan file database besar agar tidak melampaui batas GitHub
 *.sql
+/database-backup
