@@ -1,5 +1,5 @@
 # ============================================================
-# EKSPOR DATABASE — Dashboard Realtime
+# EKSPOR DATABASE - Dashboard Realtime
 # Membuat file backup .sql lengkap (struktur + data) ke folder
 # database-backup\ dengan nama berstempel waktu.
 # Konfigurasi dibaca otomatis dari file .env proyek.
@@ -13,7 +13,7 @@ $envFile = Join-Path $root '.env'
 if (-not (Test-Path $envFile)) { Write-Host "GAGAL: file .env tidak ditemukan di $root" -ForegroundColor Red; exit 1 }
 $envMap = @{}
 foreach ($line in Get-Content $envFile) {
-    if ($line -match '^\s*(DB_HOST|DB_PORT|DB_DATABASE|DB_USERNAME|DB_PASSWORD)\s*=\s*(.*)$') {
+    if ($line -match '^\s*(DB_HOST|DB_PORT|DB_DATABASE|DB_USERNAME|DB_PASSWORD|MYSQL_BIN_DIR)\s*=\s*(.*)$') {
         $envMap[$Matches[1]] = $Matches[2].Trim().Trim('"').Trim("'")
     }
 }
@@ -24,16 +24,55 @@ $dbUser = if ($envMap['DB_USERNAME']) { $envMap['DB_USERNAME'] } else { 'root' }
 $dbPass = $envMap['DB_PASSWORD']
 if (-not $dbName) { Write-Host "GAGAL: DB_DATABASE tidak ditemukan di .env" -ForegroundColor Red; exit 1 }
 
-# --- Cari mysqldump (PATH -> Laragon -> XAMPP) ---
-$mysqldump = $null
-$cmd = Get-Command mysqldump -ErrorAction SilentlyContinue
-if ($cmd) { $mysqldump = $cmd.Source }
-if (-not $mysqldump) {
-    $cand = Get-ChildItem 'C:\laragon\bin\mysql\*\bin\mysqldump.exe' -ErrorAction SilentlyContinue | Select-Object -First 1
-    if ($cand) { $mysqldump = $cand.FullName }
+# --- Cari folder bin MySQL yang BISA TERHUBUNG ke server yang berjalan.
+#     Kandidat: MYSQL_BIN_DIR (.env) -> PATH -> semua drive (XAMPP /
+#     Laragon / WAMP / MySQL Server). Tiap kandidat diuji koneksi dulu,
+#     karena client MariaDB (XAMPP) tidak bisa masuk ke server MySQL 8
+#     dan sebaliknya bila keduanya terpasang. ---
+function Find-MySqlBinDir([hashtable]$envMap, $dbHost, $dbPort, $dbUser, $dbPass) {
+    $dirs = @()
+    if ($envMap['MYSQL_BIN_DIR']) { $dirs += $envMap['MYSQL_BIN_DIR'] }
+    $cmd = Get-Command mysql -ErrorAction SilentlyContinue
+    if ($cmd) { $dirs += (Split-Path -Parent $cmd.Source) }
+    foreach ($drive in (Get-PSDrive -PSProvider FileSystem | Where-Object { $_.Root -match '^[A-Z]:\\$' })) {
+        $r = $drive.Root
+        $dirs += (Join-Path $r 'xampp\mysql\bin')
+        foreach ($glob in @('laragon\bin\mysql\*\bin', 'wamp64\bin\mysql\*\bin', 'wamp\bin\mysql\*\bin')) {
+            $dirs += (Get-ChildItem (Join-Path $r $glob) -Directory -ErrorAction SilentlyContinue | ForEach-Object FullName)
+        }
+    }
+    $dirs += (Get-ChildItem "$env:ProgramFiles\MySQL\MySQL Server*\bin" -Directory -ErrorAction SilentlyContinue | ForEach-Object FullName)
+
+    $found = @()
+    foreach ($d in ($dirs | Where-Object { $_ } | Select-Object -Unique)) {
+        $exe = Join-Path $d 'mysql.exe'
+        if (-not (Test-Path $exe)) { continue }
+        $found += $d
+        # Uji koneksi sungguhan ke server (via cmd agar stderr client yang
+        # gagal konek tidak dianggap error fatal oleh PowerShell)
+        $passPart = ''; if ($dbPass) { $passPart = " --password=$dbPass" }
+        cmd /c "`"$exe`" --host=$dbHost --port=$dbPort --user=$dbUser$passPart -N -e `"SELECT 1;`" >nul 2>&1"
+        if ($LASTEXITCODE -eq 0) { return $d }
+    }
+    if ($found.Count -gt 0) {
+        Write-Host "Client MySQL ditemukan di:" -ForegroundColor Yellow
+        $found | ForEach-Object { Write-Host "  - $_" -ForegroundColor Yellow }
+        Write-Host "...tapi tidak ada yang berhasil terhubung ke $dbHost`:$dbPort." -ForegroundColor Yellow
+        Write-Host "Pastikan server database sudah BERJALAN (start dari XAMPP/Laragon) dan kredensial di .env benar."
+    }
+    return $null
 }
-if (-not $mysqldump -and (Test-Path 'C:\xampp\mysql\bin\mysqldump.exe')) { $mysqldump = 'C:\xampp\mysql\bin\mysqldump.exe' }
-if (-not $mysqldump) { Write-Host "GAGAL: mysqldump.exe tidak ditemukan. Pastikan Laragon/XAMPP/MySQL terpasang." -ForegroundColor Red; exit 1 }
+
+$binDir = Find-MySqlBinDir $envMap $dbHost $dbPort $dbUser $dbPass
+if (-not $binDir) {
+    Write-Host "GAGAL: tidak menemukan client MySQL yang bisa terhubung." -ForegroundColor Red
+    Write-Host "Bila lokasi MySQL/XAMPP Anda tidak standar, tambahkan ke .env:"
+    Write-Host "  MYSQL_BIN_DIR=D:\xampp\mysql\bin" -ForegroundColor Cyan
+    exit 1
+}
+$mysqldump = Join-Path $binDir 'mysqldump.exe'
+if (-not (Test-Path $mysqldump)) { Write-Host "GAGAL: mysqldump.exe tidak ada di $binDir" -ForegroundColor Red; exit 1 }
+Write-Host "Memakai: $mysqldump" -ForegroundColor DarkGray
 
 # --- Siapkan folder & nama file output ---
 $backupDir = Join-Path $root 'database-backup'
