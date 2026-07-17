@@ -52,10 +52,6 @@
                     <label class="text-gray-400 text-sm">Lokasi (Cabang)</label>
                     <input type="text" wire:model="lokasi" class="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 mt-1 focus:border-green-500 outline-none">
                 </div>
-                <div>
-                    <label class="text-gray-400 text-sm">Periode</label>
-                    <input type="text" wire:model="periode" class="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 mt-1 focus:border-green-500 outline-none">
-                </div>
             </div>
         </div>
 

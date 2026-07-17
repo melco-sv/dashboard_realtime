@@ -18,7 +18,6 @@ class EditBeras extends Component
     public $tanggal_pemeriksaan;
     public $tempat_pemeriksaan;
     public $lokasi;
-    public $periode;
 
     // --- GROUP 2: Pemeriksaan Fisik & Dasar ---
     public $dasar_pemeriksaan;
@@ -147,7 +146,6 @@ class EditBeras extends Component
                 'tanggal_pemeriksaan'             => $this->tanggal_pemeriksaan,
                 'tempat_pemeriksaan'              => $this->tempat_pemeriksaan,
                 'lokasi'                          => $this->lokasi,
-                'periode'                         => $this->periode,
                 'dasar_pemeriksaan'               => $this->dasar_pemeriksaan,
                 'kondisi_kemasan'                 => $this->kondisi_kemasan,
                 'hama'                            => $this->hama,
