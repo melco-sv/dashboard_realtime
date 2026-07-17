@@ -1,4 +1,4 @@
-<div class="min-h-screen bg-[#0b0c15] p-6 text-white font-['Space_Grotesk']">
+<div wire:poll.30s class="min-h-screen bg-[#0b0c15] p-6 text-white font-['Space_Grotesk']">
 
     {{-- HEADER --}}
     <div class="max-w-full mx-auto mb-6 flex justify-between items-center">
