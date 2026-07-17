@@ -52,7 +52,6 @@ class EditBeras extends Component
     public $petugas;
     public $mengetahui;
     public $code_cabang;
-    public $status;
     public $tanggal_doc; // Timestamp biasanya otomatis, tapi bisa diedit jika perlu
 
     public function mount($id)

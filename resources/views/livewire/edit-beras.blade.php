@@ -186,14 +186,9 @@
                     <label class="text-gray-400 text-sm">Kode Cabang</label>
                     <input type="text" wire:model="code_cabang" class="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 mt-1 focus:border-pink-500 outline-none">
                 </div>
-                <div>
-                    <label class="text-gray-400 text-sm">Status Dokumen</label>
-                    <select wire:model="status" class="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 mt-1 focus:border-pink-500 outline-none">
-                        <option value="Draft">Draft</option>
-                        <option value="Approve">Approve</option>
-                        <option value="Reject">Reject</option>
-                    </select>
-                </div>
+                {{-- Field "Status Dokumen" dihapus — status dokumen adalah wewenang
+                     admin pusat (verifikator); saat cabang menyimpan perbaikan,
+                     status otomatis kembali ke antrian verifikasi. --}}
             </div>
         </div>
 
