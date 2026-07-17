@@ -47,7 +47,8 @@ class EditBeras extends Component
     public $hasil_samping_butir_kuning_rusak;
 
     // --- GROUP 5: Lainnya ---
-    public $catatan;
+    public $catatan;          // catatan milik admin cabang (tersimpan di kolom)
+    public $catatanRevisi;    // catatan penolakan verifikator (tampilan saja, dari activity_log)
     public $petugas;
     public $mengetahui;
     public $code_cabang;
@@ -68,6 +69,14 @@ class EditBeras extends Component
         $this->tanggal_doc = $data->tanggal_doc
             ? \Carbon\Carbon::parse($data->tanggal_doc)->format('Y-m-d')
             : null;
+
+        // Catatan revisi verifikator dari activity_log (fallback kolom lama
+        // untuk dokumen yang ditolak sebelum perubahan penyimpanan catatan)
+        if ($data->status === 'Reject') {
+            $this->catatanRevisi = \App\Support\CatatanRevisi::satu(
+                \App\Support\CatatanRevisi::HGL, (int) $data->id_hpkk_beras
+            ) ?? $data->catatan;
+        }
     }
 
     public function updated($propertyName): void
@@ -169,10 +178,11 @@ class EditBeras extends Component
                 'petugas'                         => $this->petugas,
                 'mengetahui'                      => $this->mengetahui,
                 'code_cabang'                     => $this->code_cabang,
-                // Reset status & catatan saat cabang menyimpan perbaikan,
-                // agar dokumen kembali ke antrian Verifikasi (pending) admin pusat.
+                // Reset status saat cabang menyimpan perbaikan, agar dokumen
+                // kembali ke antrian Verifikasi (pending) admin pusat.
+                // Catatan TIDAK di-reset — kolom itu milik admin cabang.
                 'status'                          => null,
-                'catatan'                         => null,
+                'catatan'                         => $this->catatan,
             ]);
 
             // Rekam field apa yang berubah beserta nilai lama vs baru

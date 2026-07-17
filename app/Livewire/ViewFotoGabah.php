@@ -62,18 +62,18 @@ class ViewFotoGabah extends Component
             return;
         }
 
-        $this->gabah->update([
-            'status_data' => 'Reject',
-            'catatan'     => $catatan,
-        ]);
+        // Kolom `catatan` milik admin cabang — catatan penolakan cukup
+        // tersimpan di activity_log (dibaca via App\Support\CatatanRevisi).
+        $this->gabah->update(['status_data' => 'Reject']);
 
         activity()
             ->causedBy(Auth::user())
             ->withProperties([
-                'no_hpk'  => $this->gabah->nomor_hpkk_gabah,
-                'mitra'   => $this->gabah->mitra,
-                'cabang'  => optional($this->gabah->cabang)->name_cabang,
-                'catatan' => $catatan,
+                'record_id' => $this->gabah->id_hpkk_gabah,
+                'no_hpk'    => $this->gabah->nomor_hpkk_gabah,
+                'mitra'     => $this->gabah->mitra,
+                'cabang'    => optional($this->gabah->cabang)->name_cabang,
+                'catatan'   => $catatan,
             ])
             ->log('Reject GKP');
 

@@ -25,8 +25,15 @@ class ListGabah extends Component
             ->orderBy('id_hpkk_gabah', 'desc')
             ->paginate(10);
 
+        // Catatan penolakan dibaca dari activity_log (fallback kolom lama di blade)
+        $revisiNotes = \App\Support\CatatanRevisi::peta(
+            \App\Support\CatatanRevisi::GKP,
+            $data->getCollection()->pluck('id_hpkk_gabah')
+        );
+
         return view('livewire.list-gabah', [
-            'gabahList' => $data
+            'gabahList'   => $data,
+            'revisiNotes' => $revisiNotes,
         ]);
     }
 

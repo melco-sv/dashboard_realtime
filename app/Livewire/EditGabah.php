@@ -35,7 +35,8 @@ class EditGabah extends Component
     public $lokasi;
     public $mengetahui;
     public $petugas;
-    public $catatan;
+    public $catatan;          // catatan milik admin cabang (tersimpan di kolom)
+    public $catatanRevisi;    // catatan penolakan verifikator (tampilan saja, dari activity_log)
     public $code_cabang;
 
     // === MOUNT (Ambil Data Lama) ===
@@ -75,6 +76,14 @@ class EditGabah extends Component
         $this->petugas = $data->petugas;
         $this->catatan = $data->catatan;
         $this->code_cabang = $data->code_cabang;
+
+        // Catatan revisi verifikator dari activity_log (fallback kolom lama
+        // untuk dokumen yang ditolak sebelum perubahan penyimpanan catatan)
+        if ($data->status_data === 'Reject') {
+            $this->catatanRevisi = \App\Support\CatatanRevisi::satu(
+                \App\Support\CatatanRevisi::GKP, (int) $data->id_hpkk_gabah
+            ) ?? $data->catatan;
+        }
     }
 
     public function updated($propertyName): void
@@ -157,10 +166,11 @@ class EditGabah extends Component
                 'lokasi'                       => $this->lokasi,
                 'mengetahui'                   => $this->mengetahui,
                 'petugas'                      => $this->petugas,
-                // Reset status & catatan saat cabang menyimpan perbaikan,
-                // agar dokumen kembali ke antrian Verifikasi (pending) admin pusat.
+                // Reset status saat cabang menyimpan perbaikan, agar dokumen
+                // kembali ke antrian Verifikasi (pending) admin pusat.
+                // Catatan TIDAK di-reset — kolom itu milik admin cabang.
                 'status_data'                  => null,
-                'catatan'                      => null,
+                'catatan'                      => $this->catatan,
                 'code_cabang'                  => $this->code_cabang,
             ]);
 

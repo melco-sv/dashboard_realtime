@@ -132,12 +132,16 @@ class ApprovalNotif extends Component
                 ->orderByDesc('id_hpkk_gabah')->limit(6)
                 ->get(['id_hpkk_gabah', 'nomor_hpkk_gabah', 'catatan', 'tanggal_pelaksanaan']);
 
+            // Catatan penolakan dari activity_log; fallback kolom lama (data sebelum perubahan)
+            $notesGabah = \App\Support\CatatanRevisi::peta(
+                \App\Support\CatatanRevisi::GKP, $gabah->pluck('id_hpkk_gabah'));
+
             foreach ($gabah as $g) {
                 $recent->push([
                     'label'  => 'Ditolak — GKP',
                     'code'   => $g->nomor_hpkk_gabah ?: '—',
                     'cabang' => null,
-                    'note'   => $g->catatan,
+                    'note'   => $notesGabah[$g->id_hpkk_gabah] ?? $g->catatan,
                     'time'   => $g->tanggal_pelaksanaan,
                     'icon'   => 'fa-wheat-awn',
                     'color'  => 'text-red-400',
@@ -149,12 +153,15 @@ class ApprovalNotif extends Component
                 ->orderByDesc('id_hpkk_beras')->limit(6)
                 ->get(['id_hpkk_beras', 'nomor_hpkk_beras', 'catatan', 'tanggal_pemeriksaan']);
 
+            $notesBeras = \App\Support\CatatanRevisi::peta(
+                \App\Support\CatatanRevisi::HGL, $beras->pluck('id_hpkk_beras'));
+
             foreach ($beras as $b) {
                 $recent->push([
                     'label'  => 'Ditolak — HGL',
                     'code'   => $b->nomor_hpkk_beras ?: '—',
                     'cabang' => null,
-                    'note'   => $b->catatan,
+                    'note'   => $notesBeras[$b->id_hpkk_beras] ?? $b->catatan,
                     'time'   => $b->tanggal_pemeriksaan,
                     'icon'   => 'fa-bowl-rice',
                     'color'  => 'text-red-400',

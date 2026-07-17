@@ -25,8 +25,15 @@ class ListBeras extends Component
             ->orderBy('id_hpkk_beras', 'desc')
             ->paginate(10);
 
+        // Catatan penolakan dibaca dari activity_log (fallback kolom lama di blade)
+        $revisiNotes = \App\Support\CatatanRevisi::peta(
+            \App\Support\CatatanRevisi::HGL,
+            $data->getCollection()->pluck('id_hpkk_beras')
+        );
+
         return view('livewire.list-beras', [
-            'berasList' => $data
+            'berasList'   => $data,
+            'revisiNotes' => $revisiNotes,
         ]);
     }
 

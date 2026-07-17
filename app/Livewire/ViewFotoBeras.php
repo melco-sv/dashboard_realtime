@@ -61,18 +61,18 @@ class ViewFotoBeras extends Component
             return;
         }
 
-        $this->beras->update([
-            'status'  => 'Reject',
-            'catatan' => $catatan,
-        ]);
+        // Kolom `catatan` milik admin cabang — catatan penolakan cukup
+        // tersimpan di activity_log (dibaca via App\Support\CatatanRevisi).
+        $this->beras->update(['status' => 'Reject']);
 
         activity()
             ->causedBy(Auth::user())
             ->withProperties([
-                'no_lhpk' => $this->beras->nomor_hpkk_beras,
-                'no_mo'   => $this->beras->id_mo,
-                'cabang'  => optional($this->beras->cabang)->name_cabang,
-                'catatan' => $catatan,
+                'record_id' => $this->beras->id_hpkk_beras,
+                'no_lhpk'   => $this->beras->nomor_hpkk_beras,
+                'no_mo'     => $this->beras->id_mo,
+                'cabang'    => optional($this->beras->cabang)->name_cabang,
+                'catatan'   => $catatan,
             ])
             ->log('Reject HGL');
 

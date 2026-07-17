@@ -146,9 +146,10 @@
                         @if($row->status === 'Approve')
                         <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-green-500/20 text-green-400 border border-green-500/30 whitespace-nowrap">✓ Approved</span>
                         @elseif($row->status === 'Reject')
-                        <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-red-500/20 text-red-400 border border-red-500/30 whitespace-nowrap" title="{{ $row->catatan }}">✗ Ditolak</span>
-                        @if($row->catatan)
-                        <div class="text-[10px] text-red-300/80 mt-1 max-w-[160px] mx-auto leading-snug" title="{{ $row->catatan }}">{{ \Illuminate\Support\Str::limit($row->catatan, 60) }}</div>
+                        @php $noteRevisi = $revisiNotes[$row->id_hpkk_beras] ?? $row->catatan; @endphp
+                        <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-red-500/20 text-red-400 border border-red-500/30 whitespace-nowrap" title="{{ $noteRevisi }}">✗ Ditolak</span>
+                        @if($noteRevisi)
+                        <div class="text-[10px] text-red-300/80 mt-1 max-w-[160px] mx-auto leading-snug" title="{{ $noteRevisi }}">{{ \Illuminate\Support\Str::limit($noteRevisi, 60) }}</div>
                         @endif
                         @else
                         <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-yellow-500/20 text-yellow-400 border border-yellow-500/30">Pending</span>

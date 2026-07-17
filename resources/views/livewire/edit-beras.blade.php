@@ -16,6 +16,16 @@
     </div>
     @endif
 
+    @if ($catatanRevisi)
+    <div class="max-w-7xl mx-auto mb-6 bg-red-500/10 border border-red-500 rounded-xl px-5 py-4">
+        <p class="text-red-400 font-bold text-sm mb-1 uppercase tracking-wider">
+            <i class="fa-solid fa-triangle-exclamation mr-2"></i>Catatan Revisi dari Verifikator
+        </p>
+        <p class="text-red-200 text-sm leading-relaxed">{{ $catatanRevisi }}</p>
+        <p class="text-red-300/60 text-xs mt-2">Perbaiki data sesuai catatan di atas, lalu simpan — dokumen akan kembali ke antrian verifikasi.</p>
+    </div>
+    @endif
+
     <form wire:submit="update" class="max-w-7xl mx-auto">
 
         <div class="bg-gray-900 border border-gray-800 rounded-2xl p-6 shadow-2xl mb-6">

@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use Livewire\WithPagination;
+use App\Support\CatatanRevisi;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
@@ -74,20 +75,20 @@ class VerifikasiGabah extends Component
             ->select('m.nomor_hpkk_gabah', 'm.mitra', 'r.name_cabang')
             ->first();
 
+        // Kolom `catatan` milik admin cabang — catatan penolakan cukup
+        // tersimpan di activity_log (dibaca via App\Support\CatatanRevisi).
         DB::table('mas_hpkk_gabah')
             ->where('id_hpkk_gabah', $id)
-            ->update([
-                'status_data' => 'Reject',
-                'catatan'     => $catatan,
-            ]);
+            ->update(['status_data' => 'Reject']);
 
         activity()
             ->causedBy(Auth::user())
             ->withProperties([
-                'no_hpk'  => $row?->nomor_hpkk_gabah,
-                'mitra'   => $row?->mitra,
-                'cabang'  => $row?->name_cabang,
-                'catatan' => $catatan,
+                'record_id' => $id,
+                'no_hpk'    => $row?->nomor_hpkk_gabah,
+                'mitra'     => $row?->mitra,
+                'cabang'    => $row?->name_cabang,
+                'catatan'   => $catatan,
             ])
             ->log('Reject GKP');
 
@@ -163,8 +164,13 @@ class VerifikasiGabah extends Component
             DB::table('ref_cabang')->orderBy('name_cabang')->get(['code_cabang', 'name_cabang'])
         );
 
+        $dataList = $query->paginate(15);
+        // Catatan penolakan dibaca dari activity_log (fallback kolom lama di blade)
+        $revisiNotes = CatatanRevisi::peta(CatatanRevisi::GKP, $dataList->getCollection()->pluck('id_hpkk_gabah'));
+
         return view('livewire.verifikasi-gabah', [
-            'dataList'      => $query->paginate(15),
+            'dataList'      => $dataList,
+            'revisiNotes'   => $revisiNotes,
             'cabangs'       => $cabangs,
             'totalKg'       => $totalKg,
             'totalApproved' => $totalApproved,

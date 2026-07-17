@@ -78,7 +78,7 @@
                     @if($item->status_data == 'Reject')
                     <div class="w-full bg-red-900/30 border border-red-600/50 rounded-lg p-2 mb-1">
                         <p class="text-[10px] font-bold text-red-400 uppercase tracking-wider mb-0.5">✗ Ditolak Admin Pusat</p>
-                        <p class="text-[11px] text-red-200 leading-snug break-words">{{ $item->catatan ?: 'Tanpa catatan.' }}</p>
+                        <p class="text-[11px] text-red-200 leading-snug break-words">{{ ($revisiNotes[$item->id_hpkk_gabah] ?? $item->catatan) ?: 'Tanpa catatan.' }}</p>
                     </div>
                     @endif
 
