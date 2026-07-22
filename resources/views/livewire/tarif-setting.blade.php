@@ -56,7 +56,7 @@
                     <div class="mt-4 bg-gray-900/50 rounded-lg p-3">
                         <p class="text-[10px] text-gray-500 uppercase tracking-wider font-bold mb-2">Preview</p>
                         @php $tg = (float) str_replace(',', '.', $tarif_bast_gabah ?: 0); @endphp
-                        <div class="grid grid-cols-3 gap-2 text-center">
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-center">
                             <div>
                                 <p class="text-[10px] text-gray-500 mb-1">1.000 Kg</p>
                                 <p class="font-bold text-white text-xs">Rp {{ number_format($tg * 1000, 0, ',', '.') }}</p>
@@ -97,7 +97,7 @@
                     <div class="mt-4 bg-gray-900/50 rounded-lg p-3">
                         <p class="text-[10px] text-gray-500 uppercase tracking-wider font-bold mb-2">Preview</p>
                         @php $tb = (float) str_replace(',', '.', $tarif_bast_beras ?: 0); @endphp
-                        <div class="grid grid-cols-3 gap-2 text-center">
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-center">
                             <div>
                                 <p class="text-[10px] text-gray-500 mb-1">1.000 Kg</p>
                                 <p class="font-bold text-white text-xs">Rp {{ number_format($tb * 1000, 0, ',', '.') }}</p>

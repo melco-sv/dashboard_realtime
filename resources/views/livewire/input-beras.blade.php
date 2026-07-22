@@ -1,8 +1,8 @@
 <div class="min-h-screen bg-[#0b0c15] p-6 text-white font-['Space_Grotesk']">
 
-    <div class="max-w-7xl mx-auto mb-8 flex justify-between items-center border-b border-gray-800 pb-4">
+    <div class="max-w-7xl mx-auto mb-8 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 border-b border-gray-800 pb-4">
         <div>
-            <h1 class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-emerald-600">
+            <h1 class="text-2xl sm:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-emerald-600">
                 Form Input Beras
             </h1>
             <p class="text-gray-400 text-sm mt-1">Create New HPKK Record (HGL)</p>
@@ -277,7 +277,7 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 @foreach ($fotoRows as $key)
-                <div wire:key="foto-row-{{ $key }}" class="bg-[#11131f] border border-gray-800 rounded-xl p-4 flex items-start gap-3">
+                <div wire:key="foto-row-{{ $key }}" class="bg-[#11131f] border border-gray-800 rounded-xl p-4 flex flex-col sm:flex-row items-start gap-3">
                     <label for="foto-{{ $key }}"
                         class="flex-shrink-0 w-28 h-28 border-2 border-dashed border-gray-700 rounded-lg cursor-pointer bg-gray-800 hover:border-emerald-500 transition-colors flex items-center justify-center overflow-hidden relative">
                         @if (isset($fotos[$key]) && $fotos[$key])
@@ -311,11 +311,11 @@
             </div>
         </div>
 
-        <div class="flex justify-end gap-4 mt-8 pt-6 border-t border-gray-800">
-            <button type="button" wire:click="cancel" class="px-6 py-3 rounded-xl bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-white font-bold transition-all">
+        <div class="flex flex-col sm:flex-row justify-end gap-4 mt-8 pt-6 border-t border-gray-800">
+            <button type="button" wire:click="cancel" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-white font-bold transition-all">
                 Cancel
             </button>
-            <button type="submit" class="px-8 py-3 rounded-xl bg-gradient-to-r from-green-600 to-emerald-500 hover:from-green-500 hover:to-emerald-400 text-white font-bold shadow-lg shadow-green-500/30 transition-all transform hover:scale-105">
+            <button type="submit" class="w-full sm:w-auto px-8 py-3 rounded-xl bg-gradient-to-r from-green-600 to-emerald-500 hover:from-green-500 hover:to-emerald-400 text-white font-bold shadow-lg shadow-green-500/30 transition-all transform hover:scale-105">
                 Create Data
             </button>
         </div>

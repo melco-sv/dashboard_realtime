@@ -1,14 +1,14 @@
 <div class="min-h-screen bg-[#0b0c15] p-6 text-white font-['Space_Grotesk']">
 
-    <div class="max-w-7xl mx-auto mb-8 flex justify-between items-center border-b border-gray-800 pb-4">
+    <div class="max-w-7xl mx-auto mb-8 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 border-b border-gray-800 pb-4">
         <div>
-            <h1 class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-orange-400 to-red-600">
+            <h1 class="text-2xl sm:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-orange-400 to-red-600">
                 Manage Users
             </h1>
             <p class="text-gray-400 text-sm mt-1">Kelola Akun & Hak Akses Pengguna</p>
         </div>
 
-        <button wire:click="create" class="px-5 py-2.5 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-bold shadow-lg shadow-orange-500/20 transition-all flex items-center gap-2">
+        <button wire:click="create" class="w-full sm:w-auto justify-center px-5 py-2.5 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-bold shadow-lg shadow-orange-500/20 transition-all flex items-center gap-2">
             <i class="fa-solid fa-plus"></i> Add User
         </button>
     </div>
@@ -101,9 +101,9 @@
 
     @if($showModal)
     <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-        <div class="bg-[#1a1d2d] w-full max-w-2xl rounded-2xl border border-gray-700 shadow-2xl overflow-hidden">
+        <div class="bg-[#1a1d2d] w-full max-w-2xl max-h-[90vh] rounded-2xl border border-gray-700 shadow-2xl overflow-hidden flex flex-col">
 
-            <div class="px-6 py-4 border-b border-gray-700 flex justify-between items-center bg-[#11131f]">
+            <div class="px-6 py-4 border-b border-gray-700 flex justify-between items-center bg-[#11131f] flex-shrink-0">
                 <h3 class="text-lg font-bold text-white">
                     {{ $isEditMode ? 'Edit User' : 'Add New User' }}
                 </h3>
@@ -112,7 +112,7 @@
                 </button>
             </div>
 
-            <form wire:submit.prevent="store" class="p-6 max-h-[80vh] overflow-y-auto">
+            <form wire:submit.prevent="store" class="p-6 overflow-y-auto flex-1 min-h-0">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
                     <div>
@@ -185,11 +185,11 @@
 
                 </div>
 
-                <div class="flex justify-end gap-3 mt-8">
-                    <button type="button" wire:click="closeModal" class="px-5 py-2.5 rounded-xl bg-gray-700 text-white font-bold hover:bg-gray-600 transition-all">
+                <div class="flex flex-col sm:flex-row justify-end gap-3 mt-8">
+                    <button type="button" wire:click="closeModal" class="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-gray-700 text-white font-bold hover:bg-gray-600 transition-all">
                         Cancel
                     </button>
-                    <button type="submit" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-red-600 text-white font-bold hover:from-orange-500 hover:to-red-500 shadow-lg shadow-orange-500/30 transition-all">
+                    <button type="submit" class="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-red-600 text-white font-bold hover:from-orange-500 hover:to-red-500 shadow-lg shadow-orange-500/30 transition-all">
                         {{ $isEditMode ? 'Update User' : 'Create User' }}
                     </button>
                 </div>

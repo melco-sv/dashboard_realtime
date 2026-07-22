@@ -39,7 +39,8 @@
 
     {{-- TABLE --}}
     <div class="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
-        <table class="w-full text-xs">
+        <div class="overflow-x-auto">
+        <table class="w-full min-w-[900px] text-xs">
             <thead>
                 <tr class="bg-gray-800/70 text-[10px] text-gray-400 uppercase tracking-wider">
                     <th class="px-3 py-2.5 text-left font-bold">Waktu</th>
@@ -122,6 +123,7 @@
                 @endforelse
             </tbody>
         </table>
+        </div>
 
         <div class="px-4 py-2 border-t border-gray-800">
             {{ $logs->links() }}

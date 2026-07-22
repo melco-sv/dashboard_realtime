@@ -2,7 +2,7 @@
 
     <div class="max-w-7xl mx-auto mb-8 flex flex-col md:flex-row justify-between items-start md:items-center border-b border-gray-800 pb-4 gap-4">
         <div>
-            <h1 class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-emerald-600">
+            <h1 class="text-2xl sm:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-emerald-600">
                 Laporan HGL (Beras)
             </h1>
             <p class="text-gray-400 text-sm mt-1">
@@ -164,7 +164,7 @@
             </table>
         </div>
 
-        <div class="p-4 border-t border-gray-700 bg-[#1a1d2d] flex justify-between items-center text-xs text-gray-500">
+        <div class="p-4 border-t border-gray-700 bg-[#1a1d2d] flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-center text-xs text-gray-500">
             <div>
                 Menampilkan data {{ $data_laporan->firstItem() }} - {{ $data_laporan->lastItem() }} dari {{ $total_record }}
             </div>

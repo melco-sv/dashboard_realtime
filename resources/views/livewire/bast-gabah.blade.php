@@ -74,10 +74,10 @@
 
     {{-- PREVIEW TABLE --}}
     <div class="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden mb-6">
-        <div class="flex items-center justify-between px-5 py-3 border-b border-gray-800">
+        <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between px-4 sm:px-5 py-3 border-b border-gray-800">
             <h2 class="text-sm font-bold text-gray-300 uppercase tracking-wider">Preview Data BAST</h2>
             <button wire:click="cetakPdf" wire:loading.attr="disabled" wire:target="cetakPdf"
-                class="bg-yellow-600 hover:bg-yellow-500 disabled:opacity-60 text-white px-4 py-2 rounded-lg text-sm font-bold transition-colors flex items-center gap-2">
+                class="w-full sm:w-auto bg-yellow-600 hover:bg-yellow-500 disabled:opacity-60 text-white px-4 py-2 rounded-lg text-sm font-bold transition-colors flex items-center justify-center gap-2">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"/>
                 </svg>

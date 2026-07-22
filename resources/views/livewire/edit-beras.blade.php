@@ -1,8 +1,8 @@
 <div class="min-h-screen bg-[#0b0c15] p-6 text-white font-['Space_Grotesk']">
 
-    <div class="max-w-7xl mx-auto mb-6 flex justify-between items-center">
+    <div class="max-w-7xl mx-auto mb-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
         <div>
-            <h1 class="text-3xl font-bold text-white">Edit Data HPKK Beras</h1>
+            <h1 class="text-2xl sm:text-3xl font-bold text-white">Edit Data HPKK Beras</h1>
             <p class="text-gray-400 text-sm">Formulir perubahan data hasil pemeriksaan kualitas</p>
         </div>
         <a href="{{ route('list.beras') }}" wire:navigate class="text-gray-400 hover:text-white transition">
@@ -103,9 +103,9 @@
 
             <div class="bg-gray-900 border border-gray-800 rounded-2xl p-6 shadow-2xl">
                 <h3 class="text-blue-500 font-bold text-lg mb-4 border-b border-gray-800 pb-2">C. Hasil Analisa Lab</h3>
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="col-span-2 grid grid-cols-4 gap-2 bg-gray-800/50 p-2 rounded-lg">
-                        <div class="col-span-4 text-xs text-blue-300 mb-1">Kadar Air (%)</div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="sm:col-span-2 grid grid-cols-2 sm:grid-cols-4 gap-2 bg-gray-800/50 p-2 rounded-lg">
+                        <div class="col-span-2 sm:col-span-4 text-xs text-blue-300 mb-1">Kadar Air (%)</div>
                         <input type="number" step="0.01" wire:model.blur="ulangan_1" placeholder="U1 (10-14)" class="bg-gray-800 border border-gray-600 rounded px-2 py-1 text-sm focus:border-blue-500">
                         <input type="number" step="0.01" wire:model.blur="ulangan_2" placeholder="U2 (10-14)" class="bg-gray-800 border border-gray-600 rounded px-2 py-1 text-sm focus:border-blue-500">
                         <input type="number" step="0.01" wire:model.blur="ulangan_3" placeholder="U3 (10-14)" class="bg-gray-800 border border-gray-600 rounded px-2 py-1 text-sm focus:border-blue-500">
@@ -192,18 +192,18 @@
             </div>
         </div>
 
-        <div class="flex items-center gap-4 pb-10">
+        <div class="flex flex-col sm:flex-row sm:items-center gap-4 pb-10">
             <button type="submit"
-                class="bg-green-600 hover:bg-green-500 text-white px-8 py-3 rounded-lg font-bold shadow-lg shadow-green-500/20 transition-all transform hover:scale-105">
+                class="w-full sm:w-auto bg-green-600 hover:bg-green-500 text-white px-8 py-3 rounded-lg font-bold shadow-lg shadow-green-500/20 transition-all transform hover:scale-105">
                 Simpan Perubahan
             </button>
 
             <a href="{{ route('list.beras') }}" wire:navigate
-                class="bg-gray-800 hover:bg-gray-700 text-gray-300 px-8 py-3 rounded-lg font-bold transition-all border border-gray-700">
+                class="w-full sm:w-auto text-center bg-gray-800 hover:bg-gray-700 text-gray-300 px-8 py-3 rounded-lg font-bold transition-all border border-gray-700">
                 Batal
             </a>
 
-            <div wire:loading wire:target="update" class="text-green-500 text-sm animate-pulse ml-4">
+            <div wire:loading wire:target="update" class="text-green-500 text-sm animate-pulse sm:ml-4">
                 Processing update...
             </div>
         </div>

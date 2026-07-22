@@ -19,7 +19,7 @@
     @endif
 
     {{-- STATS CARDS --}}
-    <div class="grid grid-cols-4 gap-3 mb-4">
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
         <div class="bg-gray-900 border border-gray-800 rounded-xl p-3">
             <p class="text-[10px] text-gray-500 uppercase tracking-wider font-bold mb-1">Total Kuantum (Kg)</p>
             <p class="text-lg font-bold text-green-400">{{ number_format($totalKg, 0, ',', '.') }}</p>
@@ -86,7 +86,8 @@
 
     {{-- TABLE --}}
     <div class="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
-        <table class="w-full text-xs">
+        <div class="overflow-x-auto">
+        <table class="w-full min-w-[1100px] text-xs">
             <thead>
                 <tr class="bg-gray-800/70 text-[10px] text-gray-400 uppercase tracking-wider">
                     <th class="px-2 py-2.5 text-left font-bold w-6">#</th>
@@ -170,6 +171,7 @@
                 @endforelse
             </tbody>
         </table>
+        </div>
 
         <div class="px-4 py-2 border-t border-gray-800 flex items-center justify-between flex-wrap gap-2">
             <p class="text-[10px] text-gray-600">⚠ KA &gt;14% &nbsp;|&nbsp; Sosoh &lt;95% &nbsp;|&nbsp; Patah &gt;25% &nbsp;|&nbsp; Menir &gt;2%</p>

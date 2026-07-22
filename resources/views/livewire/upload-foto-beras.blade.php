@@ -1,18 +1,18 @@
-<div class="min-h-screen bg-[#0b0c15] p-6 text-white font-['Space_Grotesk'] flex items-center justify-center">
+<div class="min-h-screen bg-[#0b0c15] p-4 sm:p-6 text-white font-['Space_Grotesk'] flex items-center justify-center">
 
-    <div class="w-full max-w-2xl bg-gray-900 border border-gray-800 rounded-2xl p-8 shadow-2xl relative overflow-hidden">
+    <div class="w-full max-w-2xl bg-gray-900 border border-gray-800 rounded-2xl p-5 sm:p-8 shadow-2xl relative overflow-hidden">
 
         <div class="absolute top-0 right-0 w-64 h-64 bg-green-600/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
 
         <div class="mb-8 border-b border-gray-800 pb-4">
-            <h1 class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-emerald-600">
+            <h1 class="text-2xl sm:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-emerald-600">
                 Upload Foto Beras
             </h1>
             <p class="text-gray-400 text-sm mt-1">Dokumentasi HGL: <span class="font-mono text-green-400">{{ $nomor_hpkk }}</span></p>
         </div>
 
         {{-- INFO CARD RECORD --}}
-        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-4 mb-6 grid grid-cols-2 gap-3">
+        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-4 mb-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
                 <p class="text-[10px] text-gray-500 uppercase tracking-wider font-bold mb-0.5">Tempat Pemeriksaan</p>
                 <p class="text-sm text-white font-bold uppercase">{{ $tempat ?? '-' }}</p>

@@ -23,7 +23,7 @@
 
                 {{-- Dropdown --}}
                 <div x-show="open" x-cloak x-transition.opacity.duration.150ms
-                    class="absolute right-0 mt-2 w-80 bg-[#11131f] border border-gray-700 rounded-xl shadow-2xl z-50 overflow-hidden">
+                    class="fixed inset-x-4 top-16 sm:absolute sm:inset-x-auto sm:top-auto sm:right-0 sm:mt-2 sm:w-80 bg-[#11131f] border border-gray-700 rounded-xl shadow-2xl z-50 overflow-hidden">
 
                     <div class="px-4 py-2.5 border-b border-gray-800 flex items-center justify-between">
                         <span class="text-xs font-bold text-white">{{ $panelTitle }}</span>

@@ -1,13 +1,13 @@
 <div wire:poll.30s class="min-h-screen bg-[#0b0c15] p-6 text-white font-['Space_Grotesk']">
 
     {{-- HEADER --}}
-    <div class="max-w-full mx-auto mb-6 flex justify-between items-center">
+    <div class="max-w-full mx-auto mb-6 flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
         <div>
-            <h1 class="text-3xl font-bold text-white">List Dokumen Gabah (GKP)</h1>
+            <h1 class="text-2xl sm:text-3xl font-bold text-white">List Dokumen Gabah (GKP)</h1>
             <p class="text-gray-400 text-sm">Monitoring Data Hasil Pemeriksaan Kualitas & Kuantitas</p>
         </div>
 
-        <div class="flex-1 px-4">
+        <div class="w-full sm:flex-1 sm:px-4">
             @if (session()->has('message'))
             <div class="bg-green-500/10 border border-green-500 text-green-400 px-4 py-2 rounded-lg text-sm font-bold text-center">
                 {{ session('message') }}
@@ -20,12 +20,12 @@
             @endif
         </div>
 
-        <div class="flex gap-3">
+        <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
             <input type="text" wire:model.live="search"
                 placeholder="Cari No HPK / Mitra / Sampel..."
-                class="bg-gray-800 border border-gray-700 text-white px-4 py-2 rounded-lg focus:outline-none focus:border-blue-500 w-72">
+                class="bg-gray-800 border border-gray-700 text-white px-4 py-2 rounded-lg focus:outline-none focus:border-blue-500 w-full sm:w-72">
             <a href="{{ route('input.gabah') }}" wire:navigate
-                class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg font-bold flex items-center gap-2 shadow-lg shadow-blue-500/30 whitespace-nowrap">
+                class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg font-bold flex items-center justify-center gap-2 shadow-lg shadow-blue-500/30 whitespace-nowrap w-full sm:w-auto">
                 + Input Baru
             </a>
         </div>
@@ -63,8 +63,7 @@
             <div class="flex flex-col lg:flex-row">
 
                 {{-- KOLOM KIRI: NOMOR + TOMBOL --}}
-                <div class="flex flex-row lg:flex-col items-start gap-2 p-4 bg-gray-800/30 border-b lg:border-b-0 lg:border-r border-gray-800"
-                    style="min-width: 200px; max-width: 200px;">
+                <div class="flex flex-col items-start gap-2 p-4 bg-gray-800/30 border-b lg:border-b-0 lg:border-r border-gray-800 w-full lg:w-auto lg:min-w-[200px] lg:max-w-[200px]">
 
                     <div class="text-[10px] text-gray-500 font-bold mb-1">
                         #{{ $gabahList->firstItem() + $index }}
@@ -236,7 +235,7 @@
         @endforelse
 
         {{-- PAGINATION --}}
-        <div class="pt-2">
+        <div class="pt-2 overflow-x-auto">
             {{ $gabahList->links() }}
         </div>
 

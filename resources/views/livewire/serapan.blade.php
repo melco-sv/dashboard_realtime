@@ -1,4 +1,4 @@
-<div class="space-y-8 p-6 bg-[#0b0c15] min-h-screen font-['Space_Grotesk']">
+<div class="space-y-8 p-4 sm:p-6 bg-[#0b0c15] min-h-screen font-['Space_Grotesk']">
 
     <style>
         .dark-date-input::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
@@ -33,7 +33,7 @@
 
     {{-- HEADER --}}
     <div class="text-center pb-2">
-        <h2 class="text-3xl font-extrabold text-white tracking-tight">Dashboard Kualitas Serapan</h2>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Dashboard Kualitas Serapan</h2>
         <p class="text-gray-400 text-sm mt-1">Monitoring Kualitas Gabah & Beras</p>
     </div>
 
@@ -42,7 +42,7 @@
         <div class="flex flex-col md:flex-row gap-4 w-full md:w-auto">
             <div class="flex items-center gap-3 bg-gray-800 px-4 py-2 rounded-xl border border-gray-700">
                 <span class="text-gray-400 text-xs uppercase font-bold tracking-wider">Cabang:</span>
-                <select wire:model.live="cabang" class="bg-transparent text-white font-bold focus:outline-none text-sm cursor-pointer min-w-[200px]">
+                <select wire:model.live="cabang" class="bg-transparent text-white font-bold focus:outline-none text-sm cursor-pointer flex-1 min-w-0 sm:flex-initial sm:min-w-[200px]">
                     <option value="" class="bg-gray-900 text-gray-200">Semua Cabang</option>
                     @foreach($listCabang as $kode => $nama)
                         <option value="{{ $kode }}" class="bg-gray-900 text-gray-200">{{ $nama }}</option>
@@ -51,7 +51,7 @@
             </div>
             <div class="flex items-center gap-3 bg-gray-800 px-4 py-2 rounded-xl border border-gray-700">
                 <span class="text-gray-400 text-xs uppercase font-bold tracking-wider">Periode:</span>
-                <input type="month" wire:model.live="periode" class="bg-transparent text-white font-bold focus:outline-none text-sm cursor-pointer dark-date-input">
+                <input type="month" wire:model.live="periode" class="bg-transparent text-white font-bold focus:outline-none text-sm cursor-pointer dark-date-input flex-1 min-w-0 sm:flex-initial">
             </div>
         </div>
         <div wire:loading class="text-blue-400 text-xs font-bold animate-pulse flex items-center gap-2">
@@ -64,7 +64,7 @@
     {{-- SECTION 1: RINGKASAN AKTIVITAS (NEW)                         --}}
     {{-- ============================================================ --}}
     @if(!empty($aktivitasStats))
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
 
         {{-- Gabah: Jumlah Pemeriksaan --}}
         @php $b = $badge($momStats['gabah_count_chg'] ?? null); @endphp
@@ -249,7 +249,7 @@
                     <p class="text-[10px] text-gray-500 mt-1">Total: <span class="text-orange-300 font-bold">{{ $fmtKg($hasilSampingStats['total']) }}</span></p>
                 </div>
             </div>
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 @php
                     $hsItems = [
                         ['label' => 'Menir',        'val' => $hasilSampingStats['menir'],        'color' => 'text-orange-300', 'border' => 'border-orange-900/30'],

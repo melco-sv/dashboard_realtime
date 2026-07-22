@@ -15,7 +15,7 @@
          HERO KPI CARDS — Verification + SuperAdmin only
     ════════════════════════════════════════════════════════ --}}
     @if ($showFinancial)
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
 
         {{-- Total Pendapatan Gabungan --}}
         <div class="bg-gray-900 border border-purple-900/50 rounded-2xl p-5 relative overflow-hidden">
@@ -87,7 +87,7 @@
             <div class="bg-gray-800/50 rounded-2xl p-6 border border-gray-700 backdrop-blur-sm">
                 <p class="text-gray-400 text-xs uppercase font-bold tracking-widest">Total Berat Masuk</p>
                 <div class="mt-4">
-                    <h2 class="text-4xl font-bold text-white tracking-tight">
+                    <h2 class="text-3xl sm:text-4xl font-bold text-white tracking-tight">
                         {{ $totalGabahKgDisplay }}
                     </h2>
                     <span class="text-lg text-blue-400 font-bold">Kg</span>
@@ -132,7 +132,7 @@
             <div class="bg-gray-800/50 rounded-2xl p-6 border border-gray-700 backdrop-blur-sm">
                 <p class="text-gray-400 text-xs uppercase font-bold tracking-widest">Total Kuantum Beras</p>
                 <div class="mt-4">
-                    <h2 class="text-4xl font-bold text-white tracking-tight">
+                    <h2 class="text-3xl sm:text-4xl font-bold text-white tracking-tight">
                         {{ $totalBerasKgDisplay }}
                     </h2>
                     <span class="text-lg text-green-400 font-bold">Kg</span>
@@ -197,9 +197,9 @@
                         ['label'=>'Kadar Hampa','val'=>$avgKadarHampa,'c'=>$cHampa,'unit'=>'%'],
                         ['label'=>'Butir Hijau','val'=>$avgButirHijau,'c'=>$cHijau,'unit'=>'%'],
                     ] as $m)
-                    <div class="border rounded-xl p-3 text-center {{ $m['c']['bg'] }}">
+                    <div class="border rounded-xl p-3 text-center min-w-0 {{ $m['c']['bg'] }}">
                         <p class="text-gray-500 text-[10px] uppercase tracking-wider mb-1">{{ $m['label'] }}</p>
-                        <p class="font-bold text-xl {{ $m['c']['text'] }} font-mono">{{ $m['val'] }}<span class="text-xs">{{ $m['unit'] }}</span></p>
+                        <p class="font-bold text-base sm:text-xl {{ $m['c']['text'] }} font-mono">{{ $m['val'] }}<span class="text-xs">{{ $m['unit'] }}</span></p>
                         <span class="inline-block w-1.5 h-1.5 rounded-full {{ $m['c']['dot'] }} mt-1"></span>
                     </div>
                     @endforeach
@@ -217,9 +217,9 @@
                         ['label'=>'Butir Patah','val'=>$avgButirPatah,'c'=>$cPatah,'unit'=>'%'],
                         ['label'=>'Menir','val'=>$avgMenir,'c'=>$cMenir,'unit'=>'%'],
                     ] as $m)
-                    <div class="border rounded-xl p-3 text-center {{ $m['c']['bg'] }}">
+                    <div class="border rounded-xl p-3 text-center min-w-0 {{ $m['c']['bg'] }}">
                         <p class="text-gray-500 text-[10px] uppercase tracking-wider mb-1">{{ $m['label'] }}</p>
-                        <p class="font-bold text-xl {{ $m['c']['text'] }} font-mono">{{ $m['val'] }}<span class="text-xs">{{ $m['unit'] }}</span></p>
+                        <p class="font-bold text-base sm:text-xl {{ $m['c']['text'] }} font-mono">{{ $m['val'] }}<span class="text-xs">{{ $m['unit'] }}</span></p>
                         <span class="inline-block w-1.5 h-1.5 rounded-full {{ $m['c']['dot'] }} mt-1"></span>
                     </div>
                     @endforeach
