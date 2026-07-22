@@ -79,7 +79,7 @@
                     </a>
                     <a href="#" class="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-gray-800 rounded-xl transition-all group">
                         <svg class="w-5 h-5 group-hover:text-orange-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
-                        <span class="font-medium">Serapan</span>
+                        <span class="font-medium">Dashboard</span>
                     </a>
                 </div>
             </div>
