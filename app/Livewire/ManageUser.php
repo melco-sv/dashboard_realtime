@@ -15,7 +15,7 @@ class ManageUser extends Component
     use WithPagination;
 
     // === PROPERTI FORM ===
-    public $username, $nama, $email, $position, $code_cabang, $level, $status;
+    public $username, $nama, $position, $code_cabang, $level, $status;
     public $password, $password_confirmation;
 
     // === STATE MANAGEMENT ===
@@ -80,7 +80,6 @@ class ManageUser extends Component
         $this->usernameBeingEdited = $user->username;
         $this->username = $user->username;
         $this->nama = $user->nama;
-        $this->email = $user->email;
         $this->position = $user->position;
         $this->code_cabang = $user->code_cabang;
         $this->level = $user->level;
@@ -96,7 +95,6 @@ class ManageUser extends Component
         // 1. Aturan Validasi
         $rules = [
             'nama' => 'required',
-            'email' => 'nullable|email',
             'level' => 'required',
             'code_cabang' => 'required',
             'status' => 'required',
@@ -119,7 +117,6 @@ class ManageUser extends Component
         // 2. Persiapan Data
         $data = [
             'nama' => $this->nama,
-            'email' => $this->email,
             'position' => $this->position,
             'code_cabang' => $this->code_cabang,
             'level' => $this->level,
@@ -182,7 +179,6 @@ class ManageUser extends Component
         $this->reset([
             'username',
             'nama',
-            'email',
             'position',
             'code_cabang',
             'level',

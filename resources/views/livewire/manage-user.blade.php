@@ -129,16 +129,6 @@
                     </div>
 
                     <div>
-                        <label class="block text-gray-400 text-xs font-bold mb-2">Email</label>
-                        <input type="email" wire:model="email" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-2.5 focus:border-orange-500 focus:outline-none">
-                    </div>
-
-                    <div>
-                        <label class="block text-gray-400 text-xs font-bold mb-2">Phone</label>
-                        <input type="text" wire:model="phone" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-2.5 focus:border-orange-500 focus:outline-none">
-                    </div>
-
-                    <div>
                         <label class="block text-gray-400 text-xs font-bold mb-2">Cabang <span class="text-red-500">*</span></label>
                         <select wire:model="code_cabang" class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-2.5 focus:border-orange-500 focus:outline-none">
                             <option value="">Pilih Cabang...</option>

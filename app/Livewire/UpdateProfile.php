@@ -12,8 +12,6 @@ class UpdateProfile extends Component
     // Property untuk Form
     public $username;
     public $nama;
-    public $email;
-    public $phone;
     public $position;
 
     // Read Only Property
@@ -32,8 +30,6 @@ class UpdateProfile extends Component
         // Isi form dengan data database saat ini
         $this->username = $user->username;
         $this->nama     = $user->nama;
-        $this->email    = $user->email;
-        $this->phone    = $user->phone;
         $this->position = $user->position;
 
         // Data Read Only
@@ -47,8 +43,6 @@ class UpdateProfile extends Component
         // 1. Validasi Input
         $this->validate([
             'nama' => 'required|string|max:255',
-            'email' => 'nullable|email|max:100',
-            'phone' => 'nullable|string|max:20',
             'position' => 'nullable|string|max:100',
             // Validasi Password: Min 6 karakter, dan harus sama dengan retype
             'new_password' => 'nullable|min:6|same:new_password_confirmation',
@@ -58,13 +52,8 @@ class UpdateProfile extends Component
         $user = User::find(Auth::id());
 
         // 3. Siapkan data yang akan diupdate
-        // CATATAN: kolom 'phone' TIDAK ada di tabel mas_user — menyertakannya
-        // membuat seluruh proses simpan gagal dengan SQL error "Unknown column
-        // 'phone'" (termasuk ganti password). Jika nomor telepon perlu disimpan,
-        // tambahkan kolomnya lewat migration terlebih dahulu.
         $dataToUpdate = [
             'nama' => $this->nama,
-            'email' => $this->email,
             'position' => $this->position,
         ];
 

@@ -34,22 +34,6 @@
                 </div>
 
                 <div class="space-y-1">
-                    <label class="text-xs font-bold text-orange-500 uppercase tracking-wider">Email</label>
-                    <input type="email" wire:model="email"
-                        class="w-full bg-[#0b0c15] text-white border border-gray-600 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 rounded-lg px-4 py-2.5 transition-all"
-                        placeholder="contoh@email.com">
-                    @error('email') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-                </div>
-
-                <div class="space-y-1">
-                    <label class="text-xs font-bold text-orange-500 uppercase tracking-wider">Phone</label>
-                    <input type="text" wire:model="phone"
-                        class="w-full bg-[#0b0c15] text-white border border-gray-600 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 rounded-lg px-4 py-2.5 transition-all"
-                        placeholder="0812...">
-                    @error('phone') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-                </div>
-
-                <div class="space-y-1">
                     <label class="text-xs font-bold text-gray-400 uppercase tracking-wider">Level</label>
                     <div class="w-full bg-[#11131f] text-gray-500 border border-gray-700 rounded-lg px-4 py-2.5 flex items-center gap-2 cursor-not-allowed">
                         <i class="fa-solid fa-user-shield text-xs"></i>
