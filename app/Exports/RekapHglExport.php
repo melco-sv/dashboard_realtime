@@ -88,10 +88,9 @@ class RekapHglExport implements FromCollection, WithMapping, WithEvents, WithCus
             $tanggal,                   // E: Tanggal
             $row->id_mo ?? '-',         // F: No MO
             $kuantumGkp,                // G: Kuantum GKP
-            $row->nomor_lhpk_beras ?? '-', // H: No LHPK
-            $kuantumBeras,              // I: Kuantum Beras
-            
-            // J-P: Hasil Analisa
+            $kuantumBeras,              // H: Kuantum Beras
+
+            // I-O: Hasil Analisa
             $row->derajat_sosoh ?? 0,
             $row->ulangan_1 ?? 0,
             $row->ulangan_2 ?? 0,
@@ -112,10 +111,10 @@ class RekapHglExport implements FromCollection, WithMapping, WithEvents, WithCus
                 $end = Carbon::parse($this->endDate)->isoFormat('D MMMM Y');
 
                 // --- HEADER JUDUL (Row 1-3) ---
-                $sheet->mergeCells('A1:P1'); 
+                $sheet->mergeCells('A1:O1');
                 $sheet->setCellValue('A1', 'LAPORAN PEMERIKSAAN HGL (BERAS)');
-                
-                $sheet->mergeCells('A2:P2'); 
+
+                $sheet->mergeCells('A2:O2');
                 $sheet->setCellValue('A2', 'PERIODE ' . $start . ' s.d ' . $end);
                 
                 $sheet->getStyle('A1:A2')->applyFromArray([
@@ -131,33 +130,31 @@ class RekapHglExport implements FromCollection, WithMapping, WithEvents, WithCus
                 $sheet->setCellValue('E5', 'Tanggal');
                 $sheet->setCellValue('F5', 'Nomor MO');
                 $sheet->setCellValue('G5', 'Kuantum GKP (Kg)');
-                $sheet->setCellValue('H5', 'No. LHPK');
-                $sheet->setCellValue('I5', 'Jumlah Kuantum Beras');
-                $sheet->setCellValue('J5', 'Hasil Analisa');
+                $sheet->setCellValue('H5', 'Jumlah Kuantum Beras');
+                $sheet->setCellValue('I5', 'Hasil Analisa');
 
                 // Sub-Header (Row 6)
-                $sheet->setCellValue('J6', 'Derajat Sosoh');
-                $sheet->setCellValue('K6', 'Ulangan 1');
-                $sheet->setCellValue('L6', 'Ulangan 2');
-                $sheet->setCellValue('M6', 'Ulangan 3');
-                $sheet->setCellValue('N6', 'Kadar Air');
-                $sheet->setCellValue('O6', 'Butir Patah');
-                $sheet->setCellValue('P6', 'Butir Menir');
+                $sheet->setCellValue('I6', 'Derajat Sosoh');
+                $sheet->setCellValue('J6', 'Ulangan 1');
+                $sheet->setCellValue('K6', 'Ulangan 2');
+                $sheet->setCellValue('L6', 'Ulangan 3');
+                $sheet->setCellValue('M6', 'Kadar Air');
+                $sheet->setCellValue('N6', 'Butir Patah');
+                $sheet->setCellValue('O6', 'Butir Menir');
 
                 // Merge Cells
-                $sheet->mergeCells('A5:A6'); 
-                $sheet->mergeCells('B5:B6'); 
+                $sheet->mergeCells('A5:A6');
+                $sheet->mergeCells('B5:B6');
                 $sheet->mergeCells('C5:C6');
-                $sheet->mergeCells('D5:D6'); 
-                $sheet->mergeCells('E5:E6'); 
+                $sheet->mergeCells('D5:D6');
+                $sheet->mergeCells('E5:E6');
                 $sheet->mergeCells('F5:F6');
-                $sheet->mergeCells('G5:G6'); 
-                $sheet->mergeCells('H5:H6'); 
-                $sheet->mergeCells('I5:I6');
-                $sheet->mergeCells('J5:P5'); // Merge Header 'Hasil Analisa'
+                $sheet->mergeCells('G5:G6');
+                $sheet->mergeCells('H5:H6');
+                $sheet->mergeCells('I5:O5'); // Merge Header 'Hasil Analisa'
 
                 // Style Header (Orange Theme)
-                $sheet->getStyle('A5:P6')->applyFromArray([
+                $sheet->getStyle('A5:O6')->applyFromArray([
                     'font' => ['bold' => true, 'color' => ['argb' => 'FFFFFFFF']], // Teks Putih
                     'alignment' => [
                         'horizontal' => Alignment::HORIZONTAL_CENTER, 
@@ -176,22 +173,22 @@ class RekapHglExport implements FromCollection, WithMapping, WithEvents, WithCus
                 
                 if ($lastRow >= 7) {
                     // Border Semua Data
-                    $sheet->getStyle('A7:P' . $lastRow)->applyFromArray([
+                    $sheet->getStyle('A7:O' . $lastRow)->applyFromArray([
                         'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]],
                         'alignment' => ['vertical' => Alignment::VERTICAL_CENTER]
                     ]);
 
                     // Format Angka (Koma Desimal)
-                    // G (Kuantum GKP) dan I (Kuantum Beras)
+                    // G (Kuantum GKP) dan H (Kuantum Beras)
                     $sheet->getStyle('G7:G' . $lastRow)->getNumberFormat()->setFormatCode('#,##0.00');
-                    $sheet->getStyle('I7:I' . $lastRow)->getNumberFormat()->setFormatCode('#,##0.00');
-                    
-                    // J-P (Hasil Analisa)
-                    $sheet->getStyle('J7:P' . $lastRow)->getNumberFormat()->setFormatCode('#,##0.00');
+                    $sheet->getStyle('H7:H' . $lastRow)->getNumberFormat()->setFormatCode('#,##0.00');
+
+                    // I-O (Hasil Analisa)
+                    $sheet->getStyle('I7:O' . $lastRow)->getNumberFormat()->setFormatCode('#,##0.00');
 
                     // Alignment
                     $sheet->getStyle('A7:A' . $lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-                    $sheet->getStyle('G7:P' . $lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+                    $sheet->getStyle('G7:O' . $lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
 
                     // --- TOTAL ROW ---
                     $totalRow = $lastRow + 1;
@@ -200,12 +197,12 @@ class RekapHglExport implements FromCollection, WithMapping, WithEvents, WithCus
                     
                     // Rumus Sum Kuantum GKP
                     $sheet->setCellValue('G' . $totalRow, '=SUM(G7:G' . $lastRow . ')');
-                    
+
                     // Rumus Sum Kuantum Beras
-                    $sheet->setCellValue('I' . $totalRow, '=SUM(I7:I' . $lastRow . ')');
+                    $sheet->setCellValue('H' . $totalRow, '=SUM(H7:H' . $lastRow . ')');
 
                     // Style Total Row
-                    $sheet->getStyle('A' . $totalRow . ':P' . $totalRow)->applyFromArray([
+                    $sheet->getStyle('A' . $totalRow . ':O' . $totalRow)->applyFromArray([
                         'font' => ['bold' => true],
                         'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]],
                         'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => 'FFFFE0B2']], // Orange Muda
@@ -213,7 +210,7 @@ class RekapHglExport implements FromCollection, WithMapping, WithEvents, WithCus
 
                     $sheet->getStyle('A' . $totalRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
                     $sheet->getStyle('G' . $totalRow)->getNumberFormat()->setFormatCode('#,##0.00');
-                    $sheet->getStyle('I' . $totalRow)->getNumberFormat()->setFormatCode('#,##0.00');
+                    $sheet->getStyle('H' . $totalRow)->getNumberFormat()->setFormatCode('#,##0.00');
                 }
             },
         ];
