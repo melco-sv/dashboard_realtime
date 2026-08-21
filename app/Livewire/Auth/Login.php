@@ -81,7 +81,12 @@ class Login extends Component
      * Verifikasi password dengan dukungan dua format hash:
      * - bcrypt ($2y$...) — format baru.
      * - MD5 (32 hex) — format lama; bila cocok, langsung di-upgrade ke bcrypt
-     *   dan kolom legacy password_md5 dikosongkan (rehash progresif).
+     *   (rehash progresif).
+     *
+     * Kolom legacy password_md5 sudah di-drop (migrasi
+     * 2026_08_13_000001_drop_password_md5_from_mas_user), jadi tidak lagi ditulis
+     * di sini. Cabang MD5 sengaja dipertahankan: database lama yang belum
+     * dimigrasi masih menyimpan hash MD5 di kolom `password`.
      */
     private function passwordMatches(User $user): bool
     {
@@ -95,8 +100,7 @@ class Login extends Component
         // Format lama: MD5 → cocok berarti login sah, upgrade hash saat itu juga
         if (hash_equals($stored, md5($this->password))) {
             User::where('id_user', $user->id_user)->update([
-                'password'     => Hash::make($this->password),
-                'password_md5' => '',
+                'password' => Hash::make($this->password),
             ]);
             return true;
         }

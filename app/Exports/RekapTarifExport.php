@@ -33,7 +33,7 @@ class RekapTarifExport implements FromCollection, WithMapping, WithEvents, WithC
     public function collection()
     {
         $query = DB::table('mas_hpkk_gabah as m')
-            ->leftJoin('ref_cabang as r', 'm.group', '=', 'r.code_cabang')
+            ->leftJoin('ref_cabang as r', 'm.code_cabang', '=', 'r.code_cabang')
             ->select(
                 'm.*', 
                 'r.name_cabang', 
@@ -46,7 +46,7 @@ class RekapTarifExport implements FromCollection, WithMapping, WithEvents, WithC
 
         // 1. Filter Cabang
         if (!empty($this->groupId)) {
-            $query->where('m.group', $this->groupId);
+            $query->where('m.code_cabang', $this->groupId);
         }
 
         // 2. Filter Tempat (Baru)

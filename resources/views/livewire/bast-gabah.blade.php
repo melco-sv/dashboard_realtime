@@ -1,4 +1,4 @@
-<div x-data x-on:open-pdf.window="let a=document.createElement('a');a.href=$event.detail.url;a.target='_blank';a.rel='noopener';document.body.appendChild(a);a.click();document.body.removeChild(a);" class="min-h-screen bg-[#0b0c15] p-6 text-white font-['Space_Grotesk']">
+<div x-data="{ confirmCetak: false }" x-on:open-pdf.window="let a=document.createElement('a');a.href=$event.detail.url;a.target='_blank';a.rel='noopener';document.body.appendChild(a);a.click();document.body.removeChild(a);" class="min-h-screen bg-[#0b0c15] p-6 text-white font-['Space_Grotesk']">
 
     {{-- HEADER --}}
     <div class="mb-6">
@@ -76,7 +76,7 @@
     <div class="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden mb-6">
         <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between px-4 sm:px-5 py-3 border-b border-gray-800">
             <h2 class="text-sm font-bold text-gray-300 uppercase tracking-wider">Preview Data BAST</h2>
-            <button wire:click="cetakPdf" wire:loading.attr="disabled" wire:target="cetakPdf"
+            <button type="button" @click="confirmCetak = true" wire:loading.attr="disabled" wire:target="cetakPdf"
                 class="w-full sm:w-auto bg-yellow-600 hover:bg-yellow-500 disabled:opacity-60 text-white px-4 py-2 rounded-lg text-sm font-bold transition-colors flex items-center justify-center gap-2">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"/>
@@ -149,4 +149,86 @@
     </div>
 
     {{-- Modal "Lengkapi Data BAST" tidak dipakai lagi — nomor surat otomatis, tarif & nama pejabat diambil dari Pengaturan (BAST → Pengaturan Pejabat). Cetak langsung dari tombol di atas. --}}
+
+    {{-- MODAL KONFIRMASI CETAK — mencegah nomor surat BAST terbit karena salah periode --}}
+    <div x-show="confirmCetak" x-cloak @click="confirmCetak = false"
+        x-on:keydown.escape.window="confirmCetak = false"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+
+        <div @click.stop
+            class="bg-[#1a1d2d] w-full max-w-lg max-h-[90vh] rounded-2xl border border-gray-700 shadow-2xl flex flex-col overflow-hidden">
+
+            {{-- Header --}}
+            <div class="px-5 py-4 border-b border-gray-700 bg-[#11131f] flex items-start gap-3 flex-shrink-0">
+                <div class="w-9 h-9 rounded-full bg-yellow-500/10 border border-yellow-500/40 flex items-center justify-center flex-shrink-0">
+                    <i class="fa-solid fa-triangle-exclamation text-yellow-400"></i>
+                </div>
+                <div class="min-w-0">
+                    <h3 class="text-base font-bold text-white">Konfirmasi Cetak BAST GKP</h3>
+                    <p class="text-xs text-gray-400 mt-0.5">Nomor surat akan diterbitkan begitu Anda melanjutkan</p>
+                </div>
+            </div>
+
+            {{-- Body --}}
+            <div class="p-5 space-y-4 overflow-y-auto flex-1 min-h-0">
+
+                {{-- Ringkasan data yang akan dicetak --}}
+                <div class="bg-[#0b0c15] border border-gray-700/60 rounded-xl divide-y divide-gray-800">
+                    <div class="flex items-center justify-between gap-3 px-4 py-2.5">
+                        <span class="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Periode</span>
+                        <span class="text-sm font-bold text-white text-right">
+                            {{ \Carbon\Carbon::parse($tgl_mulai)->format('d/m/Y') }}
+                            <span class="text-gray-500 font-normal">s.d.</span>
+                            {{ \Carbon\Carbon::parse($tgl_akhir)->format('d/m/Y') }}
+                        </span>
+                    </div>
+                    <div class="flex items-center justify-between gap-3 px-4 py-2.5">
+                        <span class="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Nomor Surat</span>
+                        <span class="text-sm font-bold font-mono text-yellow-400 text-right break-all">{{ $nomor_surat ?: '-' }}</span>
+                    </div>
+                    <div class="flex items-center justify-between gap-3 px-4 py-2.5">
+                        <span class="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Total Dokumen</span>
+                        <span class="text-sm font-bold text-white text-right">{{ number_format($total_record) }}</span>
+                    </div>
+                    <div class="flex items-center justify-between gap-3 px-4 py-2.5">
+                        <span class="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Total Kuantum</span>
+                        <span class="text-sm font-bold text-white text-right">{{ number_format($total_kg, 3, ',', '.') }} Kg</span>
+                    </div>
+                </div>
+
+                {{-- Peringatan utama --}}
+                <div class="bg-yellow-500/10 border border-yellow-500/40 rounded-xl p-4">
+                    <p class="text-sm font-bold text-yellow-300 mb-2">
+                        Pastikan periode dan data di atas sudah benar sebelum melanjutkan.
+                    </p>
+                    <ul class="text-xs text-yellow-100/80 space-y-1.5 list-disc pl-4 leading-relaxed">
+                        <li>Nomor surat BAST akan <span class="font-bold">tercatat permanen</span> dan tidak dapat dibatalkan.</li>
+                        <li>Jika periode yang dicetak keliru, nomor surat itu tetap terpakai — akibatnya penomoran BAST menjadi tidak berurutan dan Admin Pusat menerima dokumen yang sebenarnya tidak perlu diapprove.</li>
+                        <li>Mencetak ulang <span class="font-bold">periode yang sama</span> tetap memakai nomor surat yang sama, jadi aman.</li>
+                    </ul>
+                </div>
+
+                @if ($total_record == 0)
+                <div class="bg-red-500/10 border border-red-500/50 rounded-xl p-3.5">
+                    <p class="text-xs text-red-300 font-bold leading-relaxed">
+                        Tidak ada data pada periode ini. Melanjutkan akan menerbitkan BAST kosong dan tetap memakai satu nomor surat.
+                    </p>
+                </div>
+                @endif
+            </div>
+
+            {{-- Footer --}}
+            <div class="px-5 py-4 border-t border-gray-700 bg-[#11131f] flex flex-col-reverse sm:flex-row sm:justify-end gap-2 flex-shrink-0">
+                <button type="button" @click="confirmCetak = false"
+                    class="w-full sm:w-auto px-4 py-2.5 rounded-lg text-sm font-bold text-gray-300 bg-gray-800 hover:bg-gray-700 border border-gray-700 transition-colors">
+                    Batal, Periksa Lagi
+                </button>
+                <button type="button" wire:click="cetakPdf" @click="confirmCetak = false"
+                    class="w-full sm:w-auto px-4 py-2.5 rounded-lg text-sm font-bold text-white bg-yellow-600 hover:bg-yellow-500 transition-colors flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-file-arrow-down"></i>
+                    Ya, Cetak Sekarang
+                </button>
+            </div>
+        </div>
+    </div>
 </div>

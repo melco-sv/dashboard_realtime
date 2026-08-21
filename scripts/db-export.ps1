@@ -62,6 +62,7 @@ function Find-MySqlBinDir([hashtable]$envMap, $dbHost, $dbPort, $dbUser, $dbPass
     }
     return $null
 }
+<<<<<<< Updated upstream
 
 $binDir = Find-MySqlBinDir $envMap $dbHost $dbPort $dbUser $dbPass
 if (-not $binDir) {
@@ -73,6 +74,10 @@ if (-not $binDir) {
 $mysqldump = Join-Path $binDir 'mysqldump.exe'
 if (-not (Test-Path $mysqldump)) { Write-Host "GAGAL: mysqldump.exe tidak ada di $binDir" -ForegroundColor Red; exit 1 }
 Write-Host "Memakai: $mysqldump" -ForegroundColor DarkGray
+=======
+if (-not $mysqldump -and (Test-Path 'D:\xampp\mysql\bin\mysqldump.exe')) { $mysqldump = 'D:\xampp\mysql\bin\mysqldump.exe' }
+if (-not $mysqldump) { Write-Host "GAGAL: mysqldump.exe tidak ditemukan. Pastikan Laragon/XAMPP/MySQL terpasang." -ForegroundColor Red; exit 1 }
+>>>>>>> Stashed changes
 
 # --- Siapkan folder & nama file output ---
 $backupDir = Join-Path $root 'database-backup'

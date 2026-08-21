@@ -123,11 +123,11 @@ class ManageUser extends Component
             'status' => $this->status,
         ];
 
-        // 3. Handle Password — bcrypt (login mendukung dua format selama transisi;
-        //    kolom legacy password_md5 dikosongkan agar hash lemah tidak tersisa)
+        // 3. Handle Password — selalu bcrypt.
+        //    (Kolom legacy password_md5 sudah di-drop, lihat migrasi
+        //     2026_08_13_000001_drop_password_md5_from_mas_user.)
         if (!empty($this->password)) {
             $data['password'] = Hash::make($this->password);
-            $data['password_md5'] = '';
         }
 
         // 4. Eksekusi Database

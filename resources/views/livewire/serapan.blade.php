@@ -331,7 +331,7 @@
             <div class="flex items-center justify-between mb-4">
                 <div>
                     <h4 class="text-sm font-bold text-white uppercase tracking-widest">Ranking Performa Cabang</h4>
-                    <p class="text-[10px] text-gray-500 mt-1">Urutan terbaik → terburuk berdasarkan Total Pendapatan</p>
+                    <p class="text-[10px] text-gray-500 mt-1">Urutan terbaik → terburuk berdasarkan Total Dokumen (GKP + HGL)</p>
                 </div>
                 <span class="text-[10px] text-indigo-400 bg-indigo-500/10 px-3 py-1 rounded-full font-bold border border-indigo-500/30">
                     {{ count($rankingCabang) }} Cabang
@@ -344,6 +344,9 @@
                         <tr class="bg-gray-800/80 text-gray-400 text-[10px] uppercase tracking-widest">
                             <th class="px-4 py-3 text-left font-bold">#</th>
                             <th class="px-4 py-3 text-left font-bold">Cabang</th>
+                            <th class="px-4 py-3 text-center font-bold">Dok. GKP</th>
+                            <th class="px-4 py-3 text-center font-bold">Dok. HGL</th>
+                            <th class="px-4 py-3 text-center font-bold text-indigo-300">Total Dokumen</th>
                             <th class="px-4 py-3 text-center font-bold">Gabah (Kg)</th>
                             <th class="px-4 py-3 text-center font-bold">Beras (Kg)</th>
                             <th class="px-4 py-3 text-center font-bold">Total Pendapatan</th>
@@ -358,9 +361,12 @@
                         <tr class="bg-gray-900/50 hover:bg-gray-800/50 transition-colors">
                             <td class="px-4 py-3 font-extrabold {{ $rankCls }}">#{{ $rank }}</td>
                             <td class="px-4 py-3 font-bold text-white">{{ $row['name'] }}</td>
-                            <td class="px-4 py-3 text-center font-mono text-blue-300">{{ number_format($row['gabah_kg'], 2, ',', '.') }}</td>
-                            <td class="px-4 py-3 text-center font-mono text-green-300">{{ number_format($row['beras_kg'], 2, ',', '.') }}</td>
-                            <td class="px-4 py-3 text-center font-mono font-bold text-indigo-300">
+                            <td class="px-4 py-3 text-center font-mono text-blue-300">{{ number_format($row['dok_gkp'], 0, ',', '.') }}</td>
+                            <td class="px-4 py-3 text-center font-mono text-green-300">{{ number_format($row['dok_hgl'], 0, ',', '.') }}</td>
+                            <td class="px-4 py-3 text-center font-mono font-bold text-indigo-300">{{ number_format($row['total_dokumen'], 0, ',', '.') }}</td>
+                            <td class="px-4 py-3 text-center font-mono text-blue-300/70">{{ number_format($row['gabah_kg'], 2, ',', '.') }}</td>
+                            <td class="px-4 py-3 text-center font-mono text-green-300/70">{{ number_format($row['beras_kg'], 2, ',', '.') }}</td>
+                            <td class="px-4 py-3 text-center font-mono text-gray-400">
                                 Rp {{ number_format($row['pendapatan'], 0, ',', '.') }}
                             </td>
                         </tr>

@@ -59,10 +59,9 @@ class UpdateProfile extends Component
 
         // 4. Cek apakah user mengisi password baru
         if (!empty($this->new_password)) {
-            // Hash bcrypt (login mendukung dua format selama transisi;
-            // kolom legacy password_md5 dikosongkan agar hash lemah tidak tersisa)
+            // Hash bcrypt. Kolom legacy password_md5 sudah di-drop, lihat migrasi
+            // 2026_08_13_000001_drop_password_md5_from_mas_user.
             $dataToUpdate['password'] = Hash::make($this->new_password);
-            $dataToUpdate['password_md5'] = '';
         }
 
         // 5. Simpan ke Database

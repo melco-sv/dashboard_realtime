@@ -251,16 +251,15 @@ class Serapan extends Component
     {
         try {
             $gabah = MasHpkkGabah::withoutGlobalScopes()
-                ->join('ref_cabang', 'mas_hpkk_gabah.code_cabang', '=', 'ref_cabang.code_cabang')
                 ->select(
-                    'mas_hpkk_gabah.code_cabang as code',
-                    'ref_cabang.name_cabang',
+                    'code_cabang as code',
                     DB::raw('COUNT(*) as jumlah_gabah'),
                     DB::raw("SUM(CAST(REPLACE(jumlah_timbangan, ',', '.') AS DECIMAL(15,2))) as total_kg_gabah"),
                 )
                 ->when($this->periode, fn($q) => $q->where('tanggal_pelaksanaan', 'like', $this->periode . '%'))
-                ->groupBy('mas_hpkk_gabah.code_cabang', 'ref_cabang.name_cabang')
-                ->get();
+                ->groupBy('code_cabang')
+                ->get()
+                ->keyBy('code');
 
             $beras = MasHpkkBeras::withoutGlobalScopes()
                 ->select(
@@ -273,21 +272,49 @@ class Serapan extends Component
                 ->get()
                 ->keyBy('code');
 
-            return $gabah->map(function ($row) use ($beras) {
-                $b         = $beras->get($row->code);
-                $gabahKg   = (float) ($row->total_kg_gabah ?? 0);
-                $berasKg   = $b ? (float) ($b->total_kg_beras ?? 0) : 0;
-                $pendapatan = ($gabahKg * 36) + ($berasKg * 46);
+            // Gabungkan kode cabang dari kedua tabel. Sebelumnya daftar ini
+            // dibangun dari tabel gabah saja, sehingga cabang yang hanya punya
+            // dokumen HGL (beras) tanpa GKP (gabah) tidak pernah muncul di
+            // ranking sama sekali.
+            $codes = $gabah->keys()
+                ->merge($beras->keys())
+                ->unique()
+                ->reject(fn($c) => $c === null || $c === '')
+                ->values();
+
+            if ($codes->isEmpty()) {
+                return [];
+            }
+
+            $names = DB::table('ref_cabang')
+                ->whereIn('code_cabang', $codes->all())
+                ->pluck('name_cabang', 'code_cabang');
+
+            return $codes->map(function ($code) use ($gabah, $beras, $names) {
+                $g = $gabah->get($code);
+                $b = $beras->get($code);
+
+                // GKP = gabah, HGL = beras (lihat BastGabah/BastBeras).
+                $dokGkp = $g ? (int) $g->jumlah_gabah : 0;
+                $dokHgl = $b ? (int) $b->jumlah_beras : 0;
+
+                $gabahKg = $g ? (float) ($g->total_kg_gabah ?? 0) : 0;
+                $berasKg = $b ? (float) ($b->total_kg_beras ?? 0) : 0;
+
                 return [
-                    'name'         => $row->name_cabang,
-                    'jumlah_gabah' => (int) $row->jumlah_gabah,
-                    'jumlah_beras' => $b ? (int) $b->jumlah_beras : 0,
-                    'gabah_kg'     => $gabahKg,
-                    'beras_kg'     => $berasKg,
-                    'pendapatan'   => $pendapatan,
+                    'name'          => $names[$code] ?? ('Cabang ' . $code),
+                    'dok_gkp'       => $dokGkp,
+                    'dok_hgl'       => $dokHgl,
+                    'total_dokumen' => $dokGkp + $dokHgl,
+                    'jumlah_gabah'  => $dokGkp,
+                    'jumlah_beras'  => $dokHgl,
+                    'gabah_kg'      => $gabahKg,
+                    'beras_kg'      => $berasKg,
+                    'pendapatan'    => ($gabahKg * 36) + ($berasKg * 46),
                 ];
             })
-            ->sortByDesc('pendapatan')
+            // Ranking berdasarkan jumlah dokumen, bukan pendapatan.
+            ->sortByDesc('total_dokumen')
             ->values()
             ->toArray();
         } catch (\Exception $e) {

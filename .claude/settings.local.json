@@ -15,7 +15,8 @@
       "Bash(Get-ChildItem -Path \"c:\\\\dashboard-saya\" -Recurse -Force)",
       "Bash(Select-Object -First 100)",
       "Bash(grep -A 40 \"CREATE TABLE \\\\`mas_hpkk_gabah\\\\`\" /c/dashboard-saya/pkgbsuco_bulog2025.sql)",
-      "Bash(grep -A 25 \"CREATE TABLE \\\\`mas_user\\\\`\" /c/dashboard-saya/pkgbsuco_bulog2025.sql)"
+      "Bash(grep -A 25 \"CREATE TABLE \\\\`mas_user\\\\`\" /c/dashboard-saya/pkgbsuco_bulog2025.sql)",
+      "Bash(ls /c/xampp/mysql/bin/mysql.exe /c/laragon/bin/mysql/*/bin/mysql.exe /d/xampp/mysql/bin/mysql.exe 2>/dev/null; echo \"---\"; which mysql mysqldump 2>/dev/null; echo \"--- done\")"
     ]
   }
 }

@@ -86,6 +86,7 @@ function Find-MySqlBinDir([hashtable]$envMap, $dbHost, $dbPort, $dbUser, $dbPass
     }
     return $null
 }
+<<<<<<< Updated upstream
 
 $binDir = Find-MySqlBinDir $envMap $dbHost $dbPort $dbUser $dbPass
 if (-not $binDir) {
@@ -101,6 +102,10 @@ Write-Host "Memakai: $mysql" -ForegroundColor DarkGray
 $passPart = ''; if ($dbPass) { $passPart = " --password=$dbPass" }
 $serverVer = cmd /c "`"$mysql`" --host=$dbHost --port=$dbPort --user=$dbUser$passPart -N -e `"SELECT VERSION();`" 2>nul"
 $isMariaDb = "$serverVer" -match 'MariaDB'
+=======
+if (-not $mysql -and (Test-Path 'D:\xampp\mysql\bin\mysql.exe')) { $mysql = 'D:\xampp\mysql\bin\mysql.exe' }
+if (-not $mysql) { Write-Host "GAGAL: mysql.exe tidak ditemukan. Pastikan Laragon/XAMPP/MySQL terpasang." -ForegroundColor Red; exit 1 }
+>>>>>>> Stashed changes
 
 # --- Konfirmasi (aksi menimpa!) ---
 $info   = Get-Item $File
@@ -132,15 +137,36 @@ if ($isMariaDb -and (Select-String -Path $File -Pattern 'utf8mb4_0900_' -Quiet))
 
 Write-Host "Sedang mengimpor, harap tunggu..." -ForegroundColor Yellow
 
+# --- Kompatibilitas: backup dari MySQL 8 tidak bisa langsung dibaca MariaDB ---
+# MySQL 8 memakai collation utf8mb4_0900_* yang tidak dikenal MariaDB (error 1273).
+# Jika terdeteksi, buat salinan sementara dengan collation padanan lalu impor salinan itu.
+$importFile = $File
+$serverVer  = (& $mysql --version) -join ' '
+if ($serverVer -match 'MariaDB' -and (Select-String -Path $File -Pattern 'utf8mb4_0900' -List)) {
+    Write-Host "Backup berasal dari MySQL 8, server lokal MariaDB - menyesuaikan collation..." -ForegroundColor Yellow
+    $sql = [System.IO.File]::ReadAllText($File)
+    $sql = $sql -replace 'utf8mb4_0900_bin', 'utf8mb4_bin'
+    $sql = $sql -replace 'utf8mb4_0900_\w+', 'utf8mb4_unicode_ci'
+    $sql = $sql -replace " /\*!80016 DEFAULT ENCRYPTION='N' \*/", ''
+    $importFile = Join-Path $env:TEMP ('dbimport_' + [System.IO.Path]::GetFileName($File))
+    [System.IO.File]::WriteAllText($importFile, $sql, (New-Object System.Text.UTF8Encoding $false))
+}
+
 # --- Jalankan impor (redirect via cmd agar aliran byte utuh) ---
 $passPart = ''
 if ($dbPass) { $passPart = " --password=$dbPass" }
 $cmdLine = "`"$mysql`" --host=$dbHost --port=$dbPort --user=$dbUser$passPart --default-character-set=utf8mb4 < `"$importFile`""
 cmd /c $cmdLine
 $importExit = $LASTEXITCODE
+<<<<<<< Updated upstream
 if ($tmpCompat -and (Test-Path $tmpCompat)) { Remove-Item $tmpCompat -Force }
 if ($importExit -ne 0) {
     Write-Host "GAGAL: impor berhenti dengan kode $importExit. Pastikan server berjalan & file backup utuh." -ForegroundColor Red
+=======
+if ($importFile -ne $File) { Remove-Item $importFile -Force -ErrorAction SilentlyContinue }
+if ($importExit -ne 0) {
+    Write-Host "GAGAL: impor berhenti dengan kode $importExit. Pastikan MySQL berjalan & file backup utuh." -ForegroundColor Red
+>>>>>>> Stashed changes
     exit 1
 }
 
